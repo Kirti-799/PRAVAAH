@@ -1,0 +1,54 @@
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from app.api.routes import api_router
+from app.core.config import settings
+
+
+def get_application() -> FastAPI:
+    """Create and configure the FastAPI application instance."""
+    app = FastAPI(
+        title=settings.PROJECT_NAME,
+        version=settings.VERSION,
+        description=(
+            "PRAVAAH: Predictive Risk Assessment and Vulnerability Analysis "
+            "for Adaptive Assistance & Humanitarian Response. "
+            "Phase 0 — Project Foundation and Development Environment."
+        ),
+        docs_url=f"{settings.API_V1_STR}/docs",
+        redoc_url=f"{settings.API_V1_STR}/redoc",
+        openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    )
+
+    # Configure CORS using environment-driven origin whitelist
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.ALLOWED_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_headers=["*"],
+    )
+
+    # Attach versioned API routes under /api
+    app.include_router(api_router, prefix=settings.API_V1_STR)
+
+    @app.get(
+        "/",
+        tags=["root"],
+        summary="API Root Identification",
+        description="Provides API identification and documentation links.",
+    )
+    def root():
+        return {
+            "service": settings.PROJECT_NAME,
+            "version": settings.VERSION,
+            "environment": settings.ENVIRONMENT,
+            "message": "PRAVAAH API is operational. See documentation at /api/docs.",
+            "docs_url": f"{settings.API_V1_STR}/docs",
+            "health_url": f"{settings.API_V1_STR}/health",
+        }
+
+    return app
+
+
+app = get_application()

@@ -1,0 +1,80 @@
+# Environments & Dependencies
+.venv/
+venv/
+env/
+ENV/
+node_modules/
+
+# Python cache & build
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & Linting
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.ruff_cache/
+.oxlintrc.json
+
+# Frontend build artifacts
+frontend/dist/
+frontend/dist-ssr/
+*.local
+
+# Environment files - preserve examples
+.env
+.env.*
+!.env.example
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# OS generated files
+Thumbs.db
+[Dd]esktop.ini
+.DS_Store
+
+# IDE & Editor caches
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Large datasets and ML model artifacts (Phase 1+)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+ml/artifacts/*
+!ml/artifacts/.gitkeep
+*.h5
+*.pkl
+*.joblib
+*.pt
+*.pth
+*.onnx
+*.parquet
+*.geoparquet
