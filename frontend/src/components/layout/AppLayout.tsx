@@ -1,40 +1,78 @@
+/**
+ * frontend/src/components/layout/AppLayout.tsx
+ *
+ * Root layout container for PRAVAAH — AI-Powered Flood Risk Assessment & Management System.
+ * Connects the streamlined Sidebar, top Header, and GeospatialWorkspace.
+ */
+
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { GeospatialWorkspace } from '../map/GeospatialWorkspace';
 import type { HealthStatus } from '../../types/api';
 
 interface AppLayoutProps {
-  children: React.ReactNode;
   isLoading: boolean;
   healthData: HealthStatus | null;
   error: string | null;
+  lastChecked: Date | null;
   onRetry: () => void;
+  onBackToLanding?: () => void;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({
-  children,
   isLoading,
   healthData,
   error,
+  lastChecked,
   onRetry,
+  onBackToLanding,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeNav, setActiveNav] = useState('Overview');
+
+  const handleSelectNav = (name: string) => {
+    setActiveNav(name);
+  };
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <div className="flex h-screen max-h-screen w-full flex-col overflow-hidden bg-[#FBF9F5] text-[#2C221E]">
+      {/* Top Header */}
+      <Header
+        onMenuToggle={() => setSidebarOpen(true)}
+        isLoading={isLoading}
+        healthData={healthData}
+        error={error}
+        onRetry={onRetry}
+        onBackToLanding={onBackToLanding}
+      />
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Header
-          onMenuToggle={() => setSidebarOpen(true)}
+      {/* Main Workspace Area: Sidebar + Primary Workspace */}
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Left Navigation Sidebar */}
+        <Sidebar
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+          activeNav={activeNav}
+          onSelectNav={handleSelectNav}
           isLoading={isLoading}
           healthData={healthData}
           error={error}
+          lastChecked={lastChecked}
           onRetry={onRetry}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="mx-auto max-w-7xl">{children}</div>
+        {/* Primary Analytical & GIS Workspace */}
+        <main className="flex-1 h-full w-full overflow-hidden relative">
+          <GeospatialWorkspace
+            activeNav={activeNav}
+            onNavChange={setActiveNav}
+            isLoading={isLoading}
+            healthData={healthData}
+            error={error}
+            lastChecked={lastChecked}
+            onRetry={onRetry}
+          />
         </main>
       </div>
     </div>

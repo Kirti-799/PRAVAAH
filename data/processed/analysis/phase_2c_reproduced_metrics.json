@@ -1,0 +1,386 @@
+{
+  "TRAIN": {
+    "Persistence": {
+      "overall": {
+        "sample_count": 1412,
+        "mae_cumecs": 54.77,
+        "rmse_cumecs": 381.44,
+        "r2_score": 0.0675,
+        "mean_bias_cumecs": -0.07,
+        "nse_score": 0.0675,
+        "skill_score_vs_persistence": 0.0
+      },
+      "high_flow": {
+        "sample_count": 9,
+        "mae_cumecs": 3244.22,
+        "rmse_cumecs": 3607.2,
+        "r2_score": -2.2972,
+        "mean_bias_cumecs": -1841.15,
+        "nse_score": -2.2972,
+        "skill_score_vs_persistence": 0.0
+      },
+      "high_flow_count": 9
+    },
+    "Trailing 3d Mean": {
+      "overall": {
+        "sample_count": 1412,
+        "mae_cumecs": 64.36,
+        "rmse_cumecs": 386.14,
+        "r2_score": 0.0444,
+        "mean_bias_cumecs": -0.12,
+        "nse_score": 0.0444,
+        "skill_score_vs_persistence": -0.0248
+      },
+      "high_flow": {
+        "sample_count": 9,
+        "mae_cumecs": 3482.47,
+        "rmse_cumecs": 3749.79,
+        "r2_score": -2.563,
+        "mean_bias_cumecs": -3036.19,
+        "nse_score": -2.563,
+        "skill_score_vs_persistence": -0.0806
+      },
+      "high_flow_count": 9
+    },
+    "Linear OLS": {
+      "overall": {
+        "sample_count": 1412,
+        "mae_cumecs": 66.22,
+        "rmse_cumecs": 333.2,
+        "r2_score": 0.2885,
+        "mean_bias_cumecs": 0.0,
+        "nse_score": 0.2885,
+        "skill_score_vs_persistence": 0.2369
+      },
+      "high_flow": {
+        "sample_count": 9,
+        "mae_cumecs": 3560.96,
+        "rmse_cumecs": 3802.24,
+        "r2_score": -2.6634,
+        "mean_bias_cumecs": -2993.86,
+        "nse_score": -2.6634,
+        "skill_score_vs_persistence": -0.1111
+      },
+      "high_flow_count": 9
+    },
+    "Random Forest v1": {
+      "overall": {
+        "sample_count": 1412,
+        "mae_cumecs": 42.62,
+        "rmse_cumecs": 250.79,
+        "r2_score": 0.5969,
+        "mean_bias_cumecs": -0.52,
+        "nse_score": 0.5969,
+        "skill_score_vs_persistence": 0.5677
+      },
+      "high_flow": {
+        "sample_count": 9,
+        "mae_cumecs": 2244.3,
+        "rmse_cumecs": 2583.78,
+        "r2_score": -0.6917,
+        "mean_bias_cumecs": -1971.87,
+        "nse_score": -0.6917,
+        "skill_score_vs_persistence": 0.4869
+      },
+      "high_flow_count": 9
+    },
+    "HistGradientBoosting v1": {
+      "overall": {
+        "sample_count": 1412,
+        "mae_cumecs": 46.87,
+        "rmse_cumecs": 271.81,
+        "r2_score": 0.5265,
+        "mean_bias_cumecs": -6.33,
+        "nse_score": 0.5265,
+        "skill_score_vs_persistence": 0.4922
+      },
+      "high_flow": {
+        "sample_count": 9,
+        "mae_cumecs": 2659.46,
+        "rmse_cumecs": 3074.6,
+        "r2_score": -1.3954,
+        "mean_bias_cumecs": -2505.84,
+        "nse_score": -1.3954,
+        "skill_score_vs_persistence": 0.2735
+      },
+      "high_flow_count": 9
+    },
+    "Gradient Boosting v1": {
+      "overall": {
+        "sample_count": 1412,
+        "mae_cumecs": 36.51,
+        "rmse_cumecs": 152.5,
+        "r2_score": 0.8509,
+        "mean_bias_cumecs": -0.0,
+        "nse_score": 0.8509,
+        "skill_score_vs_persistence": 0.8402
+      },
+      "high_flow": {
+        "sample_count": 9,
+        "mae_cumecs": 1233.0,
+        "rmse_cumecs": 1534.97,
+        "r2_score": 0.403,
+        "mean_bias_cumecs": -1181.82,
+        "nse_score": 0.403,
+        "skill_score_vs_persistence": 0.8189
+      },
+      "high_flow_count": 9
+    }
+  },
+  "VAL": {
+    "Persistence": {
+      "overall": {
+        "sample_count": 322,
+        "mae_cumecs": 97.39,
+        "rmse_cumecs": 588.29,
+        "r2_score": -0.2027,
+        "mean_bias_cumecs": 0.0,
+        "nse_score": -0.2027,
+        "skill_score_vs_persistence": 0.0
+      },
+      "high_flow": {
+        "sample_count": 4,
+        "mae_cumecs": 4060.87,
+        "rmse_cumecs": 4991.25,
+        "r2_score": -2.7188,
+        "mean_bias_cumecs": -1203.28,
+        "nse_score": -2.7188,
+        "skill_score_vs_persistence": 0.0
+      },
+      "high_flow_count": 4
+    },
+    "Trailing 3d Mean": {
+      "overall": {
+        "sample_count": 322,
+        "mae_cumecs": 104.69,
+        "rmse_cumecs": 558.76,
+        "r2_score": -0.085,
+        "mean_bias_cumecs": 0.0,
+        "nse_score": -0.085,
+        "skill_score_vs_persistence": 0.0979
+      },
+      "high_flow": {
+        "sample_count": 4,
+        "mae_cumecs": 2984.7,
+        "rmse_cumecs": 4243.5,
+        "r2_score": -1.688,
+        "mean_bias_cumecs": -2797.33,
+        "nse_score": -1.688,
+        "skill_score_vs_persistence": 0.2772
+      },
+      "high_flow_count": 4
+    },
+    "Linear OLS": {
+      "overall": {
+        "sample_count": 322,
+        "mae_cumecs": 89.91,
+        "rmse_cumecs": 489.13,
+        "r2_score": 0.1685,
+        "mean_bias_cumecs": -20.95,
+        "nse_score": 0.1685,
+        "skill_score_vs_persistence": 0.3087
+      },
+      "high_flow": {
+        "sample_count": 4,
+        "mae_cumecs": 3321.24,
+        "rmse_cumecs": 4267.82,
+        "r2_score": -1.7189,
+        "mean_bias_cumecs": -2428.56,
+        "nse_score": -1.7189,
+        "skill_score_vs_persistence": 0.2689
+      },
+      "high_flow_count": 4
+    },
+    "Random Forest v1": {
+      "overall": {
+        "sample_count": 322,
+        "mae_cumecs": 77.48,
+        "rmse_cumecs": 485.06,
+        "r2_score": 0.1823,
+        "mean_bias_cumecs": -13.83,
+        "nse_score": 0.1823,
+        "skill_score_vs_persistence": 0.3202
+      },
+      "high_flow": {
+        "sample_count": 4,
+        "mae_cumecs": 2525.07,
+        "rmse_cumecs": 4069.25,
+        "r2_score": -1.4718,
+        "mean_bias_cumecs": -2250.72,
+        "nse_score": -1.4718,
+        "skill_score_vs_persistence": 0.3353
+      },
+      "high_flow_count": 4
+    },
+    "HistGradientBoosting v1": {
+      "overall": {
+        "sample_count": 322,
+        "mae_cumecs": 79.45,
+        "rmse_cumecs": 478.8,
+        "r2_score": 0.2033,
+        "mean_bias_cumecs": -25.42,
+        "nse_score": 0.2033,
+        "skill_score_vs_persistence": 0.3376
+      },
+      "high_flow": {
+        "sample_count": 4,
+        "mae_cumecs": 2642.91,
+        "rmse_cumecs": 4114.51,
+        "r2_score": -1.5271,
+        "mean_bias_cumecs": -2642.91,
+        "nse_score": -1.5271,
+        "skill_score_vs_persistence": 0.3205
+      },
+      "high_flow_count": 4
+    },
+    "Gradient Boosting v1": {
+      "overall": {
+        "sample_count": 322,
+        "mae_cumecs": 99.09,
+        "rmse_cumecs": 553.79,
+        "r2_score": -0.0658,
+        "mean_bias_cumecs": -5.46,
+        "nse_score": -0.0658,
+        "skill_score_vs_persistence": 0.1139
+      },
+      "high_flow": {
+        "sample_count": 4,
+        "mae_cumecs": 3316.36,
+        "rmse_cumecs": 4367.14,
+        "r2_score": -1.8469,
+        "mean_bias_cumecs": -2090.13,
+        "nse_score": -1.8469,
+        "skill_score_vs_persistence": 0.2344
+      },
+      "high_flow_count": 4
+    }
+  },
+  "TEST": {
+    "Persistence": {
+      "overall": {
+        "sample_count": 611,
+        "mae_cumecs": 74.25,
+        "rmse_cumecs": 421.78,
+        "r2_score": 0.4994,
+        "mean_bias_cumecs": -0.44,
+        "nse_score": 0.4994,
+        "skill_score_vs_persistence": 0.0
+      },
+      "high_flow": {
+        "sample_count": 8,
+        "mae_cumecs": 2524.06,
+        "rmse_cumecs": 3311.61,
+        "r2_score": -0.9803,
+        "mean_bias_cumecs": -847.59,
+        "nse_score": -0.9803,
+        "skill_score_vs_persistence": 0.0
+      },
+      "high_flow_count": 8
+    },
+    "Trailing 3d Mean": {
+      "overall": {
+        "sample_count": 611,
+        "mae_cumecs": 90.15,
+        "rmse_cumecs": 484.75,
+        "r2_score": 0.3387,
+        "mean_bias_cumecs": -1.12,
+        "nse_score": 0.3387,
+        "skill_score_vs_persistence": -0.3209
+      },
+      "high_flow": {
+        "sample_count": 8,
+        "mae_cumecs": 3213.52,
+        "rmse_cumecs": 3946.07,
+        "r2_score": -1.8118,
+        "mean_bias_cumecs": -1497.53,
+        "nse_score": -1.8118,
+        "skill_score_vs_persistence": -0.4199
+      },
+      "high_flow_count": 8
+    },
+    "Linear OLS": {
+      "overall": {
+        "sample_count": 611,
+        "mae_cumecs": 86.58,
+        "rmse_cumecs": 413.06,
+        "r2_score": 0.5199,
+        "mean_bias_cumecs": -32.24,
+        "nse_score": 0.5199,
+        "skill_score_vs_persistence": 0.0409
+      },
+      "high_flow": {
+        "sample_count": 8,
+        "mae_cumecs": 2644.17,
+        "rmse_cumecs": 3440.62,
+        "r2_score": -1.1376,
+        "mean_bias_cumecs": -2442.88,
+        "nse_score": -1.1376,
+        "skill_score_vs_persistence": -0.0794
+      },
+      "high_flow_count": 8
+    },
+    "Random Forest v1": {
+      "overall": {
+        "sample_count": 611,
+        "mae_cumecs": 95.82,
+        "rmse_cumecs": 469.52,
+        "r2_score": 0.3796,
+        "mean_bias_cumecs": -10.8,
+        "nse_score": 0.3796,
+        "skill_score_vs_persistence": -0.2392
+      },
+      "high_flow": {
+        "sample_count": 8,
+        "mae_cumecs": 2883.34,
+        "rmse_cumecs": 3669.87,
+        "r2_score": -1.4319,
+        "mean_bias_cumecs": -2724.82,
+        "nse_score": -1.4319,
+        "skill_score_vs_persistence": -0.2281
+      },
+      "high_flow_count": 8
+    },
+    "HistGradientBoosting v1": {
+      "overall": {
+        "sample_count": 611,
+        "mae_cumecs": 100.21,
+        "rmse_cumecs": 482.34,
+        "r2_score": 0.3453,
+        "mean_bias_cumecs": -23.38,
+        "nse_score": 0.3453,
+        "skill_score_vs_persistence": -0.3078
+      },
+      "high_flow": {
+        "sample_count": 8,
+        "mae_cumecs": 3161.62,
+        "rmse_cumecs": 3917.32,
+        "r2_score": -1.7709,
+        "mean_bias_cumecs": -3109.05,
+        "nse_score": -1.7709,
+        "skill_score_vs_persistence": -0.3993
+      },
+      "high_flow_count": 8
+    },
+    "Gradient Boosting v1": {
+      "overall": {
+        "sample_count": 611,
+        "mae_cumecs": 104.6,
+        "rmse_cumecs": 501.25,
+        "r2_score": 0.293,
+        "mean_bias_cumecs": -9.84,
+        "nse_score": 0.293,
+        "skill_score_vs_persistence": -0.4123
+      },
+      "high_flow": {
+        "sample_count": 8,
+        "mae_cumecs": 3067.73,
+        "rmse_cumecs": 3909.63,
+        "r2_score": -1.7601,
+        "mean_bias_cumecs": -2704.28,
+        "nse_score": -1.7601,
+        "skill_score_vs_persistence": -0.3938
+      },
+      "high_flow_count": 8
+    }
+  }
+}

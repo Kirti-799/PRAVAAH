@@ -1,0 +1,632 @@
+{
+  "dataset": "hathnikund_discharge_forecasting_24h.csv",
+  "partition_sizes": {
+    "TRAIN": 1412,
+    "VAL": 322,
+    "TEST": 611,
+    "FULL": 2345
+  },
+  "linear_model_coefficients": {
+    "intercept_beta0": 19.0503,
+    "q_current_beta1": 0.5016,
+    "rf_accum_3d_beta2": 2.0783
+  },
+  "evaluations": {
+    "TRAIN": {
+      "persistence": {
+        "overall": {
+          "sample_count": 1412,
+          "mae_cumecs": 54.77,
+          "rmse_cumecs": 381.44,
+          "r2_score": 0.0675,
+          "mean_bias_cumecs": -0.07,
+          "nse_score": 0.0675,
+          "skill_score_vs_persistence": 0.0
+        },
+        "monsoon": {
+          "sample_count": 461,
+          "mae_cumecs": 162.52,
+          "rmse_cumecs": 667.27,
+          "r2_score": 0.0297,
+          "mean_bias_cumecs": -1.64,
+          "nse_score": 0.0297,
+          "skill_score_vs_persistence": 0.0
+        },
+        "non_monsoon": {
+          "sample_count": 951,
+          "mae_cumecs": 2.53,
+          "rmse_cumecs": 13.71,
+          "r2_score": 0.6022,
+          "mean_bias_cumecs": 0.69,
+          "nse_score": 0.6022,
+          "skill_score_vs_persistence": 0.0
+        },
+        "high_flow_subset": {
+          "sample_count": 9,
+          "mae_cumecs": 3244.22,
+          "rmse_cumecs": 3607.2,
+          "r2_score": -2.2972,
+          "mean_bias_cumecs": -1841.15,
+          "nse_score": -2.2972,
+          "skill_score_vs_persistence": 0.0
+        }
+      },
+      "trailing_3d_mean": {
+        "overall": {
+          "sample_count": 1412,
+          "mae_cumecs": 64.36,
+          "rmse_cumecs": 386.14,
+          "r2_score": 0.0444,
+          "mean_bias_cumecs": -0.12,
+          "nse_score": 0.0444,
+          "skill_score_vs_persistence": -0.0248
+        },
+        "monsoon": {
+          "sample_count": 461,
+          "mae_cumecs": 191.12,
+          "rmse_cumecs": 675.5,
+          "r2_score": 0.0057,
+          "mean_bias_cumecs": -3.03,
+          "nse_score": 0.0057,
+          "skill_score_vs_persistence": -0.0248
+        },
+        "non_monsoon": {
+          "sample_count": 951,
+          "mae_cumecs": 2.9,
+          "rmse_cumecs": 13.82,
+          "r2_score": 0.5958,
+          "mean_bias_cumecs": 1.3,
+          "nse_score": 0.5958,
+          "skill_score_vs_persistence": -0.0161
+        },
+        "high_flow_subset": {
+          "sample_count": 9,
+          "mae_cumecs": 3482.47,
+          "rmse_cumecs": 3749.79,
+          "r2_score": -2.563,
+          "mean_bias_cumecs": -3036.19,
+          "nse_score": -2.563,
+          "skill_score_vs_persistence": -0.0806
+        }
+      },
+      "seasonal_naive_doy": {
+        "overall": {
+          "sample_count": 1412,
+          "mae_cumecs": 65.61,
+          "rmse_cumecs": 326.25,
+          "r2_score": 0.3178,
+          "mean_bias_cumecs": -0.0,
+          "nse_score": 0.3178,
+          "skill_score_vs_persistence": 0.2684
+        },
+        "monsoon": {
+          "sample_count": 461,
+          "mae_cumecs": 192.29,
+          "rmse_cumecs": 570.43,
+          "r2_score": 0.2909,
+          "mean_bias_cumecs": 0.24,
+          "nse_score": 0.2909,
+          "skill_score_vs_persistence": 0.2692
+        },
+        "non_monsoon": {
+          "sample_count": 951,
+          "mae_cumecs": 4.21,
+          "rmse_cumecs": 17.51,
+          "r2_score": 0.3513,
+          "mean_bias_cumecs": -0.12,
+          "nse_score": 0.3513,
+          "skill_score_vs_persistence": -0.6308
+        },
+        "high_flow_subset": {
+          "sample_count": 9,
+          "mae_cumecs": 2896.58,
+          "rmse_cumecs": 3329.69,
+          "r2_score": -1.8094,
+          "mean_bias_cumecs": -2896.58,
+          "nse_score": -1.8094,
+          "skill_score_vs_persistence": 0.1479
+        }
+      },
+      "linear_regression_ols": {
+        "overall": {
+          "sample_count": 1412,
+          "mae_cumecs": 66.22,
+          "rmse_cumecs": 333.2,
+          "r2_score": 0.2885,
+          "mean_bias_cumecs": 0.0,
+          "nse_score": 0.2885,
+          "skill_score_vs_persistence": 0.2369
+        },
+        "monsoon": {
+          "sample_count": 461,
+          "mae_cumecs": 161.1,
+          "rmse_cumecs": 581.99,
+          "r2_score": 0.2619,
+          "mean_bias_cumecs": -36.43,
+          "nse_score": 0.2619,
+          "skill_score_vs_persistence": 0.2393
+        },
+        "non_monsoon": {
+          "sample_count": 951,
+          "mae_cumecs": 20.23,
+          "rmse_cumecs": 25.45,
+          "r2_score": -0.3698,
+          "mean_bias_cumecs": 17.66,
+          "nse_score": -0.3698,
+          "skill_score_vs_persistence": -2.4434
+        },
+        "high_flow_subset": {
+          "sample_count": 9,
+          "mae_cumecs": 3560.96,
+          "rmse_cumecs": 3802.24,
+          "r2_score": -2.6634,
+          "mean_bias_cumecs": -2993.86,
+          "nse_score": -2.6634,
+          "skill_score_vs_persistence": -0.1111
+        }
+      }
+    },
+    "VAL": {
+      "persistence": {
+        "overall": {
+          "sample_count": 322,
+          "mae_cumecs": 97.39,
+          "rmse_cumecs": 588.29,
+          "r2_score": -0.2027,
+          "mean_bias_cumecs": 0.0,
+          "nse_score": -0.2027,
+          "skill_score_vs_persistence": 0.0
+        },
+        "monsoon": {
+          "sample_count": 120,
+          "mae_cumecs": 244.26,
+          "rmse_cumecs": 961.71,
+          "r2_score": -0.2641,
+          "mean_bias_cumecs": -2.52,
+          "nse_score": -0.2641,
+          "skill_score_vs_persistence": 0.0
+        },
+        "non_monsoon": {
+          "sample_count": 202,
+          "mae_cumecs": 10.14,
+          "rmse_cumecs": 47.34,
+          "r2_score": 0.3727,
+          "mean_bias_cumecs": 1.5,
+          "nse_score": 0.3727,
+          "skill_score_vs_persistence": 0.0
+        },
+        "high_flow_subset": {
+          "sample_count": 4,
+          "mae_cumecs": 4060.87,
+          "rmse_cumecs": 4991.25,
+          "r2_score": -2.7188,
+          "mean_bias_cumecs": -1203.28,
+          "nse_score": -2.7188,
+          "skill_score_vs_persistence": 0.0
+        }
+      },
+      "trailing_3d_mean": {
+        "overall": {
+          "sample_count": 322,
+          "mae_cumecs": 104.69,
+          "rmse_cumecs": 558.76,
+          "r2_score": -0.085,
+          "mean_bias_cumecs": 0.0,
+          "nse_score": -0.085,
+          "skill_score_vs_persistence": 0.0979
+        },
+        "monsoon": {
+          "sample_count": 120,
+          "mae_cumecs": 258.54,
+          "rmse_cumecs": 913.26,
+          "r2_score": -0.1399,
+          "mean_bias_cumecs": -6.06,
+          "nse_score": -0.1399,
+          "skill_score_vs_persistence": 0.0982
+        },
+        "non_monsoon": {
+          "sample_count": 202,
+          "mae_cumecs": 13.29,
+          "rmse_cumecs": 47.13,
+          "r2_score": 0.3783,
+          "mean_bias_cumecs": 3.6,
+          "nse_score": 0.3783,
+          "skill_score_vs_persistence": 0.009
+        },
+        "high_flow_subset": {
+          "sample_count": 4,
+          "mae_cumecs": 2984.7,
+          "rmse_cumecs": 4243.5,
+          "r2_score": -1.688,
+          "mean_bias_cumecs": -2797.33,
+          "nse_score": -1.688,
+          "skill_score_vs_persistence": 0.2772
+        }
+      },
+      "seasonal_naive_doy": {
+        "overall": {
+          "sample_count": 322,
+          "mae_cumecs": 111.29,
+          "rmse_cumecs": 547.5,
+          "r2_score": -0.0417,
+          "mean_bias_cumecs": -42.3,
+          "nse_score": -0.0417,
+          "skill_score_vs_persistence": 0.1339
+        },
+        "monsoon": {
+          "sample_count": 120,
+          "mae_cumecs": 274.06,
+          "rmse_cumecs": 893.99,
+          "r2_score": -0.0923,
+          "mean_bias_cumecs": -90.16,
+          "nse_score": -0.0923,
+          "skill_score_vs_persistence": 0.1359
+        },
+        "non_monsoon": {
+          "sample_count": 202,
+          "mae_cumecs": 14.59,
+          "rmse_cumecs": 55.17,
+          "r2_score": 0.1483,
+          "mean_bias_cumecs": -13.87,
+          "nse_score": 0.1483,
+          "skill_score_vs_persistence": -0.3577
+        },
+        "high_flow_subset": {
+          "sample_count": 4,
+          "mae_cumecs": 3758.13,
+          "rmse_cumecs": 4525.81,
+          "r2_score": -2.0576,
+          "mean_bias_cumecs": -3758.13,
+          "nse_score": -2.0576,
+          "skill_score_vs_persistence": 0.1778
+        }
+      },
+      "linear_regression_ols": {
+        "overall": {
+          "sample_count": 322,
+          "mae_cumecs": 89.91,
+          "rmse_cumecs": 489.13,
+          "r2_score": 0.1685,
+          "mean_bias_cumecs": -20.95,
+          "nse_score": 0.1685,
+          "skill_score_vs_persistence": 0.3087
+        },
+        "monsoon": {
+          "sample_count": 120,
+          "mae_cumecs": 202.71,
+          "rmse_cumecs": 799.26,
+          "r2_score": 0.1269,
+          "mean_bias_cumecs": -78.96,
+          "nse_score": 0.1269,
+          "skill_score_vs_persistence": 0.3093
+        },
+        "non_monsoon": {
+          "sample_count": 202,
+          "mae_cumecs": 22.9,
+          "rmse_cumecs": 43.35,
+          "r2_score": 0.474,
+          "mean_bias_cumecs": 13.52,
+          "nse_score": 0.474,
+          "skill_score_vs_persistence": 0.1615
+        },
+        "high_flow_subset": {
+          "sample_count": 4,
+          "mae_cumecs": 3321.24,
+          "rmse_cumecs": 4267.82,
+          "r2_score": -1.7189,
+          "mean_bias_cumecs": -2428.56,
+          "nse_score": -1.7189,
+          "skill_score_vs_persistence": 0.2689
+        }
+      }
+    },
+    "TEST": {
+      "persistence": {
+        "overall": {
+          "sample_count": 611,
+          "mae_cumecs": 74.25,
+          "rmse_cumecs": 421.78,
+          "r2_score": 0.4994,
+          "mean_bias_cumecs": -0.44,
+          "nse_score": 0.4994,
+          "skill_score_vs_persistence": 0.0
+        },
+        "monsoon": {
+          "sample_count": 211,
+          "mae_cumecs": 209.77,
+          "rmse_cumecs": 715.76,
+          "r2_score": 0.4554,
+          "mean_bias_cumecs": 2.43,
+          "nse_score": 0.4554,
+          "skill_score_vs_persistence": 0.0
+        },
+        "non_monsoon": {
+          "sample_count": 400,
+          "mae_cumecs": 2.76,
+          "rmse_cumecs": 38.65,
+          "r2_score": -0.0038,
+          "mean_bias_cumecs": -1.95,
+          "nse_score": -0.0038,
+          "skill_score_vs_persistence": 0.0
+        },
+        "high_flow_subset": {
+          "sample_count": 8,
+          "mae_cumecs": 2524.06,
+          "rmse_cumecs": 3311.61,
+          "r2_score": -0.9803,
+          "mean_bias_cumecs": -847.59,
+          "nse_score": -0.9803,
+          "skill_score_vs_persistence": 0.0
+        }
+      },
+      "trailing_3d_mean": {
+        "overall": {
+          "sample_count": 611,
+          "mae_cumecs": 90.15,
+          "rmse_cumecs": 484.75,
+          "r2_score": 0.3387,
+          "mean_bias_cumecs": -1.12,
+          "nse_score": 0.3387,
+          "skill_score_vs_persistence": -0.3209
+        },
+        "monsoon": {
+          "sample_count": 211,
+          "mae_cumecs": 254.98,
+          "rmse_cumecs": 823.15,
+          "r2_score": 0.2798,
+          "mean_bias_cumecs": 0.45,
+          "nse_score": 0.2798,
+          "skill_score_vs_persistence": -0.3226
+        },
+        "non_monsoon": {
+          "sample_count": 400,
+          "mae_cumecs": 3.19,
+          "rmse_cumecs": 38.84,
+          "r2_score": -0.0137,
+          "mean_bias_cumecs": -1.96,
+          "nse_score": -0.0137,
+          "skill_score_vs_persistence": -0.0098
+        },
+        "high_flow_subset": {
+          "sample_count": 8,
+          "mae_cumecs": 3213.52,
+          "rmse_cumecs": 3946.07,
+          "r2_score": -1.8118,
+          "mean_bias_cumecs": -1497.53,
+          "nse_score": -1.8118,
+          "skill_score_vs_persistence": -0.4199
+        }
+      },
+      "seasonal_naive_doy": {
+        "overall": {
+          "sample_count": 611,
+          "mae_cumecs": 140.48,
+          "rmse_cumecs": 622.72,
+          "r2_score": -0.0912,
+          "mean_bias_cumecs": -64.93,
+          "nse_score": -0.0912,
+          "skill_score_vs_persistence": -1.1798
+        },
+        "monsoon": {
+          "sample_count": 211,
+          "mae_cumecs": 397.05,
+          "rmse_cumecs": 1058.26,
+          "r2_score": -0.1904,
+          "mean_bias_cumecs": -187.44,
+          "nse_score": -0.1904,
+          "skill_score_vs_persistence": -1.186
+        },
+        "non_monsoon": {
+          "sample_count": 400,
+          "mae_cumecs": 5.13,
+          "rmse_cumecs": 39.71,
+          "r2_score": -0.0595,
+          "mean_bias_cumecs": -0.31,
+          "nse_score": -0.0595,
+          "skill_score_vs_persistence": -0.0555
+        },
+        "high_flow_subset": {
+          "sample_count": 8,
+          "mae_cumecs": 4316.6,
+          "rmse_cumecs": 4933.86,
+          "r2_score": -3.3957,
+          "mean_bias_cumecs": -4316.6,
+          "nse_score": -3.3957,
+          "skill_score_vs_persistence": -1.2197
+        }
+      },
+      "linear_regression_ols": {
+        "overall": {
+          "sample_count": 611,
+          "mae_cumecs": 86.58,
+          "rmse_cumecs": 413.06,
+          "r2_score": 0.5199,
+          "mean_bias_cumecs": -32.24,
+          "nse_score": 0.5199,
+          "skill_score_vs_persistence": 0.0409
+        },
+        "monsoon": {
+          "sample_count": 211,
+          "mae_cumecs": 212.86,
+          "rmse_cumecs": 700.52,
+          "r2_score": 0.4784,
+          "mean_bias_cumecs": -123.03,
+          "nse_score": 0.4784,
+          "skill_score_vs_persistence": 0.0421
+        },
+        "non_monsoon": {
+          "sample_count": 400,
+          "mae_cumecs": 19.96,
+          "rmse_cumecs": 41.89,
+          "r2_score": -0.179,
+          "mean_bias_cumecs": 15.66,
+          "nse_score": -0.179,
+          "skill_score_vs_persistence": -0.1745
+        },
+        "high_flow_subset": {
+          "sample_count": 8,
+          "mae_cumecs": 2644.17,
+          "rmse_cumecs": 3440.62,
+          "r2_score": -1.1376,
+          "mean_bias_cumecs": -2442.88,
+          "nse_score": -1.1376,
+          "skill_score_vs_persistence": -0.0794
+        }
+      }
+    },
+    "FULL": {
+      "persistence": {
+        "overall": {
+          "sample_count": 2345,
+          "mae_cumecs": 65.7,
+          "rmse_cumecs": 426.01,
+          "r2_score": 0.2007,
+          "mean_bias_cumecs": -0.16,
+          "nse_score": 0.2007,
+          "skill_score_vs_persistence": 0.0
+        },
+        "monsoon": {
+          "sample_count": 792,
+          "mae_cumecs": 187.5,
+          "rmse_cumecs": 731.98,
+          "r2_score": 0.1573,
+          "mean_bias_cumecs": -0.69,
+          "nse_score": 0.1573,
+          "skill_score_vs_persistence": 0.0
+        },
+        "non_monsoon": {
+          "sample_count": 1553,
+          "mae_cumecs": 3.58,
+          "rmse_cumecs": 28.13,
+          "r2_score": 0.3182,
+          "mean_bias_cumecs": 0.11,
+          "nse_score": 0.3182,
+          "skill_score_vs_persistence": 0.0
+        },
+        "high_flow_subset": {
+          "sample_count": 21,
+          "mae_cumecs": 3125.42,
+          "rmse_cumecs": 3807.83,
+          "r2_score": -1.8386,
+          "mean_bias_cumecs": -1341.15,
+          "nse_score": -1.8386,
+          "skill_score_vs_persistence": 0.0
+        }
+      },
+      "trailing_3d_mean": {
+        "overall": {
+          "sample_count": 2345,
+          "mae_cumecs": 76.61,
+          "rmse_cumecs": 440.31,
+          "r2_score": 0.1461,
+          "mean_bias_cumecs": -0.36,
+          "nse_score": 0.1461,
+          "skill_score_vs_persistence": -0.0683
+        },
+        "monsoon": {
+          "sample_count": 792,
+          "mae_cumecs": 218.35,
+          "rmse_cumecs": 756.62,
+          "r2_score": 0.0995,
+          "mean_bias_cumecs": -2.56,
+          "nse_score": 0.0995,
+          "skill_score_vs_persistence": -0.0685
+        },
+        "non_monsoon": {
+          "sample_count": 1553,
+          "mae_cumecs": 4.33,
+          "rmse_cumecs": 28.19,
+          "r2_score": 0.3156,
+          "mean_bias_cumecs": 0.76,
+          "nse_score": 0.3156,
+          "skill_score_vs_persistence": -0.0038
+        },
+        "high_flow_subset": {
+          "sample_count": 21,
+          "mae_cumecs": 3285.2,
+          "rmse_cumecs": 3922.76,
+          "r2_score": -2.0126,
+          "mean_bias_cumecs": -2404.54,
+          "nse_score": -2.0126,
+          "skill_score_vs_persistence": -0.0613
+        }
+      },
+      "seasonal_naive_doy": {
+        "overall": {
+          "sample_count": 2345,
+          "mae_cumecs": 91.39,
+          "rmse_cumecs": 454.19,
+          "r2_score": 0.0914,
+          "mean_bias_cumecs": -22.73,
+          "nse_score": 0.0914,
+          "skill_score_vs_persistence": -0.1367
+        },
+        "monsoon": {
+          "sample_count": 792,
+          "mae_cumecs": 259.23,
+          "rmse_cumecs": 780.29,
+          "r2_score": 0.0423,
+          "mean_bias_cumecs": -63.46,
+          "nse_score": 0.0423,
+          "skill_score_vs_persistence": -0.1364
+        },
+        "non_monsoon": {
+          "sample_count": 1553,
+          "mae_cumecs": 5.8,
+          "rmse_cumecs": 31.46,
+          "r2_score": 0.1473,
+          "mean_bias_cumecs": -1.96,
+          "nse_score": 0.1473,
+          "skill_score_vs_persistence": -0.2505
+        },
+        "high_flow_subset": {
+          "sample_count": 21,
+          "mae_cumecs": 3601.64,
+          "rmse_cumecs": 4233.98,
+          "r2_score": -2.5095,
+          "mean_bias_cumecs": -3601.64,
+          "nse_score": -2.5095,
+          "skill_score_vs_persistence": -0.2363
+        }
+      },
+      "linear_regression_ols": {
+        "overall": {
+          "sample_count": 2345,
+          "mae_cumecs": 74.78,
+          "rmse_cumecs": 379.68,
+          "r2_score": 0.3651,
+          "mean_bias_cumecs": -11.28,
+          "nse_score": 0.3651,
+          "skill_score_vs_persistence": 0.2057
+        },
+        "monsoon": {
+          "sample_count": 792,
+          "mae_cumecs": 181.19,
+          "rmse_cumecs": 651.68,
+          "r2_score": 0.332,
+          "mean_bias_cumecs": -65.95,
+          "nse_score": 0.332,
+          "skill_score_vs_persistence": 0.2074
+        },
+        "non_monsoon": {
+          "sample_count": 1553,
+          "mae_cumecs": 20.51,
+          "rmse_cumecs": 33.06,
+          "r2_score": 0.0585,
+          "mean_bias_cumecs": 16.61,
+          "nse_score": 0.0585,
+          "skill_score_vs_persistence": -0.3809
+        },
+        "high_flow_subset": {
+          "sample_count": 21,
+          "mae_cumecs": 3166.05,
+          "rmse_cumecs": 3764.96,
+          "r2_score": -1.7751,
+          "mean_bias_cumecs": -2676.29,
+          "nse_score": -1.7751,
+          "skill_score_vs_persistence": 0.0224
+        }
+      }
+    }
+  }
+}

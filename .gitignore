@@ -4,6 +4,7 @@ venv/
 env/
 ENV/
 node_modules/
+frontend/node_modules/
 
 # Python cache & build
 __pycache__/
@@ -63,18 +64,29 @@ Thumbs.db
 *.swp
 *.swo
 
-# Large datasets and ML model artifacts (Phase 1+)
+# Temporary directories & duplicates
+scratch/
+PRAVAAH/
+
+# Large raw datasets & rasters
 data/raw/*
 !data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
-ml/artifacts/*
-!ml/artifacts/.gitkeep
+*.tif
+*.tiff
+*.grd
 *.h5
-*.pkl
-*.joblib
+*.parquet
+*.geoparquet
 *.pt
 *.pth
 *.onnx
-*.parquet
-*.geoparquet
+
+# Large intermediate processed data files
+data/processed/rainfall/gridded/*cell*.csv
+
+# ML model artifacts - preserve validated production model
+ml/artifacts/*
+!ml/artifacts/.gitkeep
+*.pkl
+*.joblib
+!ml/models/hathnikund_rf_v1.joblib

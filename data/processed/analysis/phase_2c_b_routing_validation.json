@@ -1,0 +1,204 @@
+{
+  "phase": "2C-B",
+  "project": "PRAVAAH",
+  "title": "Hydrological Routing Validation & Tabletop Scenario Simulation",
+  "audit_timestamp_utc": "2026-10-20T17:45:00Z",
+  "status": "VALIDATED_UNCALIBRATED_TABLETOP_PROTOTYPE",
+  "scientific_disclaimer": "SIMULATED DOWNSTREAM DISCHARGE — NOT OBSERVED DELHI WATER LEVEL. Parameter-dependent sensitivity prototype; not an empirically calibrated forecast.",
+  "routing_engine": {
+    "method": "Hydrological Muskingum Storage Routing",
+    "governing_storage_equation": "S = K * [x * I + (1 - x) * O]",
+    "discrete_recurrence_equation": "O(t+1) = C0 * I(t+1) + C1 * I(t) + C2 * O(t)",
+    "coefficient_formulas": {
+      "denominator": "D = 2*K*(1-x) + dt",
+      "C0": "C0 = (dt - 2*K*x) / D",
+      "C1": "C1 = (dt + 2*K*x) / D",
+      "C2": "C2 = (2*K*(1-x) - dt) / D",
+      "sum_property": "C0 + C1 + C2 == 1.0 (Exact Continuity Guarantee)"
+    },
+    "stability_conditions": {
+      "lower_bound": "2*K*x <= dt",
+      "upper_bound": "dt <= 2*K*(1-x)",
+      "violation_behavior": "Raises explicit ValueError with diagnostic bounds (no silent clipping)"
+    }
+  },
+  "parameter_provenance_audit": {
+    "discrepancy_analysis": {
+      "phase_1f_codebase_default": {
+        "K_hours": 36.0,
+        "x": 0.2,
+        "dt_hours": 24.0,
+        "subreaches": 1,
+        "status": "AUTHORITATIVE_BASELINE",
+        "provenance": "Engineering literature: 220 km corridor / 6 km/h mean alluvial flood-wave celerity (~36.7 h); x=0.20 for natural sand-bed river.",
+        "calibration_status": "UNCALIBRATED",
+        "stability_check": {
+          "2Kx_hours": 14.4,
+          "dt_hours": 24.0,
+          "2K_1_minus_x_hours": 57.6,
+          "is_strictly_stable": true
+        },
+        "coefficients": {
+          "C0": 0.117647,
+          "C1": 0.470588,
+          "C2": 0.411765,
+          "sum": 1.0
+        },
+        "notes": "Produces strictly positive forward and backward weighting coefficients (all > 0)."
+      },
+      "phase_2c_a_narrative_heuristic": {
+        "K_hours": 48.0,
+        "x": 0.25,
+        "dt_hours": 24.0,
+        "subreaches": 1,
+        "status": "ALTERNATIVE_UPPER_BOUND_HEURISTIC",
+        "provenance": "Reported in narrative text from general CWC flood bulletin heuristic for moderate wave transit times.",
+        "calibration_status": "UNCALIBRATED",
+        "stability_check": {
+          "2Kx_hours": 24.0,
+          "dt_hours": 24.0,
+          "2K_1_minus_x_hours": 72.0,
+          "is_strictly_stable": true
+        },
+        "coefficients": {
+          "C0": 0.0,
+          "C1": 0.5,
+          "C2": 0.5,
+          "sum": 1.0
+        },
+        "notes": "Boundary condition: dt == 2Kx forces C0 to exactly zero. Any x > 0.25 or K > 48h causes C0 < 0 (instability). Kept as sensitivity option."
+      }
+    },
+    "catalog_quantities": {
+      "measured_quantities": [
+        "Upstream River Inflow (Hathnikund Barrage U/S daily gauge, 2018-2025)",
+        "Upstream River Release (Hathnikund Barrage D/S daily gauge, 2018-2025)"
+      ],
+      "derived_quantities": [
+        "Reach Thalweg Length (220.0 km, derived from Survey of India / CWC Yamuna Basin River Trace)",
+        "Reach Average Bed Slope (0.00034 m/m, derived from regional elevation gradient: 280m at HKB to 205m at Delhi)"
+      ],
+      "assumed_quantities": [
+        "Muskingum Storage Parameter K (36.0 h / 48.0 h)",
+        "Muskingum Weighting Parameter x (0.20 / 0.25)",
+        "Initial reach outflow condition (O_0 = I_0 steady-state assumption)"
+      ],
+      "unavailable_quantities": [
+        "Continuous downstream water levels and discharge at Delhi ORB (CWC Station 028-MDD)",
+        "Channel bathymetric cross-sections (restricted across CWC, Haryana I&WRD, Delhi I&FC)",
+        "Spatial Manning's roughness field n(x, y)",
+        "Lateral tributary inflows (Som, Pathrala flash rivers)",
+        "Intermediate barrage operational logs (Wazirabad and ITO sluice gates)"
+      ]
+    }
+  },
+  "historical_data_validation_feasibility": {
+    "summary": "Empirical parameter calibration and independent physical routing validation are BLOCKED by absence of continuous downstream observations at Delhi Old Railway Bridge.",
+    "validation_matrix": [
+      {
+        "validation_level": "Mathematical Verification",
+        "question": "Does the Muskingum algorithm adhere to analytical conservation of mass and stability constraints?",
+        "required_evidence": "Deterministic invariant tests (C0+C1+C2=1.0, steady-state preservation, bounds enforcement).",
+        "available_evidence": "12 deterministic unit tests in ml/tests/test_routing_tabletop.py and 6 backend integration tests.",
+        "status": "VERIFIED",
+        "next_action": "Maintain automated CI invariant test suite."
+      },
+      {
+        "validation_level": "Historical Event Comparison",
+        "question": "Can the prototype reproduce qualitative wave attenuation across verified historical episodes?",
+        "required_evidence": "Paired historical Hathnikund release hydrographs.",
+        "available_evidence": "10 verified multi-day episodes (2018-2024) in historical_high_discharge_episodes.csv.",
+        "status": "CONDITIONALLY_FEASIBLE_SENSITIVITY_ONLY",
+        "next_action": "Use historical replay strictly for exploratory sensitivity analysis; state that outputs are simulated."
+      },
+      {
+        "validation_level": "Parameter Calibration",
+        "question": "Can parameters K and x be mathematically fitted to minimize error against observed downstream discharge?",
+        "required_evidence": "Continuous, synchronized downstream discharge time-series at or near Delhi ORB.",
+        "available_evidence": "None. Only daily barrage releases at Hathnikund exist in the repository.",
+        "status": "IMPOSSIBLE_BLOCKED",
+        "next_action": "Acquire continuous CWC Station 028-MDD stage/discharge telemetry before calibration attempts."
+      },
+      {
+        "validation_level": "Independent Physical Validation",
+        "question": "Can simulated wave transit lag and crest discharge be corroborated against independent intermediate gauges?",
+        "required_evidence": "Intermediate gauge records along the 220 km corridor (Yamunanagar, Karnal, Panipat, Sonipat).",
+        "available_evidence": "None. Intermediate gauges are unmetered or data is absent from repository.",
+        "status": "IMPOSSIBLE_BLOCKED",
+        "next_action": "Identify and ingest intermediate state irrigation gauges along the corridor."
+      },
+      {
+        "validation_level": "Operational Forecast Validation",
+        "question": "Can the system predict downstream flood stage (m MSL) and danger mark exceedance at Delhi?",
+        "required_evidence": "Continuous stage observations paired with an authoritative CWC rating curve.",
+        "available_evidence": "None. Stage-discharge relationship at Delhi ORB is non-stationary and unavailable.",
+        "status": "STRICTLY_BLOCKED",
+        "next_action": "Strictly prohibit operational flood predictions and false alarm generation."
+      }
+    ]
+  },
+  "tabletop_scenarios_evaluated": [
+    {
+      "preset_id": "PRESET_CONSTANT",
+      "name": "Constant Inflow (1,000 m³/s)",
+      "inflow_peak_cumecs": 1000.0,
+      "simulated_outflow_peak_cumecs": 1000.0,
+      "attenuation_cumecs": 0.0,
+      "attenuation_percent": 0.0,
+      "apparent_lag_hours": 0.0,
+      "mass_conservation_error_percent": 0.00001,
+      "mathematical_invariant_status": "PASSED"
+    },
+    {
+      "preset_id": "PRESET_GRADUAL_RISE",
+      "name": "Gradually Rising Wave (500 to 4,500 m³/s)",
+      "inflow_peak_cumecs": 4500.0,
+      "simulated_outflow_peak_cumecs": 3812.87,
+      "attenuation_cumecs": 687.13,
+      "attenuation_percent": 15.27,
+      "apparent_lag_hours": 24.0,
+      "mass_conservation_error_percent": 0.0012,
+      "mathematical_invariant_status": "PASSED"
+    },
+    {
+      "preset_id": "PRESET_FLASH_PULSE",
+      "name": "Short-Duration Flash Pulse (6,500 m³/s)",
+      "inflow_peak_cumecs": 6500.0,
+      "simulated_outflow_peak_cumecs": 4258.12,
+      "attenuation_cumecs": 2241.88,
+      "attenuation_percent": 34.49,
+      "apparent_lag_hours": 24.0,
+      "mass_conservation_error_percent": 0.0034,
+      "mathematical_invariant_status": "PASSED"
+    },
+    {
+      "preset_id": "PRESET_SUSTAINED_HIGH",
+      "name": "Sustained Elevated Plateau (4,200 m³/s)",
+      "inflow_peak_cumecs": 4200.0,
+      "simulated_outflow_peak_cumecs": 3985.45,
+      "attenuation_cumecs": 214.55,
+      "attenuation_percent": 5.11,
+      "apparent_lag_hours": 24.0,
+      "mass_conservation_error_percent": 0.0018,
+      "mathematical_invariant_status": "PASSED"
+    }
+  ],
+  "test_suite_execution_summary": {
+    "ml_tests_passed": 89,
+    "backend_tests_passed": 25,
+    "frontend_build_status": "SUCCESSFUL (vite v8.3.4)",
+    "numerical_invariants_verified": [
+      "Coefficient summation C0+C1+C2 == 1.0 across diverse parameter sets",
+      "Rejection of non-positive K, dt and out-of-bounds x",
+      "Rejection of negative discharge inputs (>= 0 m³/s constraint)",
+      "Rejection of non-finite inputs (NaN, Inf)",
+      "Rejection of single-point or empty hydrographs",
+      "Rejection of numerically unstable parameters (dt < 2Kx or dt > 2K(1-x))",
+      "Steady-state preservation under constant inflow (0% attenuation, 0 lag)",
+      "Attenuation and lag under pulse and rising hydrographs",
+      "Mass balance continuity error < 0.01% under all valid scenarios",
+      "Deterministic SHA-256 reproducibility hash",
+      "Strict absence of downstream water level (m MSL) estimates"
+    ]
+  }
+}

@@ -1,34 +1,96 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 @layer base {
   :root {
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+
+    /* PRAVAAH Warm Cream & Brown Design Tokens */
+    --color-espresso: #2C221E;
+    --color-dark-brown: #3E3026;
+    --color-medium-brown: #635347;
+    --color-muted-brown: #8C7869;
+    --color-saddle-brown: #8B4513;
+    --color-saddle-brown-hover: #70360E;
+
+    --color-cream-bg: #FBF9F5;
+    --color-cream-card: #FFFFFF;
+    --color-cream-surface: #FFFDF9;
+    --color-cream-subtle: #F5EFEB;
+    --color-cream-border: #EAE3D9;
+    --color-cream-border-dark: #D8CEBE;
+
+    /* River slate blue accents */
+    --color-river-slate: #2B5B84;
+    --color-river-slate-light: #EBF3F9;
+
+    /* Semantic Alerts */
+    --color-status-safe: #2E7D32;
+    --color-status-safe-bg: #E8F5E9;
+    --color-status-warning: #B45309;
+    --color-status-warning-bg: #FEF3C7;
+    --color-status-danger: #C53030;
+    --color-status-danger-bg: #FED7D7;
+
+    /* Global application canvas */
+    --app-background: #FBF9F5;
+    --panel-background: #FFFFFF;
+    --panel-secondary: #F5EFEB;
+    --border-color: #EAE3D9;
   }
 
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
   body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
     font-family: var(--font-sans);
-    background-color: #020617; /* slate-950 */
-    color: #f8fafc; /* slate-50 */
-    min-height: 100vh;
+    background-color: var(--app-background);
+    color: var(--color-dark-brown);
+  }
+
+  #root {
+    height: 100%;
+    width: 100%;
   }
 }
 
-/* Custom scrollbar */
+/* Warm subtle scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;
+  background: #F5EFEB;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 9999px;
+  background: #D8CEBE;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #8C7869;
+}
+
+/* Smooth animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

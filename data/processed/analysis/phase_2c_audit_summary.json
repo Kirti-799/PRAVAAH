@@ -1,0 +1,92 @@
+{
+  "audit_version": "1.0.0",
+  "audit_phase": "Phase 2C-A — Scientific and Operational Readiness Audit",
+  "audit_timestamp_utc": "2026-10-19T18:07:00Z",
+  "dataset_audit": {
+    "dataset_file": "data/processed/modelling/hathnikund_discharge_forecasting_24h.csv",
+    "total_rows": 2491,
+    "complete_operational_rows": 2345,
+    "valid_24h_targets": 2468,
+    "broken_target_rows": 23,
+    "calendar_span_start": "2018-01-01",
+    "calendar_span_end": "2024-12-31",
+    "calendar_span_days": 2557,
+    "missing_calendar_dates": 66,
+    "target_alignment_errors": 0,
+    "target_value_mismatches": 0,
+    "timezone_status": "SEMANTIC_DISCREPANCY_IDENTIFIED",
+    "source_timezone": "IST (UTC+05:30, morning gauge ~08:00 IST)",
+    "documented_timestamp_field": "timestamp_utc (formatted as YYYY-MM-DDT08:00:00Z, which represents 08:00 IST rather than true 02:30:00 UTC)",
+    "operational_features_count": 23
+  },
+  "reproduced_metrics": {
+    "partitions": {
+      "TRAIN": {
+        "dates": "2018-01-08 to 2021-12-31",
+        "sample_count": 1412,
+        "high_flow_count_ge_1500_cumecs": 9,
+        "models": {
+          "persistence": { "mae_cumecs": 54.77, "rmse_cumecs": 381.44, "r2_score": 0.0675, "mean_bias_cumecs": -0.07, "skill_score_vs_persistence": 0.0, "high_flow_mae": 3244.22, "high_flow_rmse": 3607.2 },
+          "trailing_3d_mean": { "mae_cumecs": 64.36, "rmse_cumecs": 386.14, "r2_score": 0.0444, "mean_bias_cumecs": -0.12, "skill_score_vs_persistence": -0.0248, "high_flow_mae": 3482.47, "high_flow_rmse": 3749.79 },
+          "linear_regression_ols": { "mae_cumecs": 66.22, "rmse_cumecs": 333.2, "r2_score": 0.2885, "mean_bias_cumecs": 0.0, "skill_score_vs_persistence": 0.2369, "high_flow_mae": 3560.96, "high_flow_rmse": 3802.24 },
+          "random_forest_v1": { "mae_cumecs": 42.62, "rmse_cumecs": 250.79, "r2_score": 0.5969, "mean_bias_cumecs": -0.52, "skill_score_vs_persistence": 0.5677, "high_flow_mae": 2244.3, "high_flow_rmse": 2583.78 },
+          "hist_gradient_boosting_v1": { "mae_cumecs": 46.87, "rmse_cumecs": 271.81, "r2_score": 0.5265, "mean_bias_cumecs": -6.33, "skill_score_vs_persistence": 0.4922, "high_flow_mae": 2659.46, "high_flow_rmse": 3074.6 },
+          "gradient_boosting_v1": { "mae_cumecs": 36.51, "rmse_cumecs": 152.5, "r2_score": 0.8509, "mean_bias_cumecs": -0.0, "skill_score_vs_persistence": 0.8402, "high_flow_mae": 1233.0, "high_flow_rmse": 1534.97 }
+        }
+      },
+      "VAL": {
+        "dates": "2022-01-01 to 2022-12-31",
+        "sample_count": 322,
+        "high_flow_count_ge_1500_cumecs": 4,
+        "models": {
+          "persistence": { "mae_cumecs": 97.39, "rmse_cumecs": 588.29, "r2_score": -0.2027, "mean_bias_cumecs": 0.0, "skill_score_vs_persistence": 0.0, "high_flow_mae": 4060.87, "high_flow_rmse": 4991.25 },
+          "trailing_3d_mean": { "mae_cumecs": 104.69, "rmse_cumecs": 558.76, "r2_score": -0.085, "mean_bias_cumecs": 0.0, "skill_score_vs_persistence": 0.0979, "high_flow_mae": 2984.7, "high_flow_rmse": 4243.5 },
+          "linear_regression_ols": { "mae_cumecs": 89.91, "rmse_cumecs": 489.13, "r2_score": 0.1685, "mean_bias_cumecs": -20.95, "skill_score_vs_persistence": 0.3087, "high_flow_mae": 3321.24, "high_flow_rmse": 4267.82 },
+          "random_forest_v1": { "mae_cumecs": 77.48, "rmse_cumecs": 485.06, "r2_score": 0.1823, "mean_bias_cumecs": -13.83, "skill_score_vs_persistence": 0.3202, "high_flow_mae": 2525.07, "high_flow_rmse": 4069.25 },
+          "hist_gradient_boosting_v1": { "mae_cumecs": 79.45, "rmse_cumecs": 478.8, "r2_score": 0.2033, "mean_bias_cumecs": -25.42, "skill_score_vs_persistence": 0.3376, "high_flow_mae": 2642.91, "high_flow_rmse": 4114.51 },
+          "gradient_boosting_v1": { "mae_cumecs": 99.09, "rmse_cumecs": 553.79, "r2_score": -0.0658, "mean_bias_cumecs": -5.46, "skill_score_vs_persistence": 0.1139, "high_flow_mae": 3316.36, "high_flow_rmse": 4367.14 }
+        }
+      },
+      "TEST": {
+        "dates": "2023-01-01 to 2024-12-31",
+        "sample_count": 611,
+        "high_flow_count_ge_1500_cumecs": 8,
+        "models": {
+          "persistence": { "mae_cumecs": 74.25, "rmse_cumecs": 421.78, "r2_score": 0.4994, "mean_bias_cumecs": -0.44, "skill_score_vs_persistence": 0.0, "high_flow_mae": 2524.06, "high_flow_rmse": 3311.61 },
+          "trailing_3d_mean": { "mae_cumecs": 90.15, "rmse_cumecs": 484.75, "r2_score": 0.3387, "mean_bias_cumecs": -1.12, "skill_score_vs_persistence": -0.3209, "high_flow_mae": 3213.52, "high_flow_rmse": 3946.07 },
+          "linear_regression_ols": { "mae_cumecs": 86.58, "rmse_cumecs": 413.06, "r2_score": 0.5199, "mean_bias_cumecs": -32.24, "skill_score_vs_persistence": 0.0409, "high_flow_mae": 2644.17, "high_flow_rmse": 3440.62 },
+          "random_forest_v1": { "mae_cumecs": 95.82, "rmse_cumecs": 469.52, "r2_score": 0.3796, "mean_bias_cumecs": -10.8, "skill_score_vs_persistence": -0.2392, "high_flow_mae": 2883.34, "high_flow_rmse": 3669.87 },
+          "hist_gradient_boosting_v1": { "mae_cumecs": 100.21, "rmse_cumecs": 482.34, "r2_score": 0.3453, "mean_bias_cumecs": -23.38, "skill_score_vs_persistence": -0.3078, "high_flow_mae": 3161.62, "high_flow_rmse": 3917.32 },
+          "gradient_boosting_v1": { "mae_cumecs": 104.6, "rmse_cumecs": 501.25, "r2_score": 0.293, "mean_bias_cumecs": -9.84, "skill_score_vs_persistence": -0.4123, "high_flow_mae": 3067.73, "high_flow_rmse": 3909.63 }
+        }
+      }
+    }
+  },
+  "extreme_event_failure_mechanism": {
+    "root_cause_1_tree_extrapolation_limit": "Decision tree regressors are bounded by training sample leaf values (max training release ~4,105 cumecs). For unprecedented floods (such as July 2023 with 8,343 cumecs), tree models suffer structural truncation, capping predictions around 2,800-3,800 cumecs.",
+    "root_cause_2_daily_data_latency": "IMD daily gridded rainfall has 24-48h publication latency. On the morning an extreme surge begins (e.g. 2023-07-09), observed river release is still at baseflow (450 cumecs), and same-day cloudburst rainfall in the upper Himalayas is not yet recorded or published.",
+    "surge_underprediction_sample": {
+      "july_2023_onset": { "date": "2023-07-09", "target_date": "2023-07-10", "q_current": 450.18, "target_q": 8342.87, "rf_pred": 352.08, "error": -7990.79, "underprediction_pct": 95.8 },
+      "september_2022_onset": { "date": "2022-09-25", "target_date": "2022-09-26", "q_current": 426.76, "target_q": 8380.4, "rf_pred": 407.11, "error": -7973.29, "underprediction_pct": 95.1 }
+    }
+  },
+  "api_audit": {
+    "predict_endpoint": "POST /api/forecasting/predict",
+    "model_status_endpoint": "GET /api/forecasting/model-status",
+    "sample_forecast_endpoint": "GET /api/forecasting/sample-forecast",
+    "real_time_telemetry_connected": false,
+    "input_contract": "Requires explicit 23-feature JSON payload",
+    "domain_validation_active": true,
+    "negative_discharge_rejected": true,
+    "target_prediction_variable": "target_discharge_24h_cumecs (HKB D/S release in m³/s)",
+    "delhi_stage_prediction_blocked": true
+  },
+  "capabilities_readiness_classification": {
+    "upstream_discharge_24h_forecasting": "B. Suitable for research or demonstration only (EXPERIMENTAL_RESEARCH_BENCHMARK)",
+    "delhi_river_stage_prediction": "C. Strictly blocked by missing authentic continuous CWC Station 028-MDD water level observations",
+    "flood_risk_assessment": "B/D. Scenario-based simulation only; operational risk blocked",
+    "candidate_safe_zone_and_route_analysis": "B. Elevation-based demonstration only; requires road network and verified shelter ground truth",
+    "population_and_infrastructure_exposure": "C/D. Blocked pending population raster and infrastructure geodatabase ingestion",
+    "what_if_scenario_simulation": "A/B. Supported for research and tabletop emergency planning"
+  }
+}

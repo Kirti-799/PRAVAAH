@@ -1,0 +1,181 @@
+{
+  "total_overlapping_days": 2484,
+  "start_date": "2018-01-01",
+  "end_date": "2024-12-31",
+  "regimes": {
+    "all_days": {
+      "title": "All Days (2018\u20132024)",
+      "sample_size": 2484,
+      "windows": {
+        "1d": {
+          "window_label": "Antecedent 1-Day (D-1)",
+          "pairs_count": 2483,
+          "mean_rainfall_mm": 2.44,
+          "inflow_hkb_us": {
+            "pearson_r": 0.5556,
+            "spearman_rho": 0.5878
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.5794,
+            "spearman_rho": 0.2175
+          }
+        },
+        "3d": {
+          "window_label": "Antecedent 3-Day (D-1 to D-3)",
+          "pairs_count": 2481,
+          "mean_rainfall_mm": 7.29,
+          "inflow_hkb_us": {
+            "pearson_r": 0.5835,
+            "spearman_rho": 0.6191
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.5513,
+            "spearman_rho": 0.2722
+          }
+        },
+        "5d": {
+          "window_label": "Antecedent 5-Day (D-1 to D-5)",
+          "pairs_count": 2479,
+          "mean_rainfall_mm": 12.1,
+          "inflow_hkb_us": {
+            "pearson_r": 0.557,
+            "spearman_rho": 0.6395
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.51,
+            "spearman_rho": 0.2935
+          }
+        },
+        "7d": {
+          "window_label": "Antecedent 7-Day (D-1 to D-7)",
+          "pairs_count": 2477,
+          "mean_rainfall_mm": 16.94,
+          "inflow_hkb_us": {
+            "pearson_r": 0.5452,
+            "spearman_rho": 0.652
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.4752,
+            "spearman_rho": 0.3116
+          }
+        }
+      }
+    },
+    "monsoon": {
+      "title": "Monsoon Season (June\u2013September)",
+      "sample_size": 834,
+      "windows": {
+        "1d": {
+          "window_label": "Antecedent 1-Day (D-1)",
+          "pairs_count": 834,
+          "mean_rainfall_mm": 5.69,
+          "inflow_hkb_us": {
+            "pearson_r": 0.5221,
+            "spearman_rho": 0.4994
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.6091,
+            "spearman_rho": 0.3641
+          }
+        },
+        "3d": {
+          "window_label": "Antecedent 3-Day (D-1 to D-3)",
+          "pairs_count": 834,
+          "mean_rainfall_mm": 16.99,
+          "inflow_hkb_us": {
+            "pearson_r": 0.5338,
+            "spearman_rho": 0.5786
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.5675,
+            "spearman_rho": 0.4367
+          }
+        },
+        "5d": {
+          "window_label": "Antecedent 5-Day (D-1 to D-5)",
+          "pairs_count": 834,
+          "mean_rainfall_mm": 28.11,
+          "inflow_hkb_us": {
+            "pearson_r": 0.4861,
+            "spearman_rho": 0.6349
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.5152,
+            "spearman_rho": 0.4819
+          }
+        },
+        "7d": {
+          "window_label": "Antecedent 7-Day (D-1 to D-7)",
+          "pairs_count": 834,
+          "mean_rainfall_mm": 38.96,
+          "inflow_hkb_us": {
+            "pearson_r": 0.4623,
+            "spearman_rho": 0.6776
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.4707,
+            "spearman_rho": 0.5202
+          }
+        }
+      }
+    },
+    "non_monsoon": {
+      "title": "Non-Monsoon Season (October\u2013May)",
+      "sample_size": 1650,
+      "windows": {
+        "1d": {
+          "window_label": "Antecedent 1-Day (D-1)",
+          "pairs_count": 1649,
+          "mean_rainfall_mm": 0.8,
+          "inflow_hkb_us": {
+            "pearson_r": 0.2859,
+            "spearman_rho": 0.2486
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.204,
+            "spearman_rho": -0.0562
+          }
+        },
+        "3d": {
+          "window_label": "Antecedent 3-Day (D-1 to D-3)",
+          "pairs_count": 1647,
+          "mean_rainfall_mm": 2.38,
+          "inflow_hkb_us": {
+            "pearson_r": 0.3452,
+            "spearman_rho": 0.2691
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.2843,
+            "spearman_rho": 0.04
+          }
+        },
+        "5d": {
+          "window_label": "Antecedent 5-Day (D-1 to D-5)",
+          "pairs_count": 1645,
+          "mean_rainfall_mm": 3.98,
+          "inflow_hkb_us": {
+            "pearson_r": 0.3585,
+            "spearman_rho": 0.2745
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.2954,
+            "spearman_rho": 0.0749
+          }
+        },
+        "7d": {
+          "window_label": "Antecedent 7-Day (D-1 to D-7)",
+          "pairs_count": 1643,
+          "mean_rainfall_mm": 5.76,
+          "inflow_hkb_us": {
+            "pearson_r": 0.4271,
+            "spearman_rho": 0.2796
+          },
+          "release_hkb_ds": {
+            "pearson_r": 0.387,
+            "spearman_rho": 0.0948
+          }
+        }
+      }
+    }
+  }
+}

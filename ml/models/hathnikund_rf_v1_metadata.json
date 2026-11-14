@@ -1,0 +1,173 @@
+{
+  "model_identifier": "hathnikund_rf_v1",
+  "model_type": "RandomForestRegressor",
+  "target_variable": "target_discharge_24h_cumecs",
+  "target_unit": "m\u00b3/s (cubic metres per second)",
+  "forecast_horizon_hours": 24,
+  "creation_timestamp_utc": "2026-10-19T17:46:23.311086+00:00",
+  "library_versions": {
+    "scikit_learn": "1.9.1",
+    "numpy": "2.5.4",
+    "joblib": "1.6.0"
+  },
+  "random_seed": 42,
+  "provenance": {
+    "source_dataset": "hathnikund_discharge_forecasting_24h.csv",
+    "source_dataset_sha256": "40f8cb1055994914299aea4019c1f7231b1fc7b3e9b5fd6e5d00bf5dd6ee0a5e",
+    "model_artifact": "hathnikund_rf_v1.joblib",
+    "model_artifact_sha256": "b7aa8d57b60fd56ca9d9a742d0eeccea1370207b65cadde31afa59c2ab8d171e"
+  },
+  "chronological_partitions": {
+    "TRAIN": {
+      "start_date": "2018-01-08",
+      "end_date": "2021-12-31",
+      "complete_rows": 1412,
+      "high_flow_samples_ge_1500_cumecs": 9
+    },
+    "VAL": {
+      "start_date": "2022-01-01",
+      "end_date": "2022-12-31",
+      "complete_rows": 322,
+      "high_flow_samples_ge_1500_cumecs": 4
+    },
+    "TEST": {
+      "start_date": "2023-01-01",
+      "end_date": "2024-12-31",
+      "complete_rows": 611,
+      "high_flow_samples_ge_1500_cumecs": 8
+    }
+  },
+  "feature_allowlist": [
+    "discharge_current_cumecs",
+    "discharge_lag_1d_cumecs",
+    "discharge_lag_2d_cumecs",
+    "discharge_lag_3d_cumecs",
+    "discharge_lag_7d_cumecs",
+    "discharge_delta_1d_cumecs",
+    "discharge_delta_ratio_1d",
+    "discharge_rolling_mean_3d_cumecs",
+    "discharge_rolling_mean_7d_cumecs",
+    "discharge_rolling_max_7d_cumecs",
+    "discharge_rolling_std_7d_cumecs",
+    "inflow_current_cumecs",
+    "inflow_release_ratio_current",
+    "rainfall_mean_d_minus_1_mm",
+    "rainfall_max_cell_d_minus_1_mm",
+    "rainfall_accum_3d_prior_mm",
+    "rainfall_accum_7d_prior_mm",
+    "rainfall_max_cell_3d_prior_mm",
+    "day_of_year",
+    "month",
+    "sin_doy",
+    "cos_doy",
+    "is_monsoon"
+  ],
+  "feature_count": 23,
+  "excluded_features": {
+    "target_discharge_24h_cumecs": "SUPERVISED TARGET: Excluded to prevent direct target leakage",
+    "target_date": "TARGET METADATA: Calendar date of prediction target",
+    "has_valid_24h_target": "TARGET METADATA: Flag indicating presence of target label",
+    "rainfall_mean_same_day_retro_mm": "RETROSPECTIVE PRODUCT: IMD gridded rainfall has 24-48h latency; unavailable at operational issue time",
+    "rainfall_valid_cells_d_minus_1": "ZERO-VARIANCE AUDIT FLAG: Constant value (91) across all valid rows; zero predictive utility",
+    "date": "PARTITION METADATA: Calendar date string",
+    "timestamp_utc": "PARTITION METADATA: UTC timestamp string",
+    "partition": "PARTITION METADATA: TRAIN/VAL/TEST partition label",
+    "is_complete_operational_row": "DATA QUALITY METADATA: Boolean operational completeness flag",
+    "missing_feature_flags": "DATA QUALITY METADATA: Semi-colon separated list of missing columns"
+  },
+  "hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 5,
+    "min_samples_leaf": 5,
+    "random_state": 42
+  },
+  "training_medians_imputer": {
+    "discharge_current_cumecs": 9.9688,
+    "discharge_lag_1d_cumecs": 9.9688,
+    "discharge_lag_2d_cumecs": 9.9688,
+    "discharge_lag_3d_cumecs": 9.9688,
+    "discharge_lag_7d_cumecs": 9.9688,
+    "discharge_delta_1d_cumecs": 0.0,
+    "discharge_delta_ratio_1d": 0.0,
+    "discharge_rolling_mean_3d_cumecs": 9.9688,
+    "discharge_rolling_mean_7d_cumecs": 9.9688,
+    "discharge_rolling_max_7d_cumecs": 9.9688,
+    "discharge_rolling_std_7d_cumecs": 0.0,
+    "inflow_current_cumecs": 118.2101,
+    "inflow_release_ratio_current": 8.4687,
+    "rainfall_mean_d_minus_1_mm": 0.04,
+    "rainfall_max_cell_d_minus_1_mm": 1.64,
+    "rainfall_accum_3d_prior_mm": 1.02,
+    "rainfall_accum_7d_prior_mm": 5.49,
+    "rainfall_max_cell_3d_prior_mm": 11.61,
+    "day_of_year": 185.0,
+    "month": 7.0,
+    "sin_doy": -0.0215,
+    "cos_doy": 0.0204,
+    "is_monsoon": 0.0
+  },
+  "performance_summary": {
+    "validation_2022": {
+      "sample_count": 322,
+      "mae_cumecs": 77.48,
+      "rmse_cumecs": 485.06,
+      "r2_score": 0.1823,
+      "mean_bias_cumecs": -13.83,
+      "nse_score": 0.1823,
+      "skill_score_vs_persistence": 0.3202
+    },
+    "validation_skill_vs_persistence": 0.3202,
+    "test_2023_2024": {
+      "sample_count": 611,
+      "mae_cumecs": 95.82,
+      "rmse_cumecs": 469.52,
+      "r2_score": 0.3796,
+      "mean_bias_cumecs": -10.8,
+      "nse_score": 0.3796,
+      "skill_score_vs_persistence": -0.2392
+    },
+    "test_skill_vs_persistence": -0.2392
+  },
+  "permutation_importance_validation_top5": [
+    {
+      "feature": "discharge_current_cumecs",
+      "rf_impurity_importance": 0.26373,
+      "val_permutation_rmse_delta": 27.285,
+      "val_permutation_std": 3.995
+    },
+    {
+      "feature": "inflow_current_cumecs",
+      "rf_impurity_importance": 0.30271,
+      "val_permutation_rmse_delta": 7.541,
+      "val_permutation_std": 1.348
+    },
+    {
+      "feature": "rainfall_max_cell_3d_prior_mm",
+      "rf_impurity_importance": 0.01595,
+      "val_permutation_rmse_delta": 4.781,
+      "val_permutation_std": 0.497
+    },
+    {
+      "feature": "rainfall_accum_3d_prior_mm",
+      "rf_impurity_importance": 0.01369,
+      "val_permutation_rmse_delta": 4.247,
+      "val_permutation_std": 0.399
+    },
+    {
+      "feature": "discharge_delta_1d_cumecs",
+      "rf_impurity_importance": 0.20465,
+      "val_permutation_rmse_delta": 1.849,
+      "val_permutation_std": 0.535
+    }
+  ],
+  "operational_recommendation": {
+    "promotion_status": "EXPERIMENTAL_RESEARCH_BENCHMARK",
+    "promoted_for_operational_disaster_warning": false,
+    "scientific_rationale": "Model demonstrates strong non-linear predictive skill on the validation partition (Val Skill vs Persistence: +0.3202, Val MAE: 77.48 m\u00b3/s vs Persistence 97.39 m\u00b3/s), successfully capturing baseflow transitions and antecedent rainfall runoff. However, on the held-out test partition containing the historic July 2023 catastrophe (8,343 m\u00b3/s), the model suffers structural tree-leaf capping (-0.2392 skill vs persistence). Per the Phase 2B Decision Gate, the model is preserved as an experimental ML benchmark and NOT promoted for autonomous operational flood warnings.",
+    "prohibited_applications": [
+      "Must NEVER be used to predict Delhi Old Railway Bridge water levels (m MSL).",
+      "Must NEVER be used to compute Delhi flood breach probabilities.",
+      "Must NEVER be used for emergency evacuation decisions without human hydrologist review."
+    ]
+  }
+}

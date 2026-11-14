@@ -1,0 +1,323 @@
+{
+  "dataset_name": "Hathnikund Downstream Discharge 24h Forecasting Dataset",
+  "version": "1.0.0",
+  "milestone": "Phase 2A \u2014 Feature Engineering and Baseline Feasibility",
+  "generation_timestamp_utc": "2026-10-19T15:55:02.841704Z",
+  "source_provenance": {
+    "discharge_sha256": "d5c7d94a7fccb37d0cb13ab54078769c77b7eedfa3e9c92a3c80fc8864295fcf",
+    "rainfall_sha256": "9d019e267325571eae2ba791d990e73c57507293ab096c078ac6da7a84c726d5",
+    "hkb_ds_total_records": 2599,
+    "hkb_us_total_records": 2593,
+    "rainfall_total_records": 2557,
+    "duplicate_discharge_timestamps": 0,
+    "duplicate_rainfall_timestamps": 0
+  },
+  "modelling_period_start": "2018-01-01",
+  "modelling_period_end": "2024-12-31",
+  "total_calendar_days_in_period": 2557,
+  "total_observed_hkb_ds_days": 2491,
+  "missing_calendar_days_in_hkb_ds": 66,
+  "total_generated_rows": 2491,
+  "valid_24h_target_rows": 2468,
+  "broken_target_rows": 23,
+  "complete_operational_rows": 2345,
+  "incomplete_rows": 146,
+  "partition_counts_all": {
+    "TRAIN": 1450,
+    "VAL": 334,
+    "TEST": 707
+  },
+  "partition_counts_complete": {
+    "TRAIN": 1412,
+    "VAL": 322,
+    "TEST": 611
+  },
+  "features_manifest": {
+    "target_discharge_24h_cumecs": {
+      "name": "target_discharge_24h_cumecs",
+      "formula": "Q_ds(t + 24h) = Q_ds(date + 1 day)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Haryana I&WRD Hathnikund Barrage Downstream Release (HKB D/S)",
+      "lookback_window": "Lead time = +24 hours (+1 calendar day)",
+      "availability_time": "Time t + 24h (08:00 IST of date + 1 day)",
+      "missing_value_behavior": "Null (NaN) if date + 1 day is missing in source; excluded from supervised training",
+      "leakage_risk": "TARGET VARIABLE: Strictly excluded from all predictor matrices",
+      "classification": "TARGET"
+    },
+    "discharge_current_cumecs": {
+      "name": "discharge_current_cumecs",
+      "formula": "Q_ds(t)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Haryana I&WRD Hathnikund Barrage Downstream Release (HKB D/S)",
+      "lookback_window": "Current observation (t)",
+      "availability_time": "Available at forecast issue time t (08:00 IST morning gauge)",
+      "missing_value_behavior": "If missing, forecast cannot be issued",
+      "leakage_risk": "None: Measured at time t",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_lag_1d_cumecs": {
+      "name": "discharge_lag_1d_cumecs",
+      "formula": "Q_ds(date - 1 day)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Haryana I&WRD Hathnikund Barrage Downstream Release (HKB D/S)",
+      "lookback_window": "Trailing 1 day (t - 24h)",
+      "availability_time": "Known 24 hours prior to forecast issue time t",
+      "missing_value_behavior": "Null if date - 1 day was unobserved; no silent zero-filling",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_lag_2d_cumecs": {
+      "name": "discharge_lag_2d_cumecs",
+      "formula": "Q_ds(date - 2 days)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Haryana I&WRD Hathnikund Barrage Downstream Release (HKB D/S)",
+      "lookback_window": "Trailing 2 days (t - 48h)",
+      "availability_time": "Known 48 hours prior to forecast issue time t",
+      "missing_value_behavior": "Null if date - 2 days was unobserved",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_lag_3d_cumecs": {
+      "name": "discharge_lag_3d_cumecs",
+      "formula": "Q_ds(date - 3 days)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Haryana I&WRD Hathnikund Barrage Downstream Release (HKB D/S)",
+      "lookback_window": "Trailing 3 days (t - 72h)",
+      "availability_time": "Known 72 hours prior to forecast issue time t",
+      "missing_value_behavior": "Null if date - 3 days was unobserved",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_lag_7d_cumecs": {
+      "name": "discharge_lag_7d_cumecs",
+      "formula": "Q_ds(date - 7 days)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Haryana I&WRD Hathnikund Barrage Downstream Release (HKB D/S)",
+      "lookback_window": "Trailing 7 days (t - 168h)",
+      "availability_time": "Known 7 days prior to forecast issue time t",
+      "missing_value_behavior": "Null if date - 7 days was unobserved",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_delta_1d_cumecs": {
+      "name": "discharge_delta_1d_cumecs",
+      "formula": "Q_ds(t) - Q_ds(date - 1 day)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Derived from HKB D/S",
+      "lookback_window": "Trailing 1 day rate of change",
+      "availability_time": "Available at time t",
+      "missing_value_behavior": "Null if lag 1 is missing",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_delta_ratio_1d": {
+      "name": "discharge_delta_ratio_1d",
+      "formula": "(Q_ds(t) - Q_ds(date - 1 day)) / (Q_ds(date - 1 day) + 1.0)",
+      "unit": "dimensionless ratio",
+      "source": "Derived from HKB D/S",
+      "lookback_window": "Trailing 1 day normalized delta",
+      "availability_time": "Available at time t",
+      "missing_value_behavior": "Null if lag 1 is missing",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_rolling_mean_3d_cumecs": {
+      "name": "discharge_rolling_mean_3d_cumecs",
+      "formula": "mean(Q_ds(date), Q_ds(date - 1), Q_ds(date - 2))",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Derived from HKB D/S",
+      "lookback_window": "Trailing 3-day window [t - 48h, t]",
+      "availability_time": "Available at time t",
+      "missing_value_behavior": "Null if any of the 3 days is missing",
+      "leakage_risk": "None: Strictly trailing (never centered)",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_rolling_mean_7d_cumecs": {
+      "name": "discharge_rolling_mean_7d_cumecs",
+      "formula": "mean(Q_ds(date - k) for k in 0..6)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Derived from HKB D/S",
+      "lookback_window": "Trailing 7-day window [t - 144h, t]",
+      "availability_time": "Available at time t",
+      "missing_value_behavior": "Null if any of the 7 days is missing",
+      "leakage_risk": "None: Strictly trailing",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_rolling_max_7d_cumecs": {
+      "name": "discharge_rolling_max_7d_cumecs",
+      "formula": "max(Q_ds(date - k) for k in 0..6)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Derived from HKB D/S",
+      "lookback_window": "Trailing 7-day window [t - 144h, t]",
+      "availability_time": "Available at time t",
+      "missing_value_behavior": "Null if any of the 7 days is missing",
+      "leakage_risk": "None: Strictly trailing",
+      "classification": "OPERATIONAL"
+    },
+    "discharge_rolling_std_7d_cumecs": {
+      "name": "discharge_rolling_std_7d_cumecs",
+      "formula": "sample_std(Q_ds(date - k) for k in 0..6)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Derived from HKB D/S",
+      "lookback_window": "Trailing 7-day window [t - 144h, t]",
+      "availability_time": "Available at time t",
+      "missing_value_behavior": "Null if any of the 7 days is missing",
+      "leakage_risk": "None: Strictly trailing",
+      "classification": "OPERATIONAL"
+    },
+    "inflow_current_cumecs": {
+      "name": "inflow_current_cumecs",
+      "formula": "Q_us(t)",
+      "unit": "m\u00b3/s (cumecs)",
+      "source": "Haryana I&WRD Hathnikund Barrage Upstream Inflow (HKB U/S)",
+      "lookback_window": "Current observation (t)",
+      "availability_time": "Available at forecast issue time t (08:00 IST morning gauge)",
+      "missing_value_behavior": "Null if unobserved (7 dry season dates missing in HKB U/S)",
+      "leakage_risk": "None: Measured at time t",
+      "classification": "OPERATIONAL"
+    },
+    "inflow_release_ratio_current": {
+      "name": "inflow_release_ratio_current",
+      "formula": "Q_us(t) / (Q_ds(t) + 1.0)",
+      "unit": "dimensionless ratio",
+      "source": "Derived from HKB U/S and HKB D/S",
+      "lookback_window": "Current observation (t)",
+      "availability_time": "Available at time t",
+      "missing_value_behavior": "Null if HKB U/S is missing",
+      "leakage_risk": "None: Captures canal diversion regime at time t",
+      "classification": "OPERATIONAL"
+    },
+    "rainfall_mean_d_minus_1_mm": {
+      "name": "rainfall_mean_d_minus_1_mm",
+      "formula": "RF_mean(date - 1 day)",
+      "unit": "mm/day",
+      "source": "IMD Pune 0.25\u00b0 Gridded Regional Summary (91 cells)",
+      "lookback_window": "Preceding 24h accumulation ending at 08:30 IST on date - 1",
+      "availability_time": "Known prior to forecast issue time t (ended ~23.5h prior)",
+      "missing_value_behavior": "Null if gridded record absent (0 missing in 2018-2024)",
+      "leakage_risk": "None: Strictly antecedent (ended prior to current morning)",
+      "classification": "OPERATIONAL"
+    },
+    "rainfall_max_cell_d_minus_1_mm": {
+      "name": "rainfall_max_cell_d_minus_1_mm",
+      "formula": "RF_max(date - 1 day)",
+      "unit": "mm/day",
+      "source": "IMD Pune 0.25\u00b0 Gridded Regional Summary",
+      "lookback_window": "Preceding 24h peak single-cell rainfall on date - 1",
+      "availability_time": "Known prior to forecast issue time t",
+      "missing_value_behavior": "Null if gridded record absent",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "rainfall_accum_3d_prior_mm": {
+      "name": "rainfall_accum_3d_prior_mm",
+      "formula": "sum(RF_mean(date - k) for k in [1, 2, 3])",
+      "unit": "mm",
+      "source": "Derived from IMD Gridded Rainfall",
+      "lookback_window": "Trailing 3-day window [date - 3, date - 1]",
+      "availability_time": "Known prior to forecast issue time t",
+      "missing_value_behavior": "Null if any constituent day is missing",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "rainfall_accum_7d_prior_mm": {
+      "name": "rainfall_accum_7d_prior_mm",
+      "formula": "sum(RF_mean(date - k) for k in 1..7)",
+      "unit": "mm",
+      "source": "Derived from IMD Gridded Rainfall",
+      "lookback_window": "Trailing 7-day window [date - 7, date - 1]",
+      "availability_time": "Known prior to forecast issue time t",
+      "missing_value_behavior": "Null if any constituent day is missing",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "rainfall_max_cell_3d_prior_mm": {
+      "name": "rainfall_max_cell_3d_prior_mm",
+      "formula": "max(RF_max(date - k) for k in [1, 2, 3])",
+      "unit": "mm/day",
+      "source": "Derived from IMD Gridded Rainfall",
+      "lookback_window": "Trailing 3-day peak cell intensity",
+      "availability_time": "Known prior to forecast issue time t",
+      "missing_value_behavior": "Null if any constituent day is missing",
+      "leakage_risk": "None: Strictly antecedent",
+      "classification": "OPERATIONAL"
+    },
+    "rainfall_valid_cells_d_minus_1": {
+      "name": "rainfall_valid_cells_d_minus_1",
+      "formula": "valid_cells_count(date - 1 day)",
+      "unit": "count of cells (out of 91)",
+      "source": "IMD Pune Gridded Quality Audit",
+      "lookback_window": "Quality check on date - 1",
+      "availability_time": "Available with gridded extraction",
+      "missing_value_behavior": "Null if unobserved; 91 expected",
+      "leakage_risk": "None: Quality audit flag",
+      "classification": "OPERATIONAL"
+    },
+    "rainfall_mean_same_day_retro_mm": {
+      "name": "rainfall_mean_same_day_retro_mm",
+      "formula": "RF_mean(date)",
+      "unit": "mm/day",
+      "source": "IMD Pune 0.25\u00b0 Gridded Regional Summary",
+      "lookback_window": "Accumulation ending at 08:30 IST on date t",
+      "availability_time": "RETROSPECTIVE ARCHIVE ONLY: IMD gridded products have 24-48h publication latency",
+      "missing_value_behavior": "Null if gridded record absent",
+      "leakage_risk": "OPERATIONAL LEAKAGE RISK: Not available in real-time operational forecasting. Strictly research/retrospective only.",
+      "classification": "RETROSPECTIVE_ANALYSIS_ONLY"
+    },
+    "day_of_year": {
+      "name": "day_of_year",
+      "formula": "calendar day index (1 to 366)",
+      "unit": "integer (1..366)",
+      "source": "Calendar date of time t",
+      "lookback_window": "Current date",
+      "availability_time": "Known deterministically at time t",
+      "missing_value_behavior": "Never missing",
+      "leakage_risk": "None",
+      "classification": "OPERATIONAL"
+    },
+    "month": {
+      "name": "month",
+      "formula": "calendar month (1 to 12)",
+      "unit": "integer (1..12)",
+      "source": "Calendar date of time t",
+      "lookback_window": "Current date",
+      "availability_time": "Known deterministically at time t",
+      "missing_value_behavior": "Never missing",
+      "leakage_risk": "None",
+      "classification": "OPERATIONAL"
+    },
+    "sin_doy": {
+      "name": "sin_doy",
+      "formula": "sin(2 * pi * day_of_year / 365.25)",
+      "unit": "dimensionless cyclical index [-1.0, 1.0]",
+      "source": "Cyclical calendar transformation",
+      "lookback_window": "Current date",
+      "availability_time": "Known deterministically at time t",
+      "missing_value_behavior": "Never missing",
+      "leakage_risk": "None",
+      "classification": "OPERATIONAL"
+    },
+    "cos_doy": {
+      "name": "cos_doy",
+      "formula": "cos(2 * pi * day_of_year / 365.25)",
+      "unit": "dimensionless cyclical index [-1.0, 1.0]",
+      "source": "Cyclical calendar transformation",
+      "lookback_window": "Current date",
+      "availability_time": "Known deterministically at time t",
+      "missing_value_behavior": "Never missing",
+      "leakage_risk": "None",
+      "classification": "OPERATIONAL"
+    },
+    "is_monsoon": {
+      "name": "is_monsoon",
+      "formula": "1 if month in [6, 7, 8, 9] else 0",
+      "unit": "binary flag {0, 1}",
+      "source": "Meteorological monsoon definition (June\u2013September)",
+      "lookback_window": "Current date",
+      "availability_time": "Known deterministically at time t",
+      "missing_value_behavior": "Never missing",
+      "leakage_risk": "None",
+      "classification": "OPERATIONAL"
+    }
+  }
+}

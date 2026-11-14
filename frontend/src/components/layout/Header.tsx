@@ -1,5 +1,16 @@
+/**
+ * frontend/src/components/layout/Header.tsx
+ *
+ * Unified Application Header for PRAVAAH in authentic Cream & Brown styling:
+ * - Deep Espresso (#2C221E) background with subtle Dark Brown (#3E3026) border.
+ * - Warm Saddle Brown (#8B4513) icon accents.
+ * - Warm Cream (#FFFDF9) typography.
+ * - Unified Project Identity: PRAVAAH — Yamuna Flood Intelligence & Decision Support.
+ * - Study Region: Hathnikund Barrage to Delhi Old Railway Bridge.
+ */
+
 import React from 'react';
-import { Menu, AlertTriangle, Loader2 } from 'lucide-react';
+import { Menu, RefreshCw, CheckCircle2, XCircle, Waves, ArrowLeft } from 'lucide-react';
 import type { HealthStatus } from '../../types/api';
 
 interface HeaderProps {
@@ -8,6 +19,7 @@ interface HeaderProps {
   healthData: HealthStatus | null;
   error: string | null;
   onRetry: () => void;
+  onBackToLanding?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,79 +28,103 @@ export const Header: React.FC<HeaderProps> = ({
   healthData,
   error,
   onRetry,
+  onBackToLanding,
 }) => {
   const isConnected = !isLoading && !error && healthData?.status === 'ok';
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 backdrop-blur-md">
+    <header className="flex h-14 w-full items-center justify-between border-b border-[#3E3026] bg-[#2C221E] px-4 sm:px-6 text-xs text-[#FFFDF9] select-none shadow-xs z-30">
+      {/* Left: Mobile Toggle, Optional Back & Product Identity */}
       <div className="flex items-center gap-3">
         <button
           onClick={onMenuToggle}
-          className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-slate-200 lg:hidden focus:outline-none focus:ring-2 focus:ring-teal-500"
+          className="rounded p-1 text-[#EAE3D9] hover:bg-[#3E3026] hover:text-white lg:hidden"
           aria-label="Toggle navigation menu"
         >
           <Menu className="h-5 w-5" />
         </button>
 
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-semibold tracking-tight text-white sm:text-xl">
-              PRAVAAH
-            </h1>
-            <span className="rounded bg-teal-500/10 px-2 py-0.5 text-[11px] font-medium tracking-wide text-teal-400 border border-teal-500/20">
-              PHASE 0 FOUNDATION
-            </span>
+        {onBackToLanding && (
+          <button
+            type="button"
+            onClick={onBackToLanding}
+            className="flex items-center gap-1.5 rounded-full border border-[#4A3B33] bg-[#3E3026] px-3 py-1 text-xs font-semibold text-[#EAE3D9] hover:bg-[#8B4513] hover:text-white transition-all shadow-2xs"
+            title="Return to Landing Page"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Landing Page</span>
+          </button>
+        )}
+
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#8B4513] text-white shadow-xs">
+            <Waves className="h-4 w-4" />
           </div>
-          <p className="hidden text-xs text-slate-400 sm:block">
-            Predictive Risk Assessment and Vulnerability Analysis for Adaptive Assistance & Humanitarian Response
-          </p>
+          <div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-base font-extrabold tracking-tight text-[#FFFDF9]">
+                PRAVAAH
+              </span>
+              <span className="hidden lg:inline text-xs font-medium text-[#EAE3D9]/90">
+                | Yamuna Flood Intelligence & Decision Support
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 sm:gap-4">
-        {/* Environment Badge */}
-        <div className="hidden rounded-full border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-xs font-medium text-slate-300 md:inline-flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full bg-blue-400" />
-          LOCAL DEVELOPMENT
+      {/* Right: Monitoring Corridor & Live System Status */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Monitoring Region Badge */}
+        <div className="hidden rounded-full border border-[#4A3B33] bg-[#382B24] px-3 py-1 text-xs text-[#EAE3D9] md:flex items-center gap-1.5 font-medium">
+          <span className="text-[#D8CEBE]">Study Region:</span>
+          <span className="font-semibold text-white">Hathnikund to Delhi ORB (251 km)</span>
         </div>
 
-        {/* Backend Connection Status Badge */}
+        {/* Backend Connection Badge */}
         <div
-          className={`flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+          className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
             isLoading
-              ? 'border-amber-500/30 bg-amber-500/10 text-amber-300'
+              ? 'border-amber-400/40 bg-amber-950/60 text-amber-200'
               : isConnected
-              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
-              : 'border-rose-500/30 bg-rose-500/10 text-rose-300'
+              ? 'border-emerald-500/40 bg-emerald-950/60 text-emerald-300'
+              : 'border-red-400/40 bg-red-950/60 text-red-300'
           }`}
+          title={
+            isConnected
+              ? `Connected to ${healthData?.service || 'PRAVAAH API'}`
+              : error || 'Service offline'
+          }
         >
           {isLoading ? (
-            <>
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-400" />
-              <span>Checking API...</span>
-            </>
+            <RefreshCw className="h-3 w-3 animate-spin text-amber-300" />
           ) : isConnected ? (
-            <>
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
-              </span>
-              <span className="hidden sm:inline">Backend:</span>
-              <span className="font-semibold">Connected</span>
-            </>
+            <CheckCircle2 className="h-3 w-3 text-emerald-400" />
           ) : (
-            <button
-              onClick={onRetry}
-              className="flex items-center gap-1 hover:underline focus:outline-none"
-              title="Click to retry health check"
-            >
-              <AlertTriangle className="h-3.5 w-3.5 text-rose-400" />
-              <span className="hidden sm:inline">Backend:</span>
-              <span className="font-semibold">Disconnected</span>
-              <span className="text-[10px] underline ml-1">(Retry)</span>
-            </button>
+            <XCircle className="h-3 w-3 text-red-400" />
           )}
+
+          <span className="hidden sm:inline">
+            {isLoading
+              ? 'Connecting...'
+              : isConnected
+              ? 'API Active'
+              : 'Offline'}
+          </span>
         </div>
+
+        {/* Manual Reconnect Action */}
+        {!isConnected && (
+          <button
+            onClick={onRetry}
+            disabled={isLoading}
+            className="flex items-center gap-1 rounded border border-[#4A3B33] bg-[#3E3026] px-2.5 py-1 text-xs font-medium text-[#EAE3D9] hover:bg-[#8B4513] hover:text-white transition-colors disabled:opacity-50"
+            title="Retry connection"
+          >
+            <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">Retry</span>
+          </button>
+        )}
       </div>
     </header>
   );

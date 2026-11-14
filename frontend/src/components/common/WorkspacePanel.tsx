@@ -1,33 +1,60 @@
-import React from 'react';
-import { Map, Layers, Database, AlertCircle, Compass } from 'lucide-react';
+import React, { useState } from 'react';
+import { Map, Layers, Database, AlertCircle, Compass, Mountain } from 'lucide-react';
+import { SpatialDataPanel } from '../spatial/SpatialDataPanel';
 
 export const WorkspacePanel: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'spatial' | 'map'>('spatial');
+
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-6 lg:p-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+    <div className="rounded-xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6 lg:p-8 space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
         <div>
           <h2 className="text-lg font-semibold text-white flex items-center gap-2">
             <Map className="h-5 w-5 text-teal-400" />
-            Geospatial Workspace & Risk Map Canvas
+            Geospatial Workspace & Terrain Processing
           </h2>
           <p className="mt-1 text-xs text-slate-400">
-            Interactive GIS viewport designated for flood risk heatmaps, terrain analysis, and routing layers.
+            Interactive GIS viewport designated for spatial data infrastructure, digital elevation inspection, and terrain analysis.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-slate-800 px-2.5 py-1 text-xs font-mono text-slate-300 border border-slate-700">
-            <Layers className="h-3.5 w-3.5 text-teal-400" />
-            MapLibre GL JS (Planned)
-          </span>
+        {/* View Switcher */}
+        <div className="flex items-center gap-1.5 rounded-lg bg-slate-950/80 p-1 border border-slate-800">
+          <button
+            type="button"
+            onClick={() => setActiveTab('spatial')}
+            className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-md font-medium transition-colors ${
+              activeTab === 'spatial'
+                ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40 shadow-xs'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Mountain className="h-3.5 w-3.5" />
+            <span>Spatial Infrastructure (Phase 3A)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('map')}
+            className={`flex items-center gap-1.5 px-3 py-1 text-xs rounded-md font-medium transition-colors ${
+              activeTab === 'map'
+                ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40 shadow-xs'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Layers className="h-3.5 w-3.5" />
+            <span>MapLibre Canvas (Planned)</span>
+          </button>
         </div>
       </div>
 
-      {/* Empty State Canvas */}
-      <div className="mt-6 flex min-h-[320px] flex-col items-center justify-center rounded-lg border border-dashed border-slate-800 bg-slate-950/60 p-8 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 border border-slate-800 text-teal-400 shadow-inner">
-          <Compass className="h-7 w-7 text-teal-400/80" />
-        </div>
+      {activeTab === 'spatial' ? (
+        <SpatialDataPanel />
+      ) : (
+        <div className="mt-6 flex min-h-[320px] flex-col items-center justify-center rounded-lg border border-dashed border-slate-800 bg-slate-950/60 p-8 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 border border-slate-800 text-teal-400 shadow-inner">
+            <Compass className="h-7 w-7 text-teal-400/80" />
+          </div>
+
 
         <h3 className="mt-4 text-sm font-semibold text-white sm:text-base">
           Geospatial Map Visualization Awaiting Phase Integration
@@ -69,6 +96,8 @@ export const WorkspacePanel: React.FC = () => {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };
+

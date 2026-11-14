@@ -1,0 +1,374 @@
+{
+  "dataset_file": "hathnikund_discharge_forecasting_24h.csv",
+  "total_records": 2491,
+  "complete_operational_records": 2345,
+  "valid_target_records": 2468,
+  "discharge_current_stats": {
+    "count": 2491,
+    "mean": 87.89,
+    "std": 463.08,
+    "min": 9.96,
+    "p50": 9.96,
+    "p90": 143.89,
+    "p95": 340.32,
+    "p99": 1292.86,
+    "max": 8380.4
+  },
+  "target_discharge_24h_stats": {
+    "count": 2468,
+    "mean": 88.52,
+    "std": 465.18,
+    "min": 9.96,
+    "p50": 9.96,
+    "p90": 143.89,
+    "p95": 340.55,
+    "p99": 1292.86,
+    "max": 8380.4
+  },
+  "discharge_delta_24h_stats": {
+    "count": 2468,
+    "mean": 0.12,
+    "std": 415.57,
+    "min": -6313.82,
+    "p50": 0.0,
+    "p90": 0.0,
+    "p95": 55.22,
+    "p99": 583.86,
+    "max": 7953.64
+  },
+  "monsoon_stats": {
+    "count": 835,
+    "mean": 232.67,
+    "std": 779.04,
+    "min": 9.96,
+    "p50": 9.97,
+    "p90": 504.87,
+    "p95": 822.23,
+    "p99": 4270.82,
+    "max": 8380.4
+  },
+  "non_monsoon_stats": {
+    "count": 1656,
+    "mean": 14.88,
+    "std": 29.95,
+    "min": 9.96,
+    "p50": 9.96,
+    "p90": 9.97,
+    "p95": 9.97,
+    "p99": 161.08,
+    "max": 553.07
+  },
+  "by_year_summary": {
+    "2018": {
+      "observed_days": 365,
+      "missing_days": 0,
+      "mean_cumecs": 130.94,
+      "max_cumecs": 7193.12,
+      "high_flow_days_above_1500": 5
+    },
+    "2019": {
+      "observed_days": 365,
+      "missing_days": 0,
+      "mean_cumecs": 56.53,
+      "max_cumecs": 7836.59,
+      "high_flow_days_above_1500": 3
+    },
+    "2020": {
+      "observed_days": 355,
+      "missing_days": 11,
+      "mean_cumecs": 26.13,
+      "max_cumecs": 723.39,
+      "high_flow_days_above_1500": 0
+    },
+    "2021": {
+      "observed_days": 365,
+      "missing_days": 0,
+      "mean_cumecs": 52.32,
+      "max_cumecs": 2924.01,
+      "high_flow_days_above_1500": 1
+    },
+    "2022": {
+      "observed_days": 334,
+      "missing_days": 31,
+      "mean_cumecs": 110.98,
+      "max_cumecs": 8380.4,
+      "high_flow_days_above_1500": 4
+    },
+    "2023": {
+      "observed_days": 345,
+      "missing_days": 20,
+      "mean_cumecs": 187.02,
+      "max_cumecs": 8342.87,
+      "high_flow_days_above_1500": 7
+    },
+    "2024": {
+      "observed_days": 362,
+      "missing_days": 4,
+      "mean_cumecs": 56.73,
+      "max_cumecs": 2464.4,
+      "high_flow_days_above_1500": 1
+    }
+  },
+  "autocorrelation_acf": {
+    "lag_1d": 0.6008,
+    "lag_2d": 0.3898,
+    "lag_3d": 0.2601,
+    "lag_4d": 0.1856,
+    "lag_5d": 0.1559,
+    "lag_6d": 0.1447,
+    "lag_7d": 0.1311,
+    "lag_8d": 0.1293,
+    "lag_9d": 0.128,
+    "lag_10d": 0.1422,
+    "lag_11d": 0.1497,
+    "lag_12d": 0.151,
+    "lag_13d": 0.1508,
+    "lag_14d": 0.0963
+  },
+  "correlations_all_days": {
+    "discharge_current_cumecs": {
+      "label": "Current Discharge Q(t)",
+      "count": 2345,
+      "pearson_r": 0.6003,
+      "spearman_rho": 0.9134
+    },
+    "discharge_lag_1d_cumecs": {
+      "label": "Lag 1 Discharge Q(t-1)",
+      "count": 2345,
+      "pearson_r": 0.3891,
+      "spearman_rho": 0.8723
+    },
+    "discharge_lag_2d_cumecs": {
+      "label": "Lag 2 Discharge Q(t-2)",
+      "count": 2345,
+      "pearson_r": 0.2594,
+      "spearman_rho": 0.8528
+    },
+    "discharge_lag_3d_cumecs": {
+      "label": "Lag 3 Discharge Q(t-3)",
+      "count": 2345,
+      "pearson_r": 0.1847,
+      "spearman_rho": 0.8314
+    },
+    "discharge_rolling_mean_3d_cumecs": {
+      "label": "Trailing 3d Mean Discharge",
+      "count": 2345,
+      "pearson_r": 0.5024,
+      "spearman_rho": 0.8656
+    },
+    "discharge_rolling_mean_7d_cumecs": {
+      "label": "Trailing 7d Mean Discharge",
+      "count": 2345,
+      "pearson_r": 0.3952,
+      "spearman_rho": 0.7968
+    },
+    "discharge_delta_1d_cumecs": {
+      "label": "Discharge 24h Delta",
+      "count": 2345,
+      "pearson_r": 0.2363,
+      "spearman_rho": -0.2029
+    },
+    "rainfall_mean_d_minus_1_mm": {
+      "label": "Catchment Rainfall D-1 Mean",
+      "count": 2345,
+      "pearson_r": 0.4359,
+      "spearman_rho": 0.2227
+    },
+    "rainfall_accum_3d_prior_mm": {
+      "label": "Catchment Rainfall 3d Accum",
+      "count": 2345,
+      "pearson_r": 0.4304,
+      "spearman_rho": 0.2714
+    },
+    "rainfall_accum_7d_prior_mm": {
+      "label": "Catchment Rainfall 7d Accum",
+      "count": 2345,
+      "pearson_r": 0.384,
+      "spearman_rho": 0.3127
+    },
+    "rainfall_mean_same_day_retro_mm": {
+      "label": "Same-Day Rainfall (Retro Only)",
+      "count": 2345,
+      "pearson_r": 0.5829,
+      "spearman_rho": 0.2295
+    },
+    "sin_doy": {
+      "label": "Cyclical Sine Day-of-Year",
+      "count": 2345,
+      "pearson_r": -0.1366,
+      "spearman_rho": -0.2579
+    },
+    "cos_doy": {
+      "label": "Cyclical Cosine Day-of-Year",
+      "count": 2345,
+      "pearson_r": -0.1659,
+      "spearman_rho": -0.1532
+    }
+  },
+  "correlations_monsoon": {
+    "discharge_current_cumecs": {
+      "label": "Current Discharge Q(t)",
+      "count": 792,
+      "pearson_r": 0.5788,
+      "spearman_rho": 0.8725
+    },
+    "discharge_lag_1d_cumecs": {
+      "label": "Lag 1 Discharge Q(t-1)",
+      "count": 792,
+      "pearson_r": 0.3559,
+      "spearman_rho": 0.7985
+    },
+    "discharge_lag_2d_cumecs": {
+      "label": "Lag 2 Discharge Q(t-2)",
+      "count": 792,
+      "pearson_r": 0.2196,
+      "spearman_rho": 0.7519
+    },
+    "discharge_lag_3d_cumecs": {
+      "label": "Lag 3 Discharge Q(t-3)",
+      "count": 792,
+      "pearson_r": 0.141,
+      "spearman_rho": 0.7013
+    },
+    "discharge_rolling_mean_3d_cumecs": {
+      "label": "Trailing 3d Mean Discharge",
+      "count": 792,
+      "pearson_r": 0.4702,
+      "spearman_rho": 0.8293
+    },
+    "discharge_rolling_mean_7d_cumecs": {
+      "label": "Trailing 7d Mean Discharge",
+      "count": 792,
+      "pearson_r": 0.3546,
+      "spearman_rho": 0.7701
+    },
+    "discharge_delta_1d_cumecs": {
+      "label": "Discharge 24h Delta",
+      "count": 792,
+      "pearson_r": 0.2427,
+      "spearman_rho": -0.0413
+    },
+    "rainfall_mean_d_minus_1_mm": {
+      "label": "Catchment Rainfall D-1 Mean",
+      "count": 792,
+      "pearson_r": 0.4244,
+      "spearman_rho": 0.3465
+    },
+    "rainfall_accum_3d_prior_mm": {
+      "label": "Catchment Rainfall 3d Accum",
+      "count": 792,
+      "pearson_r": 0.4084,
+      "spearman_rho": 0.4084
+    },
+    "rainfall_accum_7d_prior_mm": {
+      "label": "Catchment Rainfall 7d Accum",
+      "count": 792,
+      "pearson_r": 0.3417,
+      "spearman_rho": 0.4956
+    },
+    "rainfall_mean_same_day_retro_mm": {
+      "label": "Same-Day Rainfall (Retro Only)",
+      "count": 792,
+      "pearson_r": 0.6094,
+      "spearman_rho": 0.359
+    },
+    "sin_doy": {
+      "label": "Cyclical Sine Day-of-Year",
+      "count": 792,
+      "pearson_r": -0.0933,
+      "spearman_rho": -0.2846
+    },
+    "cos_doy": {
+      "label": "Cyclical Cosine Day-of-Year",
+      "count": 792,
+      "pearson_r": 0.0184,
+      "spearman_rho": 0.2584
+    }
+  },
+  "correlations_non_monsoon": {
+    "discharge_current_cumecs": {
+      "label": "Current Discharge Q(t)",
+      "count": 1553,
+      "pearson_r": 0.6282,
+      "spearman_rho": 0.9387
+    },
+    "discharge_lag_1d_cumecs": {
+      "label": "Lag 1 Discharge Q(t-1)",
+      "count": 1553,
+      "pearson_r": 0.5803,
+      "spearman_rho": 0.9192
+    },
+    "discharge_lag_2d_cumecs": {
+      "label": "Lag 2 Discharge Q(t-2)",
+      "count": 1553,
+      "pearson_r": 0.543,
+      "spearman_rho": 0.9145
+    },
+    "discharge_lag_3d_cumecs": {
+      "label": "Lag 3 Discharge Q(t-3)",
+      "count": 1553,
+      "pearson_r": 0.527,
+      "spearman_rho": 0.9147
+    },
+    "discharge_rolling_mean_3d_cumecs": {
+      "label": "Trailing 3d Mean Discharge",
+      "count": 1553,
+      "pearson_r": 0.6304,
+      "spearman_rho": 0.8911
+    },
+    "discharge_rolling_mean_7d_cumecs": {
+      "label": "Trailing 7d Mean Discharge",
+      "count": 1553,
+      "pearson_r": 0.4594,
+      "spearman_rho": 0.8158
+    },
+    "discharge_delta_1d_cumecs": {
+      "label": "Discharge 24h Delta",
+      "count": 1553,
+      "pearson_r": -0.0035,
+      "spearman_rho": -0.3207
+    },
+    "rainfall_mean_d_minus_1_mm": {
+      "label": "Catchment Rainfall D-1 Mean",
+      "count": 1553,
+      "pearson_r": 0.2278,
+      "spearman_rho": -0.0686
+    },
+    "rainfall_accum_3d_prior_mm": {
+      "label": "Catchment Rainfall 3d Accum",
+      "count": 1553,
+      "pearson_r": 0.2378,
+      "spearman_rho": 0.0264
+    },
+    "rainfall_accum_7d_prior_mm": {
+      "label": "Catchment Rainfall 7d Accum",
+      "count": 1553,
+      "pearson_r": 0.3317,
+      "spearman_rho": 0.0804
+    },
+    "rainfall_mean_same_day_retro_mm": {
+      "label": "Same-Day Rainfall (Retro Only)",
+      "count": 1553,
+      "pearson_r": 0.196,
+      "spearman_rho": -0.0677
+    },
+    "sin_doy": {
+      "label": "Cyclical Sine Day-of-Year",
+      "count": 1553,
+      "pearson_r": -0.1598,
+      "spearman_rho": -0.1251
+    },
+    "cos_doy": {
+      "label": "Cyclical Cosine Day-of-Year",
+      "count": 1553,
+      "pearson_r": -0.0849,
+      "spearman_rho": 0.0295
+    }
+  },
+  "overall_persistence_benchmark": {
+    "sample_count": 2345,
+    "mae_cumecs": 65.7,
+    "rmse_cumecs": 426.01,
+    "r2_score": 0.2007
+  }
+}
