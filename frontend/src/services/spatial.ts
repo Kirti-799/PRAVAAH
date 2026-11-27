@@ -6,6 +6,7 @@
  */
 
 import { getApiBaseUrl, ApiError } from './api';
+import { isValidGeoJSON } from '../utils/geojson';
 import type {
   SpatialInventoryResponse,
   StudyAreaMetadataResponse,
@@ -206,7 +207,7 @@ export async function fetchRiverFeatures(clipToCorridor: boolean = true): Promis
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     const response = await fetch(endpoint, {
       method: 'GET',
@@ -216,24 +217,34 @@ export async function fetchRiverFeatures(clipToCorridor: boolean = true): Promis
 
     clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      throw new ApiError(
-        `Backend returned HTTP ${response.status} (${response.statusText})`,
-        response.status
-      );
+    if (response.ok) {
+      const data = await response.json();
+      if (isValidGeoJSON(data)) {
+        return data as RiverGeoJSONResponse;
+      }
     }
-
-    return (await response.json()) as RiverGeoJSONResponse;
   } catch (error: unknown) {
-    if (error instanceof ApiError) throw error;
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new ApiError(`Connection timed out while contacting ${endpoint}.`);
-    }
-    if (error instanceof Error) {
-      throw new ApiError(`River features service error: ${error.message}`);
-    }
-    throw new ApiError('An unexpected error occurred while fetching river features.');
+    console.warn('[spatial.ts] fetchRiverFeatures primary API call failed, falling back to static asset:', error);
   }
+
+  // Resilient Static CDN Fallback
+  try {
+    const fallbackRes = await fetch('/data/spatial/hydrography/yamuna_downstream_mainstem.geojson');
+    if (fallbackRes.ok) {
+      const data = await fallbackRes.json();
+      if (isValidGeoJSON(data)) {
+        return data as RiverGeoJSONResponse;
+      }
+    }
+  } catch {
+    // Ignore fallback error
+  }
+
+  return {
+    type: 'FeatureCollection',
+    features: [],
+    properties: { status: 'EMPTY' },
+  } as unknown as RiverGeoJSONResponse;
 }
 
 // ==============================================================================
@@ -467,43 +478,85 @@ export async function fetchCatchmentSummary(): Promise<import('../types/spatial'
 export async function fetchCatchmentGeometry(): Promise<any> {
   const baseUrl = getApiBaseUrl();
   const endpoint = `${baseUrl}/api/spatial/catchment/geometry`;
+
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: { Accept: 'application/json' },
+      signal: controller.signal,
     });
-    if (!response.ok) {
-      throw new ApiError(`Backend returned HTTP ${response.status}`, response.status);
+
+    clearTimeout(timeoutId);
+
+    if (response.ok) {
+      const data = await response.json();
+      if (isValidGeoJSON(data)) {
+        return data;
+      }
     }
-    return await response.json();
   } catch (error: unknown) {
-    if (error instanceof ApiError) throw error;
-    if (error instanceof Error) {
-      throw new ApiError(`Catchment geometry error: ${error.message}`);
-    }
-    throw new ApiError('An unexpected error occurred while fetching catchment geometry.');
+    console.warn('[spatial.ts] fetchCatchmentGeometry primary API call failed, falling back to static asset:', error);
   }
+
+  // Resilient Static CDN Fallback
+  try {
+    const fallbackRes = await fetch('/data/spatial/catchment/hathnikund_upstream_catchment.geojson');
+    if (fallbackRes.ok) {
+      const data = await fallbackRes.json();
+      if (isValidGeoJSON(data)) {
+        return data;
+      }
+    }
+  } catch {
+    // Ignore fallback error
+  }
+
+  return { type: 'FeatureCollection', features: [] };
 }
 
 export async function fetchCatchmentDrainage(): Promise<any> {
   const baseUrl = getApiBaseUrl();
   const endpoint = `${baseUrl}/api/spatial/catchment/drainage`;
+
   try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
     const response = await fetch(endpoint, {
       method: 'GET',
       headers: { Accept: 'application/json' },
+      signal: controller.signal,
     });
-    if (!response.ok) {
-      throw new ApiError(`Backend returned HTTP ${response.status}`, response.status);
+
+    clearTimeout(timeoutId);
+
+    if (response.ok) {
+      const data = await response.json();
+      if (isValidGeoJSON(data)) {
+        return data;
+      }
     }
-    return await response.json();
   } catch (error: unknown) {
-    if (error instanceof ApiError) throw error;
-    if (error instanceof Error) {
-      throw new ApiError(`Catchment drainage error: ${error.message}`);
-    }
-    throw new ApiError('An unexpected error occurred while fetching catchment drainage.');
+    console.warn('[spatial.ts] fetchCatchmentDrainage primary API call failed, falling back to static asset:', error);
   }
+
+  // Resilient Static CDN Fallback
+  try {
+    const fallbackRes = await fetch('/data/spatial/catchment/hathnikund_drainage_network.geojson');
+    if (fallbackRes.ok) {
+      const data = await fallbackRes.json();
+      if (isValidGeoJSON(data)) {
+        return data;
+      }
+    }
+  } catch {
+    // Ignore fallback error
+  }
+
+  return { type: 'FeatureCollection', features: [] };
 }
 
 export async function fetchRainfallCatchmentSummary(forceRefresh: boolean = false): Promise<import('../types/spatial').CatchmentRainfallSummaryResponse> {

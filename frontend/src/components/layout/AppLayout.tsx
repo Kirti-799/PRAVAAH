@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { GeospatialWorkspace } from '../map/GeospatialWorkspace';
+import { ErrorBoundary } from '../common/ErrorBoundary';
 import type { HealthStatus } from '../../types/api';
 
 interface AppLayoutProps {
@@ -78,15 +79,17 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
 
         {/* Primary Analytical & GIS Workspace */}
         <main className="flex-1 h-full w-full overflow-hidden relative">
-          <GeospatialWorkspace
-            activeNav={activeNav}
-            onNavChange={setActiveNav}
-            isLoading={isLoading}
-            healthData={healthData}
-            error={error}
-            lastChecked={lastChecked}
-            onRetry={onRetry}
-          />
+          <ErrorBoundary fallbackTitle="Workspace Recovered">
+            <GeospatialWorkspace
+              activeNav={activeNav}
+              onNavChange={setActiveNav}
+              isLoading={isLoading}
+              healthData={healthData}
+              error={error}
+              lastChecked={lastChecked}
+              onRetry={onRetry}
+            />
+          </ErrorBoundary>
         </main>
       </div>
     </div>

@@ -5,6 +5,7 @@
  */
 
 import { getApiBaseUrl, ApiError } from './api';
+import { isValidGeoJSON } from '../utils/geojson';
 import type { DisasterRiskSummaryResponse } from '../types/disaster';
 import type { FeatureCollection } from 'geojson';
 
@@ -59,20 +60,17 @@ export async function fetchSheltersGeoJSON(): Promise<FeatureCollection> {
 
     clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      throw new ApiError(
-        `Failed to fetch shelters GeoJSON: ${response.statusText}`,
-        response.status
-      );
+    if (response.ok) {
+      const data = await response.json();
+      if (isValidGeoJSON(data)) {
+        return data as FeatureCollection;
+      }
     }
-
-    return await response.json();
   } catch (error) {
-    if (error instanceof ApiError) throw error;
-    throw new ApiError(
-      `Shelters GeoJSON unavailable: ${(error as Error).message}`
-    );
+    console.warn('[disaster.ts] fetchSheltersGeoJSON failed:', error);
   }
+
+  return { type: 'FeatureCollection', features: [] } as FeatureCollection;
 }
 
 export async function fetchEvacuationCorridorsGeoJSON(): Promise<FeatureCollection> {
@@ -91,19 +89,16 @@ export async function fetchEvacuationCorridorsGeoJSON(): Promise<FeatureCollecti
 
     clearTimeout(timeoutId);
 
-    if (!response.ok) {
-      throw new ApiError(
-        `Failed to fetch evacuation corridors GeoJSON: ${response.statusText}`,
-        response.status
-      );
+    if (response.ok) {
+      const data = await response.json();
+      if (isValidGeoJSON(data)) {
+        return data as FeatureCollection;
+      }
     }
-
-    return await response.json();
   } catch (error) {
-    if (error instanceof ApiError) throw error;
-    throw new ApiError(
-      `Evacuation Corridors GeoJSON unavailable: ${(error as Error).message}`
-    );
+    console.warn('[disaster.ts] fetchEvacuationCorridorsGeoJSON failed:', error);
   }
+
+  return { type: 'FeatureCollection', features: [] } as FeatureCollection;
 }
 

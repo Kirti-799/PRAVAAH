@@ -24,6 +24,8 @@ import {
   useMapEvents,
 } from 'react-leaflet';
 import L from 'leaflet';
+import { ErrorBoundary } from '../common/ErrorBoundary';
+import { isValidGeoJSON } from '../../utils/geojson';
 import {
   Play,
   Pause,
@@ -559,6 +561,7 @@ export const InteractiveGISMap: React.FC<InteractiveGISMapProps> = ({
             <span>Loading Spatial Layers...</span>
           </div>
         )}
+        <ErrorBoundary isMapContainer={true}>
         <MapContainer
           ref={setMapInstance}
           center={corridorCenter}
@@ -610,8 +613,9 @@ export const InteractiveGISMap: React.FC<InteractiveGISMapProps> = ({
           )}
 
           {/* LAYER 2: River Centerline GeoJSON */}
-          {isLayerVisible('main_yamuna') && riverGeoJSON && (
+          {isLayerVisible('main_yamuna') && isValidGeoJSON(riverGeoJSON) && (
             <GeoJSON
+              key="map-river"
               data={riverGeoJSON as any}
               style={{
                 color: '#2563EB',
@@ -724,8 +728,9 @@ export const InteractiveGISMap: React.FC<InteractiveGISMapProps> = ({
 
 
           {/* LAYER: Upstream Himalayan Catchment Polygon (Phase 3D) */}
-          {isLayerVisible('upstream_catchment') && catchmentGeoJSON && (
+          {isLayerVisible('upstream_catchment') && isValidGeoJSON(catchmentGeoJSON) && (
             <GeoJSON
+              key="map-catchment"
               data={catchmentGeoJSON}
               style={{
                 color: '#4338CA',
@@ -757,8 +762,9 @@ export const InteractiveGISMap: React.FC<InteractiveGISMapProps> = ({
           )}
 
           {/* LAYER: DEM-Derived Contributing Drainage Lines (Phase 3D) */}
-          {isLayerVisible('catchment_drainage') && drainageGeoJSON && (
+          {isLayerVisible('catchment_drainage') && isValidGeoJSON(drainageGeoJSON) && (
             <GeoJSON
+              key="map-drainage"
               data={drainageGeoJSON}
               style={{
                 color: '#0284C7',
@@ -885,8 +891,9 @@ export const InteractiveGISMap: React.FC<InteractiveGISMapProps> = ({
             })}
 
           {/* LAYER: Designated DDMA Relief Shelters */}
-          {isLayerVisible('shelters') && sheltersGeoJSON && (
+          {isLayerVisible('shelters') && isValidGeoJSON(sheltersGeoJSON) && (
             <GeoJSON
+              key="map-shelters"
               data={sheltersGeoJSON}
               pointToLayer={(_feature, latlng) => {
                 return L.circleMarker(latlng, {
@@ -926,8 +933,9 @@ export const InteractiveGISMap: React.FC<InteractiveGISMapProps> = ({
           )}
 
           {/* LAYER: Emergency Evacuation Corridors */}
-          {isLayerVisible('evacuation_corridors') && corridorsGeoJSON && (
+          {isLayerVisible('evacuation_corridors') && isValidGeoJSON(corridorsGeoJSON) && (
             <GeoJSON
+              key="map-corridors"
               data={corridorsGeoJSON}
               style={{
                 color: '#D97706',
@@ -990,6 +998,7 @@ export const InteractiveGISMap: React.FC<InteractiveGISMapProps> = ({
             </Marker>
           )}
         </MapContainer>
+        </ErrorBoundary>
 
         {/* Selected Chainage Point Inspection Card (Phase 3E.4) */}
         {selectedRoutingPoint && (

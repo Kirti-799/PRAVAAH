@@ -20,6 +20,8 @@ import {
   Waves,
 } from 'lucide-react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import { ErrorBoundary } from '../common/ErrorBoundary';
+import { isValidGeoJSON } from '../../utils/geojson';
 import type { CatchmentSummaryResponse, RiverGeoJSONResponse } from '../../types/spatial';
 import { fetchCatchmentSummary, fetchCatchmentGeometry, fetchRiverFeatures } from '../../services/spatial';
 
@@ -55,8 +57,8 @@ export const TerrainInsightsWorkspace: React.FC<TerrainInsightsWorkspaceProps> =
 
         if (!isMounted) return;
         if (sumRes.status === 'fulfilled') setSummary(sumRes.value);
-        if (catchRes.status === 'fulfilled') setCatchmentGeoJSON(catchRes.value);
-        if (riverRes.status === 'fulfilled') setRiverGeoJSON(riverRes.value);
+        if (catchRes.status === 'fulfilled' && isValidGeoJSON(catchRes.value)) setCatchmentGeoJSON(catchRes.value);
+        if (riverRes.status === 'fulfilled' && isValidGeoJSON(riverRes.value)) setRiverGeoJSON(riverRes.value);
       } catch (err) {
         console.error('Failed to load terrain data:', err);
       } finally {
@@ -254,42 +256,46 @@ export const TerrainInsightsWorkspace: React.FC<TerrainInsightsWorkspaceProps> =
           </div>
 
           <div className="h-80 w-full overflow-hidden rounded-xl border border-[#EAE3D9] relative">
-            <MapContainer
-              center={[30.65, 77.80]}
-              zoom={8}
-              style={{ height: '100%', width: '100%' }}
-              zoomControl={false}
-              attributionControl={true}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
-                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                maxZoom={19}
-              />
-
-              {catchmentGeoJSON && (
-                <GeoJSON
-                  data={catchmentGeoJSON}
-                  style={{
-                    color: '#8B4513',
-                    weight: 2,
-                    fillColor: '#F5EFEB',
-                    fillOpacity: 0.4,
-                  }}
+            <ErrorBoundary isMapContainer={true}>
+              <MapContainer
+                center={[30.65, 77.80]}
+                zoom={8}
+                style={{ height: '100%', width: '100%' }}
+                zoomControl={false}
+                attributionControl={true}
+              >
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+                  url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  maxZoom={19}
                 />
-              )}
 
-              {riverGeoJSON && (
-                <GeoJSON
-                  data={riverGeoJSON as any}
-                  style={{
-                    color: '#2B5B84',
-                    weight: 3,
-                    opacity: 0.9,
-                  }}
-                />
-              )}
-            </MapContainer>
+                {isValidGeoJSON(catchmentGeoJSON) && (
+                  <GeoJSON
+                    key="terrain-catchment"
+                    data={catchmentGeoJSON}
+                    style={{
+                      color: '#8B4513',
+                      weight: 2,
+                      fillColor: '#F5EFEB',
+                      fillOpacity: 0.4,
+                    }}
+                  />
+                )}
+
+                {isValidGeoJSON(riverGeoJSON) && (
+                  <GeoJSON
+                    key="terrain-river"
+                    data={riverGeoJSON as any}
+                    style={{
+                      color: '#2B5B84',
+                      weight: 3,
+                      opacity: 0.9,
+                    }}
+                  />
+                )}
+              </MapContainer>
+            </ErrorBoundary>
 
             <div className="absolute bottom-3 left-3 rounded-lg bg-white/95 border border-[#EAE3D9] px-3 py-1.5 text-xs text-[#635347] shadow-xs backdrop-blur-xs font-medium">
               Pour Point: Hathnikund Barrage (30.317°N, 77.585°E) | Delineated Area: 11,365.1 km²

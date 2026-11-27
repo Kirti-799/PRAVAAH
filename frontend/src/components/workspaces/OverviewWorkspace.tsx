@@ -22,6 +22,8 @@ import {
   Mountain,
 } from 'lucide-react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import { ErrorBoundary } from '../common/ErrorBoundary';
+import { isValidGeoJSON } from '../../utils/geojson';
 import type { HealthStatus } from '../../types/api';
 import type { HydrologySummaryResponse } from '../../types/hydrology';
 import type { ExperimentalDischargeForecastResponse } from '../../types/forecasting';
@@ -73,8 +75,8 @@ export const OverviewWorkspace: React.FC<OverviewWorkspaceProps> = ({
         if (hydro.status === 'fulfilled') setHydroSummary(hydro.value);
         if (forecast.status === 'fulfilled') setMlForecast(forecast.value);
         if (weather.status === 'fulfilled') setCurrentWeather(weather.value);
-        if (river.status === 'fulfilled') setRiverGeoJSON(river.value);
-        if (catchment.status === 'fulfilled') setCatchmentGeoJSON(catchment.value);
+        if (river.status === 'fulfilled' && isValidGeoJSON(river.value)) setRiverGeoJSON(river.value);
+        if (catchment.status === 'fulfilled' && isValidGeoJSON(catchment.value)) setCatchmentGeoJSON(catchment.value);
       } catch (err) {
         if (isMounted) setFetchError((err as Error).message);
       } finally {
@@ -270,45 +272,49 @@ export const OverviewWorkspace: React.FC<OverviewWorkspaceProps> = ({
 
               {/* Leaflet Preview Container */}
               <div className="mt-4 h-72 w-full overflow-hidden rounded-xl border border-[#EAE3D9] relative">
-                <MapContainer
-                  center={[29.45, 77.30]}
-                  zoom={8}
-                  style={{ height: '100%', width: '100%' }}
-                  zoomControl={false}
-                  attributionControl={true}
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
-                    url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    maxZoom={19}
-                  />
-
-                  {/* Catchment geometry */}
-                  {catchmentGeoJSON && (
-                    <GeoJSON
-                      data={catchmentGeoJSON}
-                      style={{
-                        color: '#8B4513',
-                        weight: 1.5,
-                        fillColor: '#F5EFEB',
-                        fillOpacity: 0.35,
-                        dashArray: '4, 4',
-                      }}
+                <ErrorBoundary isMapContainer={true}>
+                  <MapContainer
+                    center={[29.45, 77.30]}
+                    zoom={8}
+                    style={{ height: '100%', width: '100%' }}
+                    zoomControl={false}
+                    attributionControl={true}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+                      url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      maxZoom={19}
                     />
-                  )}
 
-                  {/* River line */}
-                  {riverGeoJSON && (
-                    <GeoJSON
-                      data={riverGeoJSON as any}
-                      style={{
-                        color: '#2B5B84',
-                        weight: 3.5,
-                        opacity: 0.9,
-                      }}
-                    />
-                  )}
-                </MapContainer>
+                    {/* Catchment geometry */}
+                    {isValidGeoJSON(catchmentGeoJSON) && (
+                      <GeoJSON
+                        key="overview-catchment"
+                        data={catchmentGeoJSON}
+                        style={{
+                          color: '#8B4513',
+                          weight: 1.5,
+                          fillColor: '#F5EFEB',
+                          fillOpacity: 0.35,
+                          dashArray: '4, 4',
+                        }}
+                      />
+                    )}
+
+                    {/* River line */}
+                    {isValidGeoJSON(riverGeoJSON) && (
+                      <GeoJSON
+                        key="overview-river"
+                        data={riverGeoJSON as any}
+                        style={{
+                          color: '#2B5B84',
+                          weight: 3.5,
+                          opacity: 0.9,
+                        }}
+                      />
+                    )}
+                  </MapContainer>
+                </ErrorBoundary>
 
                 <div className="absolute bottom-2 left-2 rounded bg-white/90 px-2 py-1 text-[10px] font-mono text-[#635347] shadow-xs backdrop-blur-xs border border-[#EAE3D9]">
                   Center: 29.45°N, 77.30°E | Reach: 251.05 km

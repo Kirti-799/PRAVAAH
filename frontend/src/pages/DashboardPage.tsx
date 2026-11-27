@@ -23,6 +23,8 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import { ErrorBoundary } from '../components/common/ErrorBoundary';
+import { isValidGeoJSON } from '../utils/geojson';
 import type { HealthStatus } from '../types/api';
 import { riskAssessmentApi } from '../services/riskAssessment';
 import { fetchRiverFeatures } from '../services/spatial';
@@ -54,7 +56,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
         ]);
         if (isMounted) {
           if (assessRes.status === 'fulfilled') setAssessment(assessRes.value);
-          if (riverRes.status === 'fulfilled') setRiverData(riverRes.value);
+          if (riverRes.status === 'fulfilled' && isValidGeoJSON(riverRes.value)) setRiverData(riverRes.value);
         }
       } catch (err) {
         console.error('Failed to load dashboard overview data:', err);
@@ -252,6 +254,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
 
             {/* Embedded Small Map Preview */}
             <div className="h-44 w-full rounded-xl overflow-hidden border border-[#D8ECEC] relative">
+              <ErrorBoundary isMapContainer={true}>
               <MapContainer
                 center={[28.85, 77.22]}
                 zoom={8}
@@ -265,13 +268,15 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
                   url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
-                {riverData && (
+                {isValidGeoJSON(riverData) && (
                   <GeoJSON
+                    key="dashboard-river"
                     data={riverData as any}
                     style={{ color: '#16a34a', weight: 3, opacity: 0.9 }}
                   />
                 )}
               </MapContainer>
+              </ErrorBoundary>
               <button
                 type="button"
                 onClick={handleStartAssessment}

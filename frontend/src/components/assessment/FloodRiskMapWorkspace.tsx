@@ -22,6 +22,8 @@ import {
   useMap,
 } from 'react-leaflet';
 import L from 'leaflet';
+import { ErrorBoundary } from '../common/ErrorBoundary';
+import { isValidGeoJSON } from '../../utils/geojson';
 import {
   ShieldAlert,
   ShieldCheck,
@@ -133,8 +135,8 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
           fetchCatchmentGeometry(),
         ]);
         if (isMounted) {
-          if (riverRes.status === 'fulfilled') setRiverData(riverRes.value);
-          if (catchRes.status === 'fulfilled') setCatchmentData(catchRes.value);
+          if (riverRes.status === 'fulfilled' && isValidGeoJSON(riverRes.value)) setRiverData(riverRes.value);
+          if (catchRes.status === 'fulfilled' && isValidGeoJSON(catchRes.value)) setCatchmentData(catchRes.value);
         }
       } catch (err) {
         console.error('Failed to load spatial layers:', err);
@@ -275,44 +277,45 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
       <div className="relative flex flex-1 overflow-hidden">
         {/* Leaflet Map Surface */}
         <div className="relative flex-1 h-full w-full">
-          <MapContainer
-            center={centerCoord}
-            zoom={zoomLevel}
-            className="h-full w-full z-0"
-            zoomControl={false}
-          >
-            <MapController center={centerCoord} zoom={zoomLevel} />
+          <ErrorBoundary isMapContainer={true}>
+            <MapContainer
+              center={centerCoord}
+              zoom={zoomLevel}
+              className="h-full w-full z-0"
+              zoomControl={false}
+            >
+              <MapController center={centerCoord} zoom={zoomLevel} />
 
-            {/* OpenStreetMap Basemap */}
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
-              url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-              maxZoom={19}
-            />
-
-            {/* Upstream Watershed Basin Polygon */}
-            {showCatchment && catchmentData && (
-              <GeoJSON
-                key={`catchment-${assessment?.risk_color || 'default'}`}
-                data={catchmentData}
-                style={{
-                  color: assessment?.risk_color === 'RED' ? '#dc2626' : '#25345B',
-                  weight: 2,
-                  fillColor: assessment?.risk_color === 'RED' ? '#dc2626' : '#119E9A',
-                  fillOpacity: 0.12,
-                  dashArray: '4, 4',
-                }}
-                eventHandlers={{
-                  click: () => handleAreaChange('UPSTREAM_CATCHMENT'),
-                }}
+              {/* OpenStreetMap Basemap */}
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+                url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                maxZoom={19}
               />
-            )}
 
-            {/* Yamuna Downstream Mainstem Reaches Styled by Assessed Risk */}
-            {showRiver && riverData && (
-              <GeoJSON
-                key={`river-${assessment?.assessed_at || 'initial'}`}
-                data={riverData as any}
+              {/* Upstream Watershed Basin Polygon */}
+              {showCatchment && isValidGeoJSON(catchmentData) && (
+                <GeoJSON
+                  key={`catchment-${assessment?.risk_color || 'default'}`}
+                  data={catchmentData}
+                  style={{
+                    color: assessment?.risk_color === 'RED' ? '#dc2626' : '#25345B',
+                    weight: 2,
+                    fillColor: assessment?.risk_color === 'RED' ? '#dc2626' : '#119E9A',
+                    fillOpacity: 0.12,
+                    dashArray: '4, 4',
+                  }}
+                  eventHandlers={{
+                    click: () => handleAreaChange('UPSTREAM_CATCHMENT'),
+                  }}
+                />
+              )}
+
+              {/* Yamuna Downstream Mainstem Reaches Styled by Assessed Risk */}
+              {showRiver && isValidGeoJSON(riverData) && (
+                <GeoJSON
+                  key={`river-${assessment?.assessed_at || 'initial'}`}
+                  data={riverData as any}
                 style={(feature) => {
                   const wayId = feature?.properties?.osm_way_id;
                   const strokeColor = getWayColor(wayId);
@@ -410,6 +413,7 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
                 </Marker>
               ))}
           </MapContainer>
+          </ErrorBoundary>
 
           {/* Floating Map Legend & Layer Controls */}
           <div className="absolute top-3 left-3 z-[1000] flex flex-col gap-2">
