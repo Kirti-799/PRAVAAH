@@ -67,6 +67,14 @@ export async function fetchHealth(): Promise<HealthStatus> {
       );
     }
 
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new ApiError(
+        `Backend returned non-JSON response (${contentType || 'unknown'}). The request at ${endpoint} was not handled by the backend API.`,
+        response.status
+      );
+    }
+
     const json = (await response.json()) as unknown;
 
     if (

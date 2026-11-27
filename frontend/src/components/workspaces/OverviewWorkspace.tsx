@@ -278,8 +278,8 @@ export const OverviewWorkspace: React.FC<OverviewWorkspaceProps> = ({
                   attributionControl={false}
                 >
                   <TileLayer
-                    url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                    maxZoom={18}
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    maxZoom={19}
                   />
 
                   {/* Catchment geometry */}

@@ -6,8 +6,8 @@
     "api/index.py": {
       "maxDuration": 15,
       "memory": 1024,
-      "includeFiles": "{data/processed/**,ml/models/**}",
-      "excludeFiles": "{**/*.tif,**/*.tiff,data/processed/rainfall/gridded/imd_gridded_daily_cell_rainfall_2018_2024.csv}"
+      "includeFiles": "{backend/**,ml/**,data/processed/**,data/metadata/**}",
+      "excludeFiles": "{**/*.tif,**/*.tiff,data/processed/rainfall/gridded/imd_gridded_daily_cell_rainfall_2018_2024.csv,**/.venv/**,**/tests/**}"
     }
   },
   "rewrites": [

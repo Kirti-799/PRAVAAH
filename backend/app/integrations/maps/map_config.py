@@ -5,6 +5,7 @@ Basemap provider configuration and spatial viewport settings for PRAVAAH.
 Decouples map rendering from hardcoded tile URLs and provides extensible basemap switching.
 """
 
+import os
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
@@ -103,13 +104,21 @@ BASEMAP_CATALOG: List[BasemapOption] = [
     BasemapOption(
         id="carto_positron",
         name="CartoDB Positron (Light GIS)",
-        tile_url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        tile_url=(
+            f"https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png?api_key={os.environ.get('CARTO_API_KEY') or os.environ.get('VITE_CARTO_API_KEY')}"
+            if (os.environ.get("CARTO_API_KEY") or os.environ.get("VITE_CARTO_API_KEY"))
+            else "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+        ),
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
         max_zoom=19,
         min_zoom=4,
         is_default=False,
         terms_of_use_url="https://carto.com/help/working-with-data/basemaps/",
-        description="Clean high-contrast light cartography, ideal for overlaying hydrology and flood exposure.",
+        description=(
+            "Clean high-contrast light cartography. Free CARTO API key configured."
+            if (os.environ.get("CARTO_API_KEY") or os.environ.get("VITE_CARTO_API_KEY"))
+            else "Clean high-contrast light cartography (requires optional CARTO_API_KEY to suppress unauthenticated watermark; OpenStreetMap is active by default)."
+        ),
     ),
     BasemapOption(
         id="opentopomap",
