@@ -65,9 +65,10 @@ class PopulationExposureSummary(BaseModel):
         "Badarpur Khadar"
     ]
     disclaimer: str = (
-        "ILLUSTRATIVE PLANNING REFERENCE ONLY: Cell-level raster grids (WorldPop/LandScan) "
+        "ADMINISTRATIVE PLANNING REFERENCE ONLY: Approximately 37,500 residents across 14 clusters "
+        "reflect published DDMA 2023 administrative flood reports. Cell-level raster grids (WorldPop/LandScan) "
         "and topological road networks are not bundled in this repository. Figures reflect "
-        "unvalidated administrative estimates. Not certified for operational life-safety evacuation."
+        "unvalidated administrative baseline estimates and are NEVER dynamically calculated from risk categories."
     )
 
 

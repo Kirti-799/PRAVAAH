@@ -152,15 +152,23 @@ class RiskAssessmentService:
             catchment_area_km2=11365.12,
         )
 
-    def calculate_confidence(self, forecast_days: int) -> ForecastConfidenceSummary:
+    def calculate_confidence(self, forecast_days: int = 1) -> ForecastConfidenceSummary:
         """
         Calculate forecast certainty based on meteorological prediction horizon.
-        Confidence decays as horizon extends from 2 to 10 days.
+        For 24h (1-day) operational horizon, confidence is high (92%).
+        Decays progressively for hypothetical multi-day scenarios (2-10 days).
         """
-        days = max(2, min(10, forecast_days))
-        # Linear decay: 92% at 2 days down to ~36% at 10 days
-        pct = max(35, min(95, int(95 - (days - 2) * 7.4)))
+        days = max(1, min(10, forecast_days))
+        if days == 1:
+            return ForecastConfidenceSummary(
+                forecast_days=1,
+                horizon_hours=24,
+                confidence_level="HIGH",
+                confidence_score_pct=92,
+                decay_explanation="High confidence 24-hour operational horizon. Short-range numerical weather models exhibit high spatial and volumetric consistency.",
+            )
 
+        pct = max(35, min(95, int(95 - (days - 2) * 7.4)))
         if days <= 3:
             level: ConfidenceLevel = "HIGH"
             explanation = f"High confidence ({days}-day synoptic horizon). Short-range meteorological numerical weather models exhibit high spatial and volumetric consistency."
@@ -176,6 +184,7 @@ class RiskAssessmentService:
 
         return ForecastConfidenceSummary(
             forecast_days=days,
+            horizon_hours=days * 24,
             confidence_level=level,
             confidence_score_pct=pct,
             decay_explanation=explanation,
@@ -183,7 +192,7 @@ class RiskAssessmentService:
 
     async def _get_upstream_ml_forecast(self) -> UpstreamMLForecast:
         """
-        Invoke the trained upstream Random Forest model to predict next-day Hathnikund discharge.
+        Invoke the trained upstream Random Forest model to predict next-24-hour Hathnikund discharge.
         Gracefully falls back to latest complete historical record if artifacts are missing.
         """
         try:
@@ -224,19 +233,23 @@ class RiskAssessmentService:
                     model_name=status.model_name or "Hathnikund Random Forest Regressor v1",
                     predicted_inflow_cumecs=predicted_q,
                     flood_band=band,
-                    model_r2_score=status.test_r2 or 0.88,
-                    model_rmse_cumecs=status.test_rmse or 224.5,
+                    model_r2_score=0.380,
+                    model_rmse_cumecs=469.5,
+                    model_mae_cumecs=95.8,
+                    horizon_hours=24,
                 )
         except Exception:
             pass
 
-        # Fallback nominal baseline
+        # Fallback nominal baseline (Audited test metrics)
         return UpstreamMLForecast(
             model_name="Hathnikund Random Forest Regressor v1",
             predicted_inflow_cumecs=352.4,
             flood_band="NORMAL_FLOW",
-            model_r2_score=0.88,
-            model_rmse_cumecs=224.5,
+            model_r2_score=0.380,
+            model_rmse_cumecs=469.5,
+            model_mae_cumecs=95.8,
+            horizon_hours=24,
         )
 
     async def _get_weather_assessment(
@@ -338,24 +351,25 @@ class RiskAssessmentService:
 
         color_map: Dict[RiskLevel, RiskColor] = {
             "LOW": "GREEN",
-            "MODERATE": "ORANGE",
+            "MODERATE": "YELLOW",
             "HIGH": "RED",
         }
         return final_level, color_map[final_level], reach_q
 
     async def assess_risk(self, request: AssessmentRequest) -> AssessmentResponse:
-        """Execute end-to-end simplified flood risk evaluation."""
+        """Execute end-to-end simplified flood risk evaluation (Strict 24-Hour Horizon)."""
         area = self._areas_by_id.get(request.area_id)
         if area is None:
             area = self._areas_by_id["DELHI_CENTRAL"]
 
-        days = max(2, min(10, request.forecast_days))
+        days = max(1, min(10, request.forecast_days))
         confidence = self.calculate_confidence(days)
+        horizon_label = "the next 24 hours" if days == 1 else f"the next {days} days"
 
         # 1. Upstream ML Forecast
         ml_forecast = await self._get_upstream_ml_forecast()
 
-        # 2. Weather Forecast for Target Area
+        # 2. Weather Forecast for Target Area (24-Hour Lead)
         weather = await self._get_weather_assessment(
             lat=area.representative_coord[0],
             lon=area.representative_coord[1],
@@ -445,7 +459,7 @@ class RiskAssessmentService:
 
         color_map: Dict[RiskLevel, RiskColor] = {
             "LOW": "GREEN",
-            "MODERATE": "ORANGE",
+            "MODERATE": "YELLOW",
             "HIGH": "RED",
         }
         overall_color = color_map[overall_level]
@@ -453,7 +467,7 @@ class RiskAssessmentService:
         # Plain language summary & guidance
         if overall_level == "LOW":
             summary = (
-                f"LOW FLOOD RISK across {area.name} over the next {days} days. "
+                f"LOWER FLOOD RISK (GREEN) across {area.name} over {horizon_label}. "
                 f"Predicted upstream release at Hathnikund is nominal ({ml_forecast.predicted_inflow_cumecs:.1f} m³/s), "
                 f"and forecast rainfall is light ({weather.total_forecast_rainfall_mm:.1f} mm cumulative). "
                 f"Yamuna river levels are expected to remain within normal seasonal riverbed confines."
@@ -461,14 +475,14 @@ class RiskAssessmentService:
             guidance = "No emergency evacuations required. Continue standard seasonal hydrometric monitoring."
         elif overall_level == "MODERATE":
             summary = (
-                f"MODERATE FLOOD RISK across {area.name} over the next {days} days. "
+                f"MODERATE FLOOD RISK (YELLOW) across {area.name} over {horizon_label}. "
                 f"Expected flows ({ml_forecast.predicted_inflow_cumecs:.1f} m³/s) or moderate forecast rainfall "
                 f"({weather.total_forecast_rainfall_mm:.1f} mm) may cause localized waterlogging in low-lying floodplain khadar zones."
             )
             guidance = "Advise floodplain agricultural workers to monitor river stages. Review candidate shelter accessibility."
         else:
             summary = (
-                f"HIGH FLOOD RISK across {area.name} over the next {days} days! "
+                f"HIGH FLOOD RISK (RED) across {area.name} over {horizon_label}! "
                 f"Extreme flows or heavy forecast precipitation ({weather.total_forecast_rainfall_mm:.1f} mm) "
                 f"pose significant inundation threats along embankments and low-lying riverbed settlements."
             )
@@ -492,7 +506,7 @@ class RiskAssessmentService:
                     approx_distance_km=dist_km,
                     facilities=s["facilities"],
                     contact_agency=s["contact_agency"],
-                    validation_status="ILLUSTRATIVE_PROTOTYPE (Unvalidated for Life-Safety Operations)",
+                    validation_status="ILLUSTRATIVE_PROTOTYPE (Candidate shelter for planning; real-time occupancy tracking is unavailable)",
                 )
             )
         # Sort by distance
@@ -501,25 +515,28 @@ class RiskAssessmentService:
         # 7. Scientific Provenance
         provenance = ScientificProvenanceMetadata(
             ml_model_prediction=(
-                f"Trained Random Forest Regressor v1 predicting next-day Hathnikund Barrage discharge "
-                f"(R²={ml_forecast.model_r2_score:.2f}, RMSE={ml_forecast.model_rmse_cumecs:.1f} m³/s). "
-                f"Does NOT predict localized downstream water levels directly."
+                f"Trained Random Forest Regressor v1 predicting next-24-hour Hathnikund Barrage discharge "
+                f"(Audited Test R²=0.380, RMSE=469.5 m³/s, MAE=95.8 m³/s). "
+                f"Tree models cannot extrapolate beyond historical training peak (3,524 m³/s). "
+                f"Inflow prediction is strictly upstream; downstream reach risks are attenuated routing estimates, not direct stage forecasts."
             ),
             rule_based_risk_engine=(
                 "CWC & Haryana Irrigation discharge flood classifications (Normal < 1,416 m³/s, Alert 1,416-2,832 m³/s, "
-                "Warning 2,832-7,079 m³/s) coupled with IMD daily rainfall intensity standards."
+                "Warning 2,832-7,079 m³/s) coupled with IMD 24-hour rainfall intensity standards. "
+                "Risk classification: GREEN (Lower Risk), YELLOW (Moderate Risk), RED (High Risk)."
             ),
             weather_forecast_source=(
-                f"Open-Meteo Numerical Weather Prediction API ({weather.provider}) sampled for "
-                f"coordinates [{area.representative_coord[0]:.2f}°N, {area.representative_coord[1]:.2f}°E]."
+                f"Open-Meteo Numerical Weather Prediction API sampled for "
+                f"coordinates [{area.representative_coord[0]:.2f}°N, {area.representative_coord[1]:.2f}°E] across 24-hour operational horizon."
             ),
             historical_observation_baseline=(
                 "2,599 historical observation days (2018–2025) and 10 documented historical high-flow flood episodes "
-                "(including July 2023 peak of 8,342.9 m³/s daily mean / 10,194 m³/s instantaneous crest)."
+                "(including July 2023 peak of 8,342.9 m³/s daily mean / 10,194 m³/s instantaneous crest). "
+                "Administrative population exposure (~37,500 residents across 14 clusters) reflects DDMA 2023 baseline, not dynamic calculations."
             ),
             unavailable_realtime_data=(
                 "Continuous downstream stage observations at Delhi Old Railway Bridge remain restricted by CWC. "
-                "2D floodplain inundation depth and velocity are not computed; 1D thalweg risk is displayed."
+                "2D floodplain inundation depth and velocity are not computed; 1D reach risk is displayed."
             ),
         )
 

@@ -5,7 +5,7 @@
  */
 
 export type RiskLevel = 'LOW' | 'MODERATE' | 'HIGH';
-export type RiskColor = 'GREEN' | 'ORANGE' | 'RED';
+export type RiskColor = 'GREEN' | 'YELLOW' | 'RED';
 export type ConfidenceLevel = 'HIGH' | 'MODERATE' | 'FAIR' | 'LOW';
 export type AreaType = 'CORRIDOR_ALL' | 'BASIN' | 'REACH' | 'STATION';
 
@@ -30,7 +30,8 @@ export interface SupportedAreasResponse {
 
 export interface AssessmentRequest {
   area_id: string;
-  forecast_days: number;
+  forecast_days?: number;
+  horizon_hours?: number;
 }
 
 export interface UpstreamMLForecast {
@@ -39,6 +40,8 @@ export interface UpstreamMLForecast {
   flood_band: string;
   model_r2_score: number;
   model_rmse_cumecs: number;
+  model_mae_cumecs?: number;
+  horizon_hours?: number;
   provenance_note: string;
 }
 
@@ -56,6 +59,7 @@ export interface WeatherAssessmentSummary {
 
 export interface ForecastConfidenceSummary {
   forecast_days: number;
+  horizon_hours?: number;
   confidence_level: ConfidenceLevel;
   confidence_score_pct: number;
   decay_explanation: string;

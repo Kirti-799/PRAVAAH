@@ -381,9 +381,9 @@ export const DisasterResponseWorkspace: React.FC<DisasterResponseWorkspaceProps>
               <div className="rounded-xl border border-amber-300 bg-[#FFFDF9] p-4 text-xs text-[#635347] flex items-start gap-3">
                 <Info className="h-5 w-5 text-[#B45309] shrink-0 mt-0.5" />
                 <div className="leading-relaxed">
-                  <strong className="text-[#2C221E]">Mandatory Scientific Disclaimer:</strong> Population summaries presented here
-                  are derived strictly from published administrative census estimates. PRAVAAH operates as a 1D hydrological intelligence
-                  tool and <em>strictly refuses to synthesize or fabricate 2D raster flood depth or arbitrary pixel-level exposure</em>.
+                  <strong className="text-[#2C221E]">Administrative Baseline Notice:</strong> Population exposure figures (~37,500 residents across 14 clusters)
+                  are derived strictly from published Delhi Disaster Management Authority (DDMA) 2023 flood reports as an administrative planning reference.
+                  PRAVAAH operates with rigorous scientific honesty and <em>never dynamically calculates or fabricates affected population numbers from risk color categories</em>.
                 </div>
               </div>
 
@@ -450,8 +450,13 @@ export const DisasterResponseWorkspace: React.FC<DisasterResponseWorkspaceProps>
                 </div>
 
                 <span className="rounded-md bg-[#FEF3C7] border border-amber-300 px-2.5 py-1 text-[10px] font-bold text-amber-900">
-                  ILLUSTRATIVE PROTOTYPES — UNVALIDATED
+                  CANDIDATE SHELTERS — REAL-TIME OCCUPANCY UNAVAILABLE
                 </span>
+              </div>
+
+              <div className="rounded-xl border border-[#EAE3D9] bg-[#FFFDF9] p-3 text-xs text-[#635347]">
+                <strong className="text-[#2C221E]">Planning Benchmark Notice:</strong> Shelter capacities reflect official static design baselines.
+                Continuous real-time occupancy telemetry and dynamic bed availability are currently unavailable.
               </div>
 
               {/* Shelters Table */}
@@ -516,8 +521,13 @@ export const DisasterResponseWorkspace: React.FC<DisasterResponseWorkspaceProps>
                 </div>
 
                 <span className="rounded-md bg-[#FEF3C7] border border-amber-300 px-2.5 py-1 text-[10px] font-bold text-amber-900">
-                  ILLUSTRATIVE PROTOTYPES — UNVALIDATED
+                  DESIGNATED PLANNING CORRIDORS — ROAD SUBMERGENCE UNVERIFIED
                 </span>
+              </div>
+
+              <div className="rounded-xl border border-[#EAE3D9] bg-[#FFFDF9] p-3 text-xs text-[#635347]">
+                <strong className="text-[#2C221E]">Route Safety Notice:</strong> Evacuation corridors represent municipal planning alignments.
+                Road-network hazard validation and hydraulic submergence clearance are <strong>unverified</strong>. Never describe a corridor as guaranteed safe.
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

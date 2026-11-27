@@ -13,9 +13,7 @@ import React, { useState, useEffect } from 'react';
 import {
   LayoutDashboard,
   Map,
-  Activity,
   ShieldAlert,
-  Mountain,
   Maximize2,
   Minimize2,
 } from 'lucide-react';
@@ -23,9 +21,7 @@ import {
 export type WorkspaceViewMode =
   | 'overview'
   | 'map'
-  | 'simulation'
-  | 'disaster'
-  | 'terrain';
+  | 'disaster';
 
 interface MapToolbarProps {
   mapContainerRef?: React.RefObject<HTMLDivElement | null>;
@@ -69,10 +65,8 @@ export const MapToolbar: React.FC<MapToolbarProps> = ({
 
   const navItems: { mode: WorkspaceViewMode; label: string; icon: React.ElementType }[] = [
     { mode: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { mode: 'map', label: 'Flood Map', icon: Map },
-    { mode: 'simulation', label: 'Prediction & Simulation', icon: Activity },
+    { mode: 'map', label: 'Flood Risk Map', icon: Map },
     { mode: 'disaster', label: 'Disaster Response', icon: ShieldAlert },
-    { mode: 'terrain', label: 'Terrain Insights', icon: Mountain },
   ];
 
   return (

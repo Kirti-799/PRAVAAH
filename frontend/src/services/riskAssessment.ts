@@ -52,7 +52,11 @@ export const riskAssessmentApi = {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(request),
+        body: JSON.stringify({
+          area_id: request.area_id,
+          forecast_days: request.forecast_days || 1,
+          horizon_hours: 24,
+        }),
       });
 
       if (!response.ok) {

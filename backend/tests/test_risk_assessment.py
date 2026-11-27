@@ -56,7 +56,7 @@ def test_assess_risk_default_horizon():
     assert data["area_id"] == "DELHI_CENTRAL"
     assert data["forecast_days"] == 3
     assert data["risk_level"] in ["LOW", "MODERATE", "HIGH"]
-    assert data["risk_color"] in ["GREEN", "ORANGE", "RED"]
+    assert data["risk_color"] in ["GREEN", "YELLOW", "RED"]
     assert "summary" in data
     assert "guidance_action" in data
     assert data["confidence"]["forecast_days"] == 3

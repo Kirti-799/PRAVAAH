@@ -13,9 +13,7 @@ import React from 'react';
 import {
   LayoutDashboard,
   Map,
-  Activity,
   ShieldAlert,
-  Mountain,
   X,
   RefreshCw,
   CheckCircle2,
@@ -48,31 +46,19 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
     name: 'Overview',
     label: 'Overview',
     icon: LayoutDashboard,
-    description: 'Corridor summary, real observations & warning thresholds',
+    description: 'Corridor summary, CWC gauge & 24h discharge indicators',
   },
   {
-    name: 'Flood Map',
-    label: 'Flood Map',
+    name: 'Flood Risk Map',
+    label: 'Flood Risk Map',
     icon: Map,
-    description: 'Full-screen GIS map with river, stations & flood wave',
-  },
-  {
-    name: 'Prediction & Simulation',
-    label: 'Prediction & Simulation',
-    icon: Activity,
-    description: '5-step Muskingum 1D routing scenario workstation',
+    description: 'Interactive 24-hour flood risk map & geographical assessment',
   },
   {
     name: 'Disaster Response',
     label: 'Disaster Response',
     icon: ShieldAlert,
-    description: 'CWC gauge thresholds, DDMA shelters & evacuation corridors',
-  },
-  {
-    name: 'Terrain Insights',
-    label: 'Terrain Insights',
-    icon: Mountain,
-    description: 'Copernicus DEM catchment morphometry & stream network',
+    description: 'CWC gauge thresholds, candidate shelters & evacuation corridors',
   },
 ];
 
@@ -132,7 +118,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <nav className="space-y-1" aria-label="Workspaces">
             {PRIMARY_NAV_ITEMS.map((item) => {
               const Icon = item.icon;
-              const isActive = activeNav === item.name;
+              const isActive =
+                activeNav === item.name ||
+                (item.name === 'Flood Risk Map' && (activeNav === 'Flood Map' || activeNav === 'Flood Risk Map'));
 
               return (
                 <button
