@@ -29,7 +29,21 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
   onBackToLanding,
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [activeNav, setActiveNav] = useState('Overview');
+  const [activeNav, setActiveNav] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const navParam = params.get('nav');
+      if (navParam) {
+        const lower = navParam.toLowerCase();
+        if (lower === 'map' || lower === 'flood') return 'Flood Map';
+        if (lower === 'simulation' || lower === 'sim') return 'Prediction & Simulation';
+        if (lower === 'disaster') return 'Disaster Response';
+        if (lower === 'terrain') return 'Terrain Insights';
+        return navParam;
+      }
+    }
+    return 'Overview';
+  });
 
   const handleSelectNav = (name: string) => {
     setActiveNav(name);
