@@ -60,3 +60,7 @@ except Exception as _startup_err:
             "traceback": _err_trace,
             "sys_path": sys.path,
         }
+
+# Expose handler alias for Vercel WSGI/ASGI invocation compatibility
+handler = app
+
