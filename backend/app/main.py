@@ -20,20 +20,34 @@ def get_application() -> FastAPI:
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
     )
 
-    # Configure CORS using environment-driven origin whitelist
+    # Configure CORS using environment-driven origin whitelist + Vercel deployment domains
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.ALLOWED_ORIGINS,
+        allow_origin_regex=r"^https?:\/\/.*\.vercel\.app$",
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allow_headers=["*"],
     )
 
-    # Attach versioned API routes under /api
+    # Attach versioned API routes under /api (standard) and root fallback
     app.include_router(api_router, prefix=settings.API_V1_STR)
+    app.include_router(api_router)
 
     @app.get(
         "/",
+        tags=["root"],
+        summary="API Root Identification",
+        description="Provides API identification and documentation links.",
+    )
+    @app.get(
+        "/api",
+        tags=["root"],
+        summary="API Root Identification",
+        description="Provides API identification and documentation links.",
+    )
+    @app.get(
+        "/api/",
         tags=["root"],
         summary="API Root Identification",
         description="Provides API identification and documentation links.",

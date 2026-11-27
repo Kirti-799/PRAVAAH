@@ -1,16 +1,31 @@
 import type { HealthStatus } from '../types/api';
 
-const DEFAULT_API_BASE_URL = 'http://localhost:8000';
+const LOCAL_DEV_API_URL = 'http://localhost:8000';
 
 /**
- * Resolves the backend base URL from environment variables, falling back to local default.
+ * Resolves the backend base URL.
+ * - Highest precedence: explicitly configured VITE_API_BASE_URL environment variable (if non-empty).
+ * - Local development fallback (Vite dev server): http://localhost:8000.
+ * - Production browser fallback (Vercel deployment): window.location.origin (same-origin /api routing).
+ * - SSR/Node fallback: http://localhost:8000.
  */
 export function getApiBaseUrl(): string {
   const envUrl = import.meta.env.VITE_API_BASE_URL;
   if (typeof envUrl === 'string' && envUrl.trim().length > 0) {
     return envUrl.trim().replace(/\/+$/, '');
   }
-  return DEFAULT_API_BASE_URL;
+
+  // Running in browser context
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    // In local Vite development, default to local FastAPI backend on port 8000
+    if (import.meta.env.DEV) {
+      return LOCAL_DEV_API_URL;
+    }
+    // In production Vercel deployment, use same-origin domain
+    return window.location.origin.replace(/\/+$/, '');
+  }
+
+  return LOCAL_DEV_API_URL;
 }
 
 export class ApiError extends Error {
@@ -78,9 +93,10 @@ export async function fetchHealth(): Promise<HealthStatus> {
     }
 
     if (error instanceof TypeError && error.message.toLowerCase().includes('failed to fetch')) {
-      throw new ApiError(
-        `Unable to reach backend service at ${baseUrl}. Ensure FastAPI is running on port 8000 and CORS is properly configured.`
-      );
+      const hint = import.meta.env.DEV
+        ? 'Ensure FastAPI is running on port 8000 and CORS is properly configured.'
+        : 'Ensure the API service is operational and CORS is properly configured.';
+      throw new ApiError(`Unable to reach backend service at ${baseUrl}. ${hint}`);
     }
 
     if (error instanceof Error) {

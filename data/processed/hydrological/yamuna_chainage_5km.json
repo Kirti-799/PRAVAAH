@@ -1,0 +1,567 @@
+{
+  "status": "AVAILABLE",
+  "origin_point_name": "Hathnikund Barrage (Yamunanagar)",
+  "terminus_point_name": "Delhi Reach Terminus",
+  "total_chainage_km": 268.944,
+  "station_interval_km": 5.0,
+  "stations_count": 55,
+  "stations": [
+    {
+      "station_id": "STN_CH_000K",
+      "chainage_km": 0.0,
+      "chainage_m": 0.0,
+      "latitude": 30.314541,
+      "longitude": 77.585708,
+      "reach_name": "Hathnikund Barrage (Yamunanagar)",
+      "is_landmark": true,
+      "landmark_name": "Hathnikund Barrage (Upstream Origin)"
+    },
+    {
+      "station_id": "STN_CH_005K",
+      "chainage_km": 5.0,
+      "chainage_m": 5000.0,
+      "latitude": 30.285605,
+      "longitude": 77.556668,
+      "reach_name": "Yamuna Reach km 5.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_010K",
+      "chainage_km": 10.0,
+      "chainage_m": 10000.0,
+      "latitude": 30.25168,
+      "longitude": 77.525803,
+      "reach_name": "Yamuna Reach km 10.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_015K",
+      "chainage_km": 15.0,
+      "chainage_m": 15000.0,
+      "latitude": 30.213783,
+      "longitude": 77.507922,
+      "reach_name": "Yamuna Reach km 15.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_020K",
+      "chainage_km": 20.0,
+      "chainage_m": 20000.0,
+      "latitude": 30.182923,
+      "longitude": 77.483201,
+      "reach_name": "Yamuna Reach km 20.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_025K",
+      "chainage_km": 25.0,
+      "chainage_m": 25000.0,
+      "latitude": 30.151901,
+      "longitude": 77.456391,
+      "reach_name": "Yamuna Reach km 25.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_030K",
+      "chainage_km": 30.0,
+      "chainage_m": 30000.0,
+      "latitude": 30.136983,
+      "longitude": 77.421309,
+      "reach_name": "Yamuna Reach km 30.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_035K",
+      "chainage_km": 35.0,
+      "chainage_m": 35000.0,
+      "latitude": 30.115332,
+      "longitude": 77.398239,
+      "reach_name": "Yamuna Reach km 35.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_040K",
+      "chainage_km": 40.0,
+      "chainage_m": 40000.0,
+      "latitude": 30.086698,
+      "longitude": 77.367164,
+      "reach_name": "Yamuna Reach km 40.0",
+      "is_landmark": true,
+      "landmark_name": "Kalanaur / Yamunanagar Reach"
+    },
+    {
+      "station_id": "STN_CH_045K",
+      "chainage_km": 45.0,
+      "chainage_m": 45000.0,
+      "latitude": 30.064668,
+      "longitude": 77.329487,
+      "reach_name": "Yamuna Reach km 45.0",
+      "is_landmark": true,
+      "landmark_name": "Kalanaur / Yamunanagar Reach"
+    },
+    {
+      "station_id": "STN_CH_050K",
+      "chainage_km": 50.0,
+      "chainage_m": 50000.0,
+      "latitude": 30.036506,
+      "longitude": 77.297286,
+      "reach_name": "Yamuna Reach km 50.0",
+      "is_landmark": true,
+      "landmark_name": "Kalanaur / Yamunanagar Reach"
+    },
+    {
+      "station_id": "STN_CH_055K",
+      "chainage_km": 55.0,
+      "chainage_m": 55000.0,
+      "latitude": 30.003053,
+      "longitude": 77.278464,
+      "reach_name": "Yamuna Reach km 55.0",
+      "is_landmark": true,
+      "landmark_name": "Kalanaur / Yamunanagar Reach"
+    },
+    {
+      "station_id": "STN_CH_060K",
+      "chainage_km": 60.0,
+      "chainage_m": 60000.0,
+      "latitude": 29.998477,
+      "longitude": 77.240185,
+      "reach_name": "Yamuna Reach km 60.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_065K",
+      "chainage_km": 65.0,
+      "chainage_m": 65000.0,
+      "latitude": 29.959007,
+      "longitude": 77.226265,
+      "reach_name": "Yamuna Reach km 65.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_070K",
+      "chainage_km": 70.0,
+      "chainage_m": 70000.0,
+      "latitude": 29.923969,
+      "longitude": 77.21172,
+      "reach_name": "Yamuna Reach km 70.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_075K",
+      "chainage_km": 75.0,
+      "chainage_m": 75000.0,
+      "latitude": 29.892834,
+      "longitude": 77.18168,
+      "reach_name": "Yamuna Reach km 75.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_080K",
+      "chainage_km": 80.0,
+      "chainage_m": 80000.0,
+      "latitude": 29.868115,
+      "longitude": 77.198957,
+      "reach_name": "Yamuna Reach km 80.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_085K",
+      "chainage_km": 85.0,
+      "chainage_m": 85000.0,
+      "latitude": 29.8309,
+      "longitude": 77.19242,
+      "reach_name": "Yamuna Reach km 85.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_090K",
+      "chainage_km": 90.0,
+      "chainage_m": 90000.0,
+      "latitude": 29.804023,
+      "longitude": 77.160015,
+      "reach_name": "Yamuna Reach km 90.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_095K",
+      "chainage_km": 95.0,
+      "chainage_m": 95000.0,
+      "latitude": 29.767774,
+      "longitude": 77.146809,
+      "reach_name": "Yamuna Reach km 95.0",
+      "is_landmark": true,
+      "landmark_name": "Mawi / Panipat Reach"
+    },
+    {
+      "station_id": "STN_CH_100K",
+      "chainage_km": 100.0,
+      "chainage_m": 100000.0,
+      "latitude": 29.732366,
+      "longitude": 77.137407,
+      "reach_name": "Yamuna Reach km 100.0",
+      "is_landmark": true,
+      "landmark_name": "Mawi / Panipat Reach"
+    },
+    {
+      "station_id": "STN_CH_105K",
+      "chainage_km": 105.0,
+      "chainage_m": 105000.0,
+      "latitude": 29.693437,
+      "longitude": 77.144724,
+      "reach_name": "Yamuna Reach km 105.0",
+      "is_landmark": true,
+      "landmark_name": "Mawi / Panipat Reach"
+    },
+    {
+      "station_id": "STN_CH_110K",
+      "chainage_km": 110.0,
+      "chainage_m": 110000.0,
+      "latitude": 29.660422,
+      "longitude": 77.130312,
+      "reach_name": "Yamuna Reach km 110.0",
+      "is_landmark": true,
+      "landmark_name": "Mawi / Panipat Reach"
+    },
+    {
+      "station_id": "STN_CH_115K",
+      "chainage_km": 115.0,
+      "chainage_m": 115000.0,
+      "latitude": 29.624845,
+      "longitude": 77.11747,
+      "reach_name": "Yamuna Reach km 115.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_120K",
+      "chainage_km": 120.0,
+      "chainage_m": 120000.0,
+      "latitude": 29.588454,
+      "longitude": 77.102127,
+      "reach_name": "Yamuna Reach km 120.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_125K",
+      "chainage_km": 125.0,
+      "chainage_m": 125000.0,
+      "latitude": 29.550319,
+      "longitude": 77.101835,
+      "reach_name": "Yamuna Reach km 125.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_130K",
+      "chainage_km": 130.0,
+      "chainage_m": 130000.0,
+      "latitude": 29.513341,
+      "longitude": 77.108096,
+      "reach_name": "Yamuna Reach km 130.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_135K",
+      "chainage_km": 135.0,
+      "chainage_m": 135000.0,
+      "latitude": 29.487228,
+      "longitude": 77.133676,
+      "reach_name": "Yamuna Reach km 135.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_140K",
+      "chainage_km": 140.0,
+      "chainage_m": 140000.0,
+      "latitude": 29.450858,
+      "longitude": 77.137283,
+      "reach_name": "Yamuna Reach km 140.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_145K",
+      "chainage_km": 145.0,
+      "chainage_m": 145000.0,
+      "latitude": 29.419077,
+      "longitude": 77.13118,
+      "reach_name": "Yamuna Reach km 145.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_150K",
+      "chainage_km": 150.0,
+      "chainage_m": 150000.0,
+      "latitude": 29.388792,
+      "longitude": 77.155201,
+      "reach_name": "Yamuna Reach km 150.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_155K",
+      "chainage_km": 155.0,
+      "chainage_m": 155000.0,
+      "latitude": 29.35311,
+      "longitude": 77.129696,
+      "reach_name": "Yamuna Reach km 155.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_160K",
+      "chainage_km": 160.0,
+      "chainage_m": 160000.0,
+      "latitude": 29.32179,
+      "longitude": 77.143022,
+      "reach_name": "Yamuna Reach km 160.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_165K",
+      "chainage_km": 165.0,
+      "chainage_m": 165000.0,
+      "latitude": 29.293454,
+      "longitude": 77.147754,
+      "reach_name": "Yamuna Reach km 165.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_170K",
+      "chainage_km": 170.0,
+      "chainage_m": 170000.0,
+      "latitude": 29.264062,
+      "longitude": 77.127007,
+      "reach_name": "Yamuna Reach km 170.0",
+      "is_landmark": true,
+      "landmark_name": "Wazirabad Barrage Entry"
+    },
+    {
+      "station_id": "STN_CH_175K",
+      "chainage_km": 175.0,
+      "chainage_m": 175000.0,
+      "latitude": 29.225624,
+      "longitude": 77.134981,
+      "reach_name": "Yamuna Reach km 175.0",
+      "is_landmark": true,
+      "landmark_name": "Wazirabad Barrage Entry"
+    },
+    {
+      "station_id": "STN_CH_180K",
+      "chainage_km": 180.0,
+      "chainage_m": 180000.0,
+      "latitude": 29.188734,
+      "longitude": 77.143555,
+      "reach_name": "Yamuna Reach km 180.0",
+      "is_landmark": true,
+      "landmark_name": "Wazirabad Barrage Entry"
+    },
+    {
+      "station_id": "STN_CH_185K",
+      "chainage_km": 185.0,
+      "chainage_m": 185000.0,
+      "latitude": 29.151777,
+      "longitude": 77.142267,
+      "reach_name": "Yamuna Reach km 185.0",
+      "is_landmark": true,
+      "landmark_name": "Wazirabad Barrage Entry"
+    },
+    {
+      "station_id": "STN_CH_190K",
+      "chainage_km": 190.0,
+      "chainage_m": 190000.0,
+      "latitude": 29.111995,
+      "longitude": 77.143139,
+      "reach_name": "Yamuna Reach km 190.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_195K",
+      "chainage_km": 195.0,
+      "chainage_m": 195000.0,
+      "latitude": 29.080493,
+      "longitude": 77.155138,
+      "reach_name": "Yamuna Reach km 195.0",
+      "is_landmark": true,
+      "landmark_name": "Delhi Old Railway Bridge (ORB Gauge)"
+    },
+    {
+      "station_id": "STN_CH_200K",
+      "chainage_km": 200.0,
+      "chainage_m": 200000.0,
+      "latitude": 29.040489,
+      "longitude": 77.170362,
+      "reach_name": "Yamuna Reach km 200.0",
+      "is_landmark": true,
+      "landmark_name": "Delhi Old Railway Bridge (ORB Gauge)"
+    },
+    {
+      "station_id": "STN_CH_205K",
+      "chainage_km": 205.0,
+      "chainage_m": 205000.0,
+      "latitude": 29.011662,
+      "longitude": 77.189247,
+      "reach_name": "Yamuna Reach km 205.0",
+      "is_landmark": true,
+      "landmark_name": "Delhi Old Railway Bridge (ORB Gauge)"
+    },
+    {
+      "station_id": "STN_CH_210K",
+      "chainage_km": 210.0,
+      "chainage_m": 210000.0,
+      "latitude": 28.971258,
+      "longitude": 77.201844,
+      "reach_name": "Yamuna Reach km 210.0",
+      "is_landmark": true,
+      "landmark_name": "Delhi Old Railway Bridge (ORB Gauge)"
+    },
+    {
+      "station_id": "STN_CH_215K",
+      "chainage_km": 215.0,
+      "chainage_m": 215000.0,
+      "latitude": 28.930667,
+      "longitude": 77.212534,
+      "reach_name": "Yamuna Reach km 215.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_220K",
+      "chainage_km": 220.0,
+      "chainage_m": 220000.0,
+      "latitude": 28.892361,
+      "longitude": 77.228527,
+      "reach_name": "Yamuna Reach km 220.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_225K",
+      "chainage_km": 225.0,
+      "chainage_m": 225000.0,
+      "latitude": 28.853359,
+      "longitude": 77.209343,
+      "reach_name": "Yamuna Reach km 225.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_230K",
+      "chainage_km": 230.0,
+      "chainage_m": 230000.0,
+      "latitude": 28.817598,
+      "longitude": 77.216345,
+      "reach_name": "Yamuna Reach km 230.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_235K",
+      "chainage_km": 235.0,
+      "chainage_m": 235000.0,
+      "latitude": 28.777367,
+      "longitude": 77.210163,
+      "reach_name": "Yamuna Reach km 235.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_240K",
+      "chainage_km": 240.0,
+      "chainage_m": 240000.0,
+      "latitude": 28.758572,
+      "longitude": 77.230652,
+      "reach_name": "Yamuna Reach km 240.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_245K",
+      "chainage_km": 245.0,
+      "chainage_m": 245000.0,
+      "latitude": 28.719276,
+      "longitude": 77.240157,
+      "reach_name": "Yamuna Reach km 245.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_250K",
+      "chainage_km": 250.0,
+      "chainage_m": 250000.0,
+      "latitude": 28.678147,
+      "longitude": 77.233225,
+      "reach_name": "Yamuna Reach km 250.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_255K",
+      "chainage_km": 255.0,
+      "chainage_m": 255000.0,
+      "latitude": 28.647767,
+      "longitude": 77.263825,
+      "reach_name": "Yamuna Reach km 255.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_260K",
+      "chainage_km": 260.0,
+      "chainage_m": 260000.0,
+      "latitude": 28.605464,
+      "longitude": 77.25799,
+      "reach_name": "Yamuna Reach km 260.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_265K",
+      "chainage_km": 265.0,
+      "chainage_m": 265000.0,
+      "latitude": 28.57401,
+      "longitude": 77.293672,
+      "reach_name": "Yamuna Reach km 265.0",
+      "is_landmark": false,
+      "landmark_name": null
+    },
+    {
+      "station_id": "STN_CH_268K_END",
+      "chainage_km": 268.944,
+      "chainage_m": 268944.0,
+      "latitude": 28.54447,
+      "longitude": 77.314916,
+      "reach_name": "Delhi Terminal Reach (Okhla / Downstream)",
+      "is_landmark": true,
+      "landmark_name": "Yamuna Corridor Terminus"
+    }
+  ],
+  "calculation_crs": "EPSG:32643",
+  "channel_continuity": "CONTINUOUS",
+  "limitations": [
+    "Derived along merged river thalweg centerline in EPSG:32643.",
+    "Does NOT incorporate meander migration or seasonal braiding changes post-monsoon.",
+    "Station coordinates represent geometric centerline points; not physical benchmark pillars."
+  ]
+}

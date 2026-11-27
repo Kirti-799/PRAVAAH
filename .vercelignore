@@ -1,0 +1,57 @@
+# Vercel Deployment Ignore Rules for PRAVAAH
+# Prevents large offline rasters, raw datasets, test suites, and caches
+# from inflating the deployment upload and serverless function bundle.
+
+# Version control & Git
+.git/
+.github/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python caches and bytecode
+**/__pycache__/
+**/*.py[cod]
+*$py.class
+*.pyc
+
+# Test suites & caches (run in CI, not needed in production runtime)
+.pytest_cache/
+**/tests/
+tests/
+.coverage
+htmlcov/
+
+# Raw geospatial, hydrological, and rainfall datasets
+data/raw/
+
+# Large offline rasters (DEM GeoTIFFs, flow accumulation rasters)
+# Note: Runtime uses precomputed GeoJSONs and JSON metadata
+**/*.tif
+**/*.tiff
+
+# Large raw gridded cell rainfall dataset (runtime queries regional summary CSV)
+data/processed/rainfall/gridded/imd_gridded_daily_cell_rainfall_2018_2024.csv
+
+# Submission archives and scratch directory
+PRAVAAH_SUBMISSION/
+PRAVAAH_SUBMISSION.zip
+PRAVAAH_SUBMISSION (2).zip
+scratch/
+docs/
+
+# Local environment files
+.env
+.env.*
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+!*.env.example
+
+# Frontend development dependencies (built automatically by Vercel)
+frontend/node_modules/
+frontend/dist/

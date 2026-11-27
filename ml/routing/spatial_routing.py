@@ -16,18 +16,15 @@ SCIENTIFIC INTEGRITY SAFEGUARDS:
 5. Strictly non-negative discharge; enforces mass continuity and numerical stability.
 """
 
+import json
 import math
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
 import numpy as np
-import geopandas as gpd
-from shapely.geometry import LineString, Point
-from pyproj import Transformer, CRS
 
 from ml.routing.historical_simulation import HistoricalEpisodeRouter
 from ml.routing.parameters import MuskingumParameters
 from ml.routing.muskingum import MuskingumRouter
-from ml.spatial.hydrography import HydrographyProcessor, RiverChainageReport
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -195,21 +192,41 @@ class SpatialRoutingEngine:
         n_steps = len(dates)
 
         # 2. Extract chainage sampling stations along continuous mainstem
-        gdf_main = gpd.read_file(file_to_use)
-        chain_report = HydrographyProcessor.compute_river_chainage(
-            gdf_main,
-            interval_km=sampling_interval_km,
-        )
-
-        chainage_points_raw = chain_report.stations
-        total_channel_km = chain_report.total_chainage_km
+        chainage_json = REPO_ROOT / "data" / "processed" / "hydrological" / "yamuna_chainage_5km.json"
+        if sampling_interval_km == 5.0 and chainage_json.exists() and (mainstem_file is None or mainstem_file == MAINSTEM_GEOJSON):
+            with open(chainage_json, "r", encoding="utf-8") as f:
+                cached_data = json.load(f)
+            chainage_points_raw = cached_data["stations"]
+            total_channel_km = cached_data["total_chainage_km"]
+        else:
+            import geopandas as gpd
+            from ml.spatial.hydrography import HydrographyProcessor
+            gdf_main = gpd.read_file(file_to_use)
+            chain_report = HydrographyProcessor.compute_river_chainage(
+                gdf_main,
+                interval_km=sampling_interval_km,
+            )
+            chainage_points_raw = chain_report.stations
+            total_channel_km = chain_report.total_chainage_km
 
         # 3. Associate corridor monitoring stations with nearest chainage coordinates
         # and assemble combined spatial sampling points
         spatial_nodes: List[Dict[str, Any]] = []
 
         for st in chainage_points_raw:
-            ch_km = st.chainage_km
+            if isinstance(st, dict):
+                ch_km = st["chainage_km"]
+                st_id = st["station_id"]
+                st_name = st.get("landmark_name") or f"Yamuna Thalweg {ch_km:.1f} km"
+                st_lat = st["latitude"]
+                st_lon = st["longitude"]
+            else:
+                ch_km = st.chainage_km
+                st_id = st.station_id
+                st_name = st.landmark_name or f"Yamuna Thalweg {ch_km:.1f} km"
+                st_lat = st.latitude
+                st_lon = st.longitude
+
             tau_h = cls.compute_travel_time_hours(ch_km, K_total_hours=K_hours)
 
             # Assign reach identifier
@@ -225,11 +242,11 @@ class SpatialRoutingEngine:
                 reach_id = "REACH_ORB_TO_OKH"
 
             spatial_nodes.append({
-                "station_id": st.station_id,
-                "name": st.landmark_name or f"Yamuna Thalweg {ch_km:.1f} km",
+                "station_id": st_id,
+                "name": st_name,
                 "chainage_km": round(ch_km, 2),
-                "latitude": round(st.latitude, 6),
-                "longitude": round(st.longitude, 6),
+                "latitude": round(st_lat, 6),
+                "longitude": round(st_lon, 6),
                 "travel_time_tau_hours": round(tau_h, 2),
                 "reach_id": reach_id,
                 "is_monitoring_station": False,

@@ -17,12 +17,6 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any, Tuple
 import numpy as np
 
-try:
-    from shapely.geometry import Point, Polygon, shape
-    HAS_SHAPELY = True
-except ImportError:
-    HAS_SHAPELY = False
-
 
 @dataclass
 class CatchmentGridPoint:

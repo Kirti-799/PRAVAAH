@@ -22,9 +22,6 @@ if str(_repo_root) not in sys.path:
 
 from ml.spatial.study_area import StudyAreaCatalog
 from ml.spatial.inventory import SpatialInventoryCatalog
-from ml.spatial.dem import DEMValidator, DEMValidationStatus
-from ml.spatial.river import RiverNetworkValidator, RiverValidationStatus
-from ml.spatial.hydrography import HydrographyProcessor, HydrographyClass, ChannelContinuityStatus
 from app.schemas.spatial import (
     SpatialDatasetSchema,
     SpatialInventoryResponse,
@@ -142,6 +139,7 @@ class SpatialService:
         if not target_file.exists():
             raise FileNotFoundError(f"Requested DEM file '{clean_name}' does not exist in {self.dem_dir}.")
 
+        from ml.spatial.dem import DEMValidator
         report = DEMValidator.validate_file(target_file)
         return DEMValidationReportSchema(**report.to_dict())
 
@@ -171,6 +169,7 @@ class SpatialService:
             )
 
         active_file = self.dem_dir / status_dict["active_dem_file"]
+        from ml.spatial.dem import DEMValidator
         dem_report = DEMValidator.validate_file(active_file)
         slope_summary = DEMValidator.compute_slope(active_file)
 
@@ -208,6 +207,7 @@ class SpatialService:
 
     def get_river_status(self) -> RiverNetworkStatusResponse:
         """Scans the repository hydrography directory and returns availability and validation status."""
+        from ml.spatial.river import RiverNetworkValidator
         status_dict = RiverNetworkValidator.scan_repository_river_status(self.data_dir)
 
         val_report = None
@@ -230,6 +230,7 @@ class SpatialService:
         Returns validated river network features as standard GeoJSON FeatureCollection.
         If no river dataset is present, returns an empty FeatureCollection with explicit status disclaimer.
         """
+        from ml.spatial.river import RiverNetworkValidator
         status_dict = RiverNetworkValidator.scan_repository_river_status(self.data_dir)
         if status_dict["river_data_availability"] != "AVAILABLE" or not status_dict.get("active_river_file"):
             return RiverGeoJSONResponse(
@@ -254,6 +255,7 @@ class SpatialService:
         Safely validates a specific vector hydrography file in data/raw/spatial/hydrography/.
         Strictly confines paths within the sandboxed directory to block traversal.
         """
+        from ml.spatial.river import RiverNetworkValidator
         clean_name = Path(relative_file_name).name
         if clean_name != relative_file_name.strip():
             raise ValueError("Directory traversal attempt blocked: supply a simple filename without path separators.")
@@ -279,8 +281,9 @@ class SpatialService:
 
     def _get_active_hydrography_file(self) -> Optional[Path]:
         """Resolves primary candidate file from processed or raw hydrography directories."""
+        allowed_extensions = {".geojson", ".shp", ".gpkg"}
         for d in [self.proc_hydro_dir, self.hydro_dir]:
-            for ext in HydrographyProcessor.ALLOWED_EXTENSIONS:
+            for ext in allowed_extensions:
                 files = sorted(list(d.glob(f"*{ext}")))
                 if files:
                     return files[0]
@@ -288,6 +291,7 @@ class SpatialService:
 
     def get_hydrography_status(self) -> HydrographyStatusResponse:
         """Scans directories and returns complete Phase 3B hydrography status."""
+        from ml.spatial.hydrography import HydrographyProcessor
         status_dict = HydrographyProcessor.scan_hydrography_status(self.data_dir)
         report_schema = None
         if status_dict.get("processing_report"):
@@ -321,6 +325,7 @@ class SpatialService:
                 ),
             )
 
+        from ml.spatial.hydrography import HydrographyProcessor, HydrographyClass
         gdf, report = HydrographyProcessor.validate_and_process(active_file, clip_to_corridor=clip_to_corridor)
 
         from shapely.geometry import mapping
@@ -397,6 +402,7 @@ class SpatialService:
                 ],
             )
 
+        from ml.spatial.hydrography import HydrographyProcessor
         _, report = HydrographyProcessor.validate_and_process(active_file, clip_to_corridor=True)
 
         return HydrographySummaryResponse(
@@ -432,6 +438,7 @@ class SpatialService:
                 scientific_notice="River network graph unavailable due to unacquired source data.",
             )
 
+        from ml.spatial.hydrography import HydrographyProcessor
         gdf, report = HydrographyProcessor.validate_and_process(active_file, clip_to_corridor=True)
         summary, graph = HydrographyProcessor.build_network_topology(gdf)
 
@@ -477,6 +484,7 @@ class SpatialService:
                 limitations=["No river network datasets present in repository."],
             )
 
+        from ml.spatial.hydrography import HydrographyProcessor, HydrographyClass
         gdf, report = HydrographyProcessor.validate_and_process(active_file, clip_to_corridor=True)
         main_gdf = gdf[gdf["hydro_class"] == HydrographyClass.MAIN_RIVER.value].copy()
         gap_report = HydrographyProcessor.analyze_channel_continuity(main_gdf)
@@ -485,6 +493,7 @@ class SpatialService:
 
     def inspect_hydrography_file(self, relative_file_name: str, clip_to_corridor: bool = True) -> HydrographyProcessingReportSchema:
         """Safely audits a specific file in data/raw/spatial/hydrography/ or data/processed/spatial/hydrography/."""
+        from ml.spatial.hydrography import HydrographyProcessor
         clean_name = Path(relative_file_name).name
         if clean_name != relative_file_name.strip():
             raise ValueError("Directory traversal attempt blocked: supply a simple filename without path separators.")

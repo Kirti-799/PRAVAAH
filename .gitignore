@@ -67,6 +67,8 @@ Thumbs.db
 # Temporary directories & duplicates
 scratch/
 PRAVAAH/
+PRAVAAH_SUBMISSION/
+*.zip
 
 # Large raw datasets & rasters
 data/raw/*

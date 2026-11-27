@@ -9,8 +9,6 @@ import json
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-from ml.spatial.catchment import CatchmentDelineator, CatchmentMorphometryReport
-from ml.spatial.dem_acquisition import DEMAcquisitionManager
 from app.schemas.catchment import (
     CatchmentStatusResponse,
     CatchmentSummaryResponse,
@@ -25,9 +23,23 @@ class CatchmentService:
     """Service providing catchment boundaries, drainage topology, and DEM inventory."""
 
     def __init__(self, catchment_dir: Optional[Path] = None):
-        self.delineator = CatchmentDelineator()
-        self.dem_manager = DEMAcquisitionManager()
+        self._delineator = None
+        self._dem_manager = None
         self.catchment_dir = catchment_dir or (_repo_root / "data" / "processed" / "spatial" / "catchment")
+
+    @property
+    def delineator(self):
+        if self._delineator is None:
+            from ml.spatial.catchment import CatchmentDelineator
+            self._delineator = CatchmentDelineator()
+        return self._delineator
+
+    @property
+    def dem_manager(self):
+        if self._dem_manager is None:
+            from ml.spatial.dem_acquisition import DEMAcquisitionManager
+            self._dem_manager = DEMAcquisitionManager()
+        return self._dem_manager
 
     def _ensure_artifacts(self) -> None:
         """Ensures GeoJSON and metadata artifacts exist; generates them if missing."""

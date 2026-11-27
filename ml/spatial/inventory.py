@@ -16,7 +16,6 @@ from pathlib import Path
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, List, Optional, Any
-from ml.spatial.dem import DEMValidator, DEMValidationStatus, DEMMetadataReport
 
 
 class SpatialDatasetCategory(str, Enum):
@@ -237,6 +236,7 @@ class SpatialInventoryCatalog:
 
         # Inspect the primary DEM file found
         primary_file = tif_files[0]
+        from ml.spatial.dem import DEMValidator
         report = DEMValidator.validate_file(primary_file)
 
         return {
