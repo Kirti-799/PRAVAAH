@@ -275,10 +275,11 @@ export const OverviewWorkspace: React.FC<OverviewWorkspaceProps> = ({
                   zoom={8}
                   style={{ height: '100%', width: '100%' }}
                   zoomControl={false}
-                  attributionControl={false}
+                  attributionControl={true}
                 >
                   <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+                    url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
                     maxZoom={19}
                   />
 

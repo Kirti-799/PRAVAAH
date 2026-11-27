@@ -256,12 +256,15 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
                 center={[28.85, 77.22]}
                 zoom={8}
                 zoomControl={false}
-                attributionControl={false}
+                attributionControl={true}
                 dragging={false}
                 scrollWheelZoom={false}
                 className="h-full w-full"
               >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+                  url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
                 {riverData && (
                   <GeoJSON
                     data={riverData as any}

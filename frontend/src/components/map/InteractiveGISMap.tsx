@@ -459,9 +459,9 @@ export const InteractiveGISMap: React.FC<InteractiveGISMapProps> = ({
     basemaps.find((b) => b.id === selectedBasemapId) || {
       id: 'osm_standard',
       name: 'OpenStreetMap Standard',
-      tile_url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      tile_url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors',
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
       max_zoom: 19,
       min_zoom: 4,
       is_default: true,

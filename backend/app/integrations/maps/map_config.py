@@ -93,7 +93,7 @@ BASEMAP_CATALOG: List[BasemapOption] = [
     BasemapOption(
         id="osm_standard",
         name="OpenStreetMap Standard",
-        tile_url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        tile_url="https://tile.openstreetmap.org/{z}/{x}/{y}.png",
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
         max_zoom=19,
         min_zoom=4,

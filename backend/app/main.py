@@ -23,10 +23,10 @@ def get_application() -> FastAPI:
     # Configure CORS using environment-driven origin whitelist + Vercel deployment domains
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.ALLOWED_ORIGINS,
-        allow_origin_regex=r"^https?:\/\/.*\.vercel\.app$",
+        allow_origins=settings.ALLOWED_ORIGINS if isinstance(settings.ALLOWED_ORIGINS, list) else ["*"],
+        allow_origin_regex=r"^https?:\/\/.*",
         allow_credentials=True,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_methods=["*"],
         allow_headers=["*"],
     )
 

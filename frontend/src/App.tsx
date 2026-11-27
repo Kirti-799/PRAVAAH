@@ -12,7 +12,15 @@ import { AppLayout } from './components/layout/AppLayout';
 import { useHealthCheck } from './hooks/useHealthCheck';
 
 export const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<'landing' | 'app'>('landing');
+  const [currentView, setCurrentView] = useState<'landing' | 'app'>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('view') === 'app' || window.location.hash === '#app') {
+        return 'app';
+      }
+    }
+    return 'landing';
+  });
   const { data, isLoading, error, lastChecked, refetch } = useHealthCheck();
 
   if (currentView === 'landing') {
