@@ -4,8 +4,8 @@
  * Primary Unified Workspace Container for PRAVAAH in authentic Cream & Brown styling:
  * Houses the 3 core workspaces:
  * 1. Overview Dashboard (Default)
- * 2. Flood Risk Map (24-Hour AI Assessment & GIS Reach Visualization)
- * 3. Disaster Response (CWC Thresholds, Candidate Shelters & Evacuation Corridors)
+ * 2. Flood Risk Map (Interactive 24h AI Risk Assessment)
+ * 3. Disaster Response (CWC Thresholds, Candidate Shelters, Corridors)
  */
 
 import React, { useRef, useState, useEffect } from 'react';
@@ -39,9 +39,17 @@ export const GeospatialWorkspace: React.FC<GeospatialWorkspaceProps> = ({
   useEffect(() => {
     if (activeNav === 'Overview') {
       setViewMode('overview');
-    } else if (activeNav === 'Flood Map' || activeNav === 'Flood Risk Map') {
+    } else if (
+      activeNav === 'Flood Risk Map' ||
+      activeNav === 'Flood Map' ||
+      activeNav === 'map'
+    ) {
       setViewMode('map');
-    } else if (activeNav === 'Disaster Response' || activeNav === 'Disaster Intelligence') {
+    } else if (
+      activeNav === 'Disaster Response' ||
+      activeNav === 'Disaster Intelligence' ||
+      activeNav === 'disaster'
+    ) {
       setViewMode('disaster');
     }
   }, [activeNav]);
@@ -75,8 +83,11 @@ export const GeospatialWorkspace: React.FC<GeospatialWorkspaceProps> = ({
             healthData={healthData}
             error={error}
             onNavigate={(navName) => {
-              if (navName === 'Flood Map' || navName === 'Flood Risk Map') handleViewChange('map');
-              else if (navName === 'Disaster Response') handleViewChange('disaster');
+              if (navName === 'Flood Map' || navName === 'Flood Risk Map') {
+                handleViewChange('map');
+              } else if (navName === 'Disaster Response') {
+                handleViewChange('disaster');
+              }
             }}
           />
         )}

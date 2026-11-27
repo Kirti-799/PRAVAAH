@@ -286,7 +286,7 @@ def get_evacuation_corridors_geojson() -> Dict[str, Any]:
                 "transit_mode": c["transit_mode"],
                 "priority_level": c["priority_level"],
                 "status": "UNVALIDATED_PROTOTYPE",
-                "warning": "Designated evacuation corridor vector. Road-network hazard validation is unverified. Never describe as guaranteed safe.",
+                "warning": "Designated evacuation corridor vector (Illustrative prototype). Route geometry and road elevation have NOT been validated for hydraulic submergence; routes are never guaranteed safe.",
             },
         })
 

@@ -2,16 +2,16 @@
 
 Domain service for the simplified PRAVAAH AI-Powered Flood Risk Assessment & Management System.
 Integrates:
-- Upstream Random Forest model discharge predictions.
-- Open-Meteo multi-day meteorological forecasts (2-10 days) with confidence decay.
+- Upstream Random Forest model 24-hour discharge predictions (Audited Test R²=0.380, RMSE=469.5 m³/s).
+- Open-Meteo 24-hour meteorological forecasts.
 - 1D reach transit lag and peak attenuation across the Yamuna corridor.
-- CWC and IMD flood risk classification standards.
-- Candidate relief shelters with scientific de-authentication guardrails.
+- 3 Risk Categories: GREEN (Lower Risk), YELLOW (Moderate Risk), RED (High Risk).
+- Candidate relief shelters with static planning capacities and occupancy disclaimers.
 """
 
 import math
 from datetime import datetime, timezone
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 from app.schemas.risk_assessment import (
     SupportedArea,
@@ -106,7 +106,6 @@ SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
         osm_way_id=24944222,
         associated_stations=["DELHI_OLD_RAILWAY_BRIDGE", "OKHLA_BARRAGE"],
     ),
-    # Predefined Stations for point inspection
     SupportedArea(
         id="STATION_HATHNIKUND",
         name="Station: Hathnikund Barrage",
@@ -153,41 +152,13 @@ class RiskAssessmentService:
         )
 
     def calculate_confidence(self, forecast_days: int = 1) -> ForecastConfidenceSummary:
-        """
-        Calculate forecast certainty based on meteorological prediction horizon.
-        For 24h (1-day) operational horizon, confidence is high (92%).
-        Decays progressively for hypothetical multi-day scenarios (2-10 days).
-        """
-        days = max(1, min(10, forecast_days))
-        if days == 1:
-            return ForecastConfidenceSummary(
-                forecast_days=1,
-                horizon_hours=24,
-                confidence_level="HIGH",
-                confidence_score_pct=92,
-                decay_explanation="High confidence 24-hour operational horizon. Short-range numerical weather models exhibit high spatial and volumetric consistency.",
-            )
-
-        pct = max(35, min(95, int(95 - (days - 2) * 7.4)))
-        if days <= 3:
-            level: ConfidenceLevel = "HIGH"
-            explanation = f"High confidence ({days}-day synoptic horizon). Short-range meteorological numerical weather models exhibit high spatial and volumetric consistency."
-        elif days <= 5:
-            level = "MODERATE"
-            explanation = f"Moderate confidence ({days}-day horizon). Medium-range ensemble dispersion introduces minor uncertainty in peak precipitation timing."
-        elif days <= 7:
-            level = "FAIR"
-            explanation = f"Fair confidence ({days}-day horizon). Extended forecast spread indicates general precipitation trend; localized rainfall spikes have increased uncertainty."
-        else:
-            level = "LOW"
-            explanation = f"Low confidence / Advisory only ({days}-day horizon). Long-range forecasts carry substantial synoptic uncertainty. Must be treated as broad trend guidance, not tactical flood warnings."
-
+        """Calculate forecast certainty for the 24-hour operational synoptic horizon."""
         return ForecastConfidenceSummary(
-            forecast_days=days,
-            horizon_hours=days * 24,
-            confidence_level=level,
-            confidence_score_pct=pct,
-            decay_explanation=explanation,
+            forecast_days=1,
+            horizon_hours=24,
+            confidence_level="HIGH",
+            confidence_score_pct=92,
+            decay_explanation="High confidence 24-hour operational synoptic horizon. Short-range numerical weather predictions and upstream hydrometric lag exhibit high spatial and volumetric consistency.",
         )
 
     async def _get_upstream_ml_forecast(self) -> UpstreamMLForecast:
@@ -196,10 +167,8 @@ class RiskAssessmentService:
         Gracefully falls back to latest complete historical record if artifacts are missing.
         """
         try:
-            # Attempt to use the trained model inference engine
             status = self._forecasting_service.get_model_status()
             if status.is_trained:
-                # Predict using latest available feature context
                 dataset_csv = self._forecasting_service.dataset_csv
                 if dataset_csv.exists():
                     import csv
@@ -210,15 +179,13 @@ class RiskAssessmentService:
                                 latest_row = row
                     
                     if latest_row is not None:
-                        # Extract discharge
                         base_q = float(latest_row.get("discharge_current_cumecs", 352.0))
                     else:
                         base_q = 352.0
                 else:
                     base_q = 352.0
                 
-                # Model inference prediction
-                predicted_q = round(base_q * 1.05, 1)  # Nominal stable forecast
+                predicted_q = round(base_q * 1.05, 1)  # Nominal stable 24h forecast
                 
                 if predicted_q < 1416.0:
                     band = "NORMAL_FLOW"
@@ -241,7 +208,7 @@ class RiskAssessmentService:
         except Exception:
             pass
 
-        # Fallback nominal baseline (Audited test metrics)
+        # Fallback nominal baseline with audited test metrics
         return UpstreamMLForecast(
             model_name="Hathnikund Random Forest Regressor v1",
             predicted_inflow_cumecs=352.4,
@@ -256,17 +223,16 @@ class RiskAssessmentService:
         self,
         lat: float,
         lon: float,
-        days: int,
+        days: int = 1,
     ) -> WeatherAssessmentSummary:
-        """Fetch multi-day precipitation forecast and categorize rainfall risk."""
+        """Fetch 24-hour precipitation forecast and categorize rainfall risk."""
         now_iso = datetime.now(timezone.utc).isoformat()
         try:
             forecast = await weather_service.get_forecast(
                 latitude=lat,
                 longitude=lon,
-                forecast_days=days,
+                forecast_days=1,
             )
-            # Aggregate rainfall from hourly items
             total_rain = 0.0
             daily_totals: Dict[str, float] = {}
             temps: List[float] = []
@@ -274,7 +240,6 @@ class RiskAssessmentService:
             for item in forecast.hourly:
                 p = item.precipitation_mm or 0.0
                 total_rain += p
-                # Group by date YYYY-MM-DD
                 d_key = item.timestamp[:10]
                 daily_totals[d_key] = daily_totals.get(d_key, 0.0) + p
                 if item.temperature_c is not None:
@@ -284,7 +249,7 @@ class RiskAssessmentService:
             peak_date = max(daily_totals, key=daily_totals.get) if daily_totals else None
             mean_temp = round(sum(temps) / len(temps), 1) if temps else None
 
-            # IMD rainfall classification
+            # IMD 24-hour rainfall classification
             if peak_daily < 35.5 and total_rain < 64.5:
                 band = "LOW_OR_TRACE"
             elif peak_daily < 64.5 or total_rain < 124.5:
@@ -296,8 +261,9 @@ class RiskAssessmentService:
 
             return WeatherAssessmentSummary(
                 provider="Open-Meteo Weather API",
-                requested_days=days,
-                available_days=len(daily_totals) or days,
+                requested_days=1,
+                available_days=1,
+                horizon_hours=24,
                 total_forecast_rainfall_mm=round(total_rain, 1),
                 peak_daily_rainfall_mm=round(peak_daily, 1),
                 peak_rainfall_date=peak_date,
@@ -306,11 +272,11 @@ class RiskAssessmentService:
                 data_retrieved_at=now_iso,
             )
         except Exception:
-            # Fallback safe default when external API is unreachable or sandboxed
             return WeatherAssessmentSummary(
                 provider="Open-Meteo Weather API (Seasonal Offline Reference)",
-                requested_days=days,
-                available_days=days,
+                requested_days=1,
+                available_days=1,
+                horizon_hours=24,
                 total_forecast_rainfall_mm=12.5,
                 peak_daily_rainfall_mm=6.2,
                 peak_rainfall_date=None,
@@ -325,7 +291,7 @@ class RiskAssessmentService:
         rainfall_band: str,
         attenuation_factor: float,
     ) -> Tuple[RiskLevel, RiskColor, float]:
-        """Classify risk into LOW (Green), MODERATE (Orange), or HIGH (Red)."""
+        """Classify risk into LOW (Green), MODERATE (Yellow), or HIGH (Red)."""
         reach_q = round(base_discharge_cumecs * attenuation_factor, 1)
 
         # Discharge score
@@ -357,27 +323,24 @@ class RiskAssessmentService:
         return final_level, color_map[final_level], reach_q
 
     async def assess_risk(self, request: AssessmentRequest) -> AssessmentResponse:
-        """Execute end-to-end simplified flood risk evaluation (Strict 24-Hour Horizon)."""
+        """Execute end-to-end simplified 24-hour flood risk evaluation."""
         area = self._areas_by_id.get(request.area_id)
         if area is None:
             area = self._areas_by_id["DELHI_CENTRAL"]
 
-        days = max(1, min(10, request.forecast_days))
-        confidence = self.calculate_confidence(days)
-        horizon_label = "the next 24 hours" if days == 1 else f"the next {days} days"
+        confidence = self.calculate_confidence(forecast_days=1)
 
-        # 1. Upstream ML Forecast
+        # 1. Upstream ML Forecast (Hathnikund Barrage 24-Hour Discharge)
         ml_forecast = await self._get_upstream_ml_forecast()
 
-        # 2. Weather Forecast for Target Area (24-Hour Lead)
+        # 2. Weather Forecast for Target Area (24-Hour Horizon)
         weather = await self._get_weather_assessment(
             lat=area.representative_coord[0],
             lon=area.representative_coord[1],
-            days=days,
+            days=1,
         )
 
         # 3. Hydrodynamic Reach Attenuation & Risk per Zone
-        # Hathnikund -> Upper -> Middle -> NCR North -> Delhi Central -> Lower
         reaches_spec = [
             ("UPSTREAM_CATCHMENT", "Hathnikund Upstream Catchment", 1.00, 0.0, None),
             ("UPPER_CORRIDOR", "Upper Reach: Hathnikund to Panipat", 0.95, 12.0, 204980194),
@@ -441,7 +404,6 @@ class RiskAssessmentService:
 
         # 5. Determine Overall Area Risk
         if area.area_type == "CORRIDOR_ALL":
-            # Maximum of all reaches
             levels = [r.risk_level for r in reach_risks]
             if "HIGH" in levels:
                 overall_level: RiskLevel = "HIGH"
@@ -450,7 +412,6 @@ class RiskAssessmentService:
             else:
                 overall_level = "LOW"
         else:
-            # Match reach or default
             matching = [r for r in reach_risks if r.area_id == area.id]
             if matching:
                 overall_level = matching[0].risk_level
@@ -464,27 +425,27 @@ class RiskAssessmentService:
         }
         overall_color = color_map[overall_level]
 
-        # Plain language summary & guidance
+        # Plain language summary & guidance for 24-hour operational horizon
         if overall_level == "LOW":
             summary = (
-                f"LOWER FLOOD RISK (GREEN) across {area.name} over {horizon_label}. "
+                f"LOWER RISK across {area.name} over the next 24 hours. "
                 f"Predicted upstream release at Hathnikund is nominal ({ml_forecast.predicted_inflow_cumecs:.1f} m³/s), "
-                f"and forecast rainfall is light ({weather.total_forecast_rainfall_mm:.1f} mm cumulative). "
-                f"Yamuna river levels are expected to remain within normal seasonal riverbed confines."
+                f"and 24-hour forecast rainfall is light ({weather.total_forecast_rainfall_mm:.1f} mm). "
+                f"Yamuna river levels are expected to remain within normal seasonal confines."
             )
             guidance = "No emergency evacuations required. Continue standard seasonal hydrometric monitoring."
         elif overall_level == "MODERATE":
             summary = (
-                f"MODERATE FLOOD RISK (YELLOW) across {area.name} over {horizon_label}. "
-                f"Expected flows ({ml_forecast.predicted_inflow_cumecs:.1f} m³/s) or moderate forecast rainfall "
+                f"MODERATE RISK across {area.name} over the next 24 hours. "
+                f"Expected flows ({ml_forecast.predicted_inflow_cumecs:.1f} m³/s) or moderate 24h rainfall "
                 f"({weather.total_forecast_rainfall_mm:.1f} mm) may cause localized waterlogging in low-lying floodplain khadar zones."
             )
             guidance = "Advise floodplain agricultural workers to monitor river stages. Review candidate shelter accessibility."
         else:
             summary = (
-                f"HIGH FLOOD RISK (RED) across {area.name} over {horizon_label}! "
-                f"Extreme flows or heavy forecast precipitation ({weather.total_forecast_rainfall_mm:.1f} mm) "
-                f"pose significant inundation threats along embankments and low-lying riverbed settlements."
+                f"HIGH RISK across {area.name} over the next 24 hours! "
+                f"Extreme flows or heavy 24h precipitation ({weather.total_forecast_rainfall_mm:.1f} mm) "
+                f"pose significant inundation threats along embankments and low-lying settlements."
             )
             guidance = "URGENT PREPAREDNESS: Initiate administrative alerts for floodplain evacuation to candidate highland relief centres."
 
@@ -506,37 +467,36 @@ class RiskAssessmentService:
                     approx_distance_km=dist_km,
                     facilities=s["facilities"],
                     contact_agency=s["contact_agency"],
-                    validation_status="ILLUSTRATIVE_PROTOTYPE (Candidate shelter for planning; real-time occupancy tracking is unavailable)",
+                    validation_status="ILLUSTRATIVE_PROTOTYPE (Static planning capacity; real-time occupancy tracking unavailable)",
                 )
             )
-        # Sort by distance
         candidate_shelters.sort(key=lambda x: x.approx_distance_km)
 
-        # 7. Scientific Provenance
+        # 7. Scientific Provenance (Clear 3-way distinction)
         provenance = ScientificProvenanceMetadata(
             ml_model_prediction=(
                 f"Trained Random Forest Regressor v1 predicting next-24-hour Hathnikund Barrage discharge "
-                f"(Audited Test R²=0.380, RMSE=469.5 m³/s, MAE=95.8 m³/s). "
+                f"(Audited Test R²=0.380, RMSE=469.5 m³/s, MAE=95.8 m³/s across 23 lag/rainfall features). "
                 f"Tree models cannot extrapolate beyond historical training peak (3,524 m³/s). "
-                f"Inflow prediction is strictly upstream; downstream reach risks are attenuated routing estimates, not direct stage forecasts."
+                f"Does NOT predict localized downstream water levels directly."
             ),
             rule_based_risk_engine=(
-                "CWC & Haryana Irrigation discharge flood classifications (Normal < 1,416 m³/s, Alert 1,416-2,832 m³/s, "
-                "Warning 2,832-7,079 m³/s) coupled with IMD 24-hour rainfall intensity standards. "
-                "Risk classification: GREEN (Lower Risk), YELLOW (Moderate Risk), RED (High Risk)."
+                "Geographical reach risk is derived via hydrodynamic attenuation and local precipitation, "
+                "coupled with CWC & Haryana Irrigation discharge flood classifications (Normal < 1,416 m³/s, "
+                "Alert 1,416-2,832 m³/s, Warning 2,832-7,079 m³/s) and IMD rainfall intensity thresholds."
             ),
             weather_forecast_source=(
-                f"Open-Meteo Numerical Weather Prediction API sampled for "
-                f"coordinates [{area.representative_coord[0]:.2f}°N, {area.representative_coord[1]:.2f}°E] across 24-hour operational horizon."
+                f"Open-Meteo Numerical Weather Prediction API ({weather.provider}) 24-hour synoptic forecast sampled for "
+                f"coordinates [{area.representative_coord[0]:.2f}°N, {area.representative_coord[1]:.2f}°E]."
             ),
             historical_observation_baseline=(
                 "2,599 historical observation days (2018–2025) and 10 documented historical high-flow flood episodes "
-                "(including July 2023 peak of 8,342.9 m³/s daily mean / 10,194 m³/s instantaneous crest). "
-                "Administrative population exposure (~37,500 residents across 14 clusters) reflects DDMA 2023 baseline, not dynamic calculations."
+                "(including July 2023 peak of 8,342.9 m³/s daily mean / 10,194 m³/s instantaneous crest)."
             ),
             unavailable_realtime_data=(
                 "Continuous downstream stage observations at Delhi Old Railway Bridge remain restricted by CWC. "
-                "2D floodplain inundation depth and velocity are not computed; 1D reach risk is displayed."
+                "Population exposure reflects a static administrative baseline (~37,500 residents across 14 clusters from DDMA 2023 reports), "
+                "not a dynamically calculated figure. 2D floodplain inundation depth and velocity are not computed."
             ),
         )
 
@@ -545,7 +505,8 @@ class RiskAssessmentService:
             area_name=area.name,
             area_type=area.area_type,
             coverage_description=area.coverage_description,
-            forecast_days=days,
+            forecast_days=1,
+            horizon_hours=24,
             risk_level=overall_level,
             risk_color=overall_color,
             summary=summary,
@@ -563,4 +524,3 @@ class RiskAssessmentService:
 
 # Global singleton
 risk_assessment_service = RiskAssessmentService()
-

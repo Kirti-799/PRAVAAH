@@ -35,8 +35,8 @@ def get_supported_areas() -> SupportedAreasResponse:
 @router.post(
     "/assess",
     response_model=AssessmentResponse,
-    summary="Assess Flood Risk",
-    description="Assesses potential flood risk for a selected area and forecast horizon (2 to 10 days) using ML inflow prediction, weather forecasts, and historical standards.",
+    summary="Assess 24-Hour Flood Risk",
+    description="Assesses potential flood risk for a selected area over the next 24 hours using upstream ML inflow prediction, weather forecasts, and hydrodynamic reach attenuation.",
 )
 async def assess_flood_risk(request: AssessmentRequest) -> AssessmentResponse:
     try:

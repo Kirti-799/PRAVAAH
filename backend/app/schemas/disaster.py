@@ -52,8 +52,8 @@ class EvacuationCorridor(BaseModel):
 
 
 class PopulationExposureSummary(BaseModel):
-    source: str = "Derived from published Delhi Disaster Management Authority (DDMA) flood response reports"
-    methodology: str = "Illustrative administrative estimate (raster cell grid unavailable in repo)"
+    source: str = "Published Delhi Disaster Management Authority (DDMA) 2023 flood response baseline reports"
+    methodology: str = "Static administrative planning baseline (not dynamically calculated or derived from risk categories)"
     low_lying_villages_count: int = 14
     estimated_floodplain_residents: int = 37500
     livestock_count: int = 12400
@@ -65,10 +65,12 @@ class PopulationExposureSummary(BaseModel):
         "Badarpur Khadar"
     ]
     disclaimer: str = (
-        "ADMINISTRATIVE PLANNING REFERENCE ONLY: Approximately 37,500 residents across 14 clusters "
-        "reflect published DDMA 2023 administrative flood reports. Cell-level raster grids (WorldPop/LandScan) "
-        "and topological road networks are not bundled in this repository. Figures reflect "
-        "unvalidated administrative baseline estimates and are NEVER dynamically calculated from risk categories."
+        "ADMINISTRATIVE PLANNING REFERENCE ONLY: Cell-level raster grids (WorldPop/LandScan) "
+        "and topological road networks are not bundled in this repository. Population figures (~37,500 residents across 14 vulnerable clusters) "
+        "represent a published DDMA administrative baseline, NOT dynamically modeled raster predictions. "
+        "Candidate shelters reflect static planning benchmarks; real-time occupancy tracking is unavailable. "
+        "Evacuation corridors are designated planning vectors and have not undergone hydraulic road hazard validation; "
+        "routes are never guaranteed safe."
     )
 
 

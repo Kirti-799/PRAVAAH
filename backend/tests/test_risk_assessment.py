@@ -1,10 +1,11 @@
 """backend/tests/test_risk_assessment.py
 
-Unit and integration tests for the simplified PRAVAAH flood risk assessment endpoints:
+Unit and integration tests for the simplified PRAVAAH 24-hour flood risk assessment endpoints:
 - GET /api/assessment/areas
-- POST /api/assessment/assess (2 to 10 days horizon)
-- Confidence calculation and uncertainty decay
-- Candidate shelter formatting and de-authentication
+- POST /api/assessment/assess (Strict 24-hour prediction horizon)
+- 3-tier risk categories (GREEN / YELLOW / RED)
+- Audited ML metrics (Test R²=0.380, RMSE=469.5 m³/s, MAE=95.8 m³/s)
+- Candidate shelter formatting and static planning capacity guardrails
 """
 
 import pytest
@@ -30,69 +31,69 @@ def test_get_supported_areas():
     assert data["total_corridor_length_km"] == 268.94
 
 
-def test_confidence_decay_calculation():
-    """Verify confidence decays progressively from 2 to 10 days."""
-    conf_2d = risk_assessment_service.calculate_confidence(2)
-    conf_5d = risk_assessment_service.calculate_confidence(5)
-    conf_10d = risk_assessment_service.calculate_confidence(10)
-
-    assert conf_2d.confidence_level == "HIGH"
-    assert conf_2d.confidence_score_pct >= 85
-    assert conf_5d.confidence_level == "MODERATE"
-    assert conf_10d.confidence_level == "LOW"
-    assert conf_10d.confidence_score_pct < conf_2d.confidence_score_pct
+def test_confidence_24h_horizon():
+    """Verify confidence reflects the 24-hour operational synoptic horizon."""
+    conf = risk_assessment_service.calculate_confidence(1)
+    assert conf.confidence_level == "HIGH"
+    assert conf.confidence_score_pct >= 90
+    assert conf.horizon_hours == 24
 
 
-def test_assess_risk_default_horizon():
-    """Test risk assessment for Delhi Central with 3-day forecast."""
+def test_assess_risk_24h_delhi_central():
+    """Test 24-hour flood risk assessment for Delhi Central."""
     payload = {
         "area_id": "DELHI_CENTRAL",
-        "forecast_days": 3,
     }
     response = client.post("/api/assessment/assess", json=payload)
     assert response.status_code == 200
     data = response.json()
 
     assert data["area_id"] == "DELHI_CENTRAL"
-    assert data["forecast_days"] == 3
+    assert data["horizon_hours"] == 24
     assert data["risk_level"] in ["LOW", "MODERATE", "HIGH"]
     assert data["risk_color"] in ["GREEN", "YELLOW", "RED"]
     assert "summary" in data
     assert "guidance_action" in data
-    assert data["confidence"]["forecast_days"] == 3
+    assert "next 24 hours" in data["summary"].lower()
 
-    # Upstream ML forecast
-    assert "upstream_ml_forecast" in data
-    assert data["upstream_ml_forecast"]["predicted_inflow_cumecs"] > 0
-    assert "Hathnikund" in data["upstream_ml_forecast"]["model_name"]
+    # Upstream ML forecast with audited metrics
+    ml_forecast = data["upstream_ml_forecast"]
+    assert ml_forecast["predicted_inflow_cumecs"] > 0
+    assert "Hathnikund" in ml_forecast["model_name"]
+    assert ml_forecast["model_r2_score"] == 0.380
+    assert ml_forecast["model_rmse_cumecs"] == 469.5
+    assert ml_forecast["model_mae_cumecs"] == 95.8
+    assert ml_forecast["horizon_hours"] == 24
 
     # Reaches and stations
     assert len(data["reach_risks"]) >= 5
     assert len(data["station_risks"]) == 7
+    for r in data["reach_risks"]:
+        assert r["risk_color"] in ["GREEN", "YELLOW", "RED"]
 
-    # Candidate shelters
+    # Candidate shelters with static planning capacity disclaimer
     assert len(data["candidate_shelters"]) >= 5
     first_shelter = data["candidate_shelters"][0]
     assert "ILLUSTRATIVE_PROTOTYPE" in first_shelter["validation_status"]
     assert first_shelter["approx_distance_km"] >= 0.0
 
-    # Scientific provenance
-    assert "ml_model_prediction" in data["scientific_provenance"]
-    assert "rule_based_risk_engine" in data["scientific_provenance"]
-    assert "unavailable_realtime_data" in data["scientific_provenance"]
+    # Scientific provenance with 3-way distinction
+    provenance = data["scientific_provenance"]
+    assert "0.380" in provenance["ml_model_prediction"]
+    assert "rule_based_risk_engine" in provenance
+    assert "unavailable_realtime_data" in provenance
 
 
-def test_assess_risk_long_horizon_10_days():
-    """Test 10-day forecast horizon reflects low confidence and transparent uncertainty."""
+def test_assess_risk_corridor_all():
+    """Test 24-hour assessment across the entire corridor."""
     payload = {
         "area_id": "ALL_CORRIDOR",
-        "forecast_days": 10,
     }
     response = client.post("/api/assessment/assess", json=payload)
     assert response.status_code == 200
     data = response.json()
 
-    assert data["forecast_days"] == 10
-    assert data["confidence"]["confidence_level"] == "LOW"
-    assert "Advisory only" in data["confidence"]["decay_explanation"]
-
+    assert data["area_id"] == "ALL_CORRIDOR"
+    assert data["horizon_hours"] == 24
+    assert data["risk_color"] in ["GREEN", "YELLOW", "RED"]
+    assert data["confidence"]["confidence_level"] == "HIGH"

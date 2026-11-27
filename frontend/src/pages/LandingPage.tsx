@@ -417,9 +417,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 </div>
                 <span className="text-[11px] font-mono text-[#5A6A7E]">Horizon</span>
               </div>
-              <h3 className="font-bold text-[#182746] text-base">Choose Forecast Period</h3>
+              <h3 className="font-bold text-[#182746] text-base">24-Hour Operational Horizon</h3>
               <p className="text-xs text-[#2B3A4A] leading-relaxed">
-                Select an operational horizon between 2 and 10 days with transparent confidence indicators.
+                Evaluates short-range hydrological and atmospheric conditions over the critical next 24 hours with high synoptic consistency.
               </p>
             </div>
 
@@ -447,7 +447,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
               </div>
               <h3 className="font-bold text-[#182746] text-base">Explore Zones & Shelters</h3>
               <p className="text-xs text-[#2B3A4A] leading-relaxed">
-                Inspect Green, Orange, and Red risk reaches on the Leaflet map and review candidate evacuation centres.
+                Inspect Green (Lower Risk), Yellow (Moderate Risk), and Red (High Risk) zones on the interactive GIS map and review candidate relief centres.
               </p>
             </div>
           </div>
@@ -513,7 +513,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted }) => {
                 Civilian Usability
               </span>
               <p className="text-[#5A6A7E] leading-relaxed">
-                Streamlined 3-tier risk classifications (Green, Orange, Red) and candidate evacuation locations without technical GIS jargon.
+                Streamlined 3-tier risk classifications (Green — Lower Risk, Yellow — Moderate Risk, Red — High Risk) and candidate evacuation locations without technical GIS jargon.
               </p>
             </div>
           </div>
