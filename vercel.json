@@ -18,6 +18,10 @@
       "destination": "/api/spatial"
     },
     {
+      "source": "/api/hydrology/(.*)",
+      "destination": "/api/hydrology"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
