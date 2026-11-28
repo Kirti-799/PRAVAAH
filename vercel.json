@@ -2,12 +2,20 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/api/forecasting/model-status",
-      "destination": "/api/forecasting/model_status"
+      "source": "/api/forecasting/(.*)",
+      "destination": "/api/forecasting"
     },
     {
-      "source": "/api/disaster/risk-summary",
-      "destination": "/api/disaster/risk_summary"
+      "source": "/api/weather/(.*)",
+      "destination": "/api/weather"
+    },
+    {
+      "source": "/api/disaster/(.*)",
+      "destination": "/api/disaster"
+    },
+    {
+      "source": "/api/spatial/(.*)",
+      "destination": "/api/spatial"
     },
     {
       "source": "/((?!api/).*)",
