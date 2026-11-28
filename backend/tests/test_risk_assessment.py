@@ -111,4 +111,40 @@ def test_assess_risk_24h_ml_horizon():
     assert data["confidence"]["confidence_level"] == "HIGH"
     assert data["estimated_affected_population"] > 0
     assert data["vulnerable_villages_count"] > 0
+    assert data["river_id"] == "yamuna"
+    assert data["is_operational_river"] is True
+
+
+def test_get_supported_areas_multi_rivers():
+    """Verify catalog includes multiple rivers and expansion basins."""
+    response = client.get("/api/assessment/areas")
+    assert response.status_code == 200
+    data = response.json()
+    assert "rivers" in data
+    river_ids = [r["id"] for r in data["rivers"]]
+    assert "yamuna" in river_ids
+    assert "ganga" in river_ids
+    assert "brahmaputra" in river_ids
+    assert "godavari" in river_ids
+
+
+def test_assess_risk_uncalibrated_expansion_basin():
+    """Verify assessing an uncalibrated river honestly displays model unavailable without fake predictions."""
+    payload = {
+        "area_id": "GANGA_HARIDWAR",
+        "forecast_days": 1,
+    }
+    response = client.post("/api/assessment/assess", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+
+    assert data["river_id"] == "ganga"
+    assert data["is_operational_river"] is False
+    assert data["upstream_ml_forecast"]["predicted_inflow_cumecs"] == 0.0
+    assert "Model Unavailable" in data["upstream_ml_forecast"]["model_name"]
+    assert "PLANNED EXPANSION BASIN" in data["summary"]
+    # Live weather should still be populated
+    assert "weather" in data
+    assert len(data["candidate_shelters"]) > 0
+
 

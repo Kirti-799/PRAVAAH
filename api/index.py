@@ -43,8 +43,12 @@ except Exception as _startup_err:
         allow_headers=["*"],
     )
 
+    @app.get("/")
+    @app.get("/api")
     @app.get("/api/health")
     @app.get("/health")
+    @app.get("/api/index.py")
+    @app.get("/index.py")
     def health():
         return {
             "status": "ok",

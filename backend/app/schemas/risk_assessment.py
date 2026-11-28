@@ -18,10 +18,22 @@ ConfidenceLevel = Literal["HIGH", "MODERATE", "FAIR", "LOW"]
 AreaType = Literal["CORRIDOR_ALL", "BASIN", "REACH", "STATION"]
 
 
+class RiverInfo(BaseModel):
+    """River basin entity with operational model status."""
+    id: str = Field(..., description="Unique river identifier, e.g. 'yamuna', 'ganga'")
+    name: str = Field(..., description="Human-readable river name")
+    is_operational: bool = Field(..., description="Whether calibrated ML prediction model is active")
+    status_label: str = Field(..., description="Status badge label, e.g. 'Operational ML (24h Active)'")
+    description: str = Field(..., description="Basin overview and geographical coverage")
+
+
 class SupportedArea(BaseModel):
     """Geographical area supported by authentic spatial data in PRAVAAH."""
     id: str = Field(..., description="Unique area identifier, e.g. 'DELHI_CENTRAL'")
     name: str = Field(..., description="Human-readable area title")
+    river_id: str = Field(default="yamuna", description="River identifier: yamuna, ganga, brahmaputra, godavari")
+    river_name: str = Field(default="Yamuna River", description="Name of the river basin")
+    is_operational: bool = Field(default=True, description="Whether ML model is operational for this reach")
     area_type: AreaType = Field(..., description="Classification: BASIN, REACH, STATION, or CORRIDOR_ALL")
     coverage_description: str = Field(..., description="Geographical coverage and landmarks")
     length_km: Optional[float] = Field(None, description="Reach thalweg length in km if applicable")
@@ -32,8 +44,10 @@ class SupportedArea(BaseModel):
 
 
 class SupportedAreasResponse(BaseModel):
-    """Catalog of supported areas."""
+    """Catalog of supported areas and river systems."""
+    rivers: List[RiverInfo] = Field(default_factory=list, description="Supported river basins")
     areas: List[SupportedArea]
+    default_river_id: str = "yamuna"
     default_area_id: str = "DELHI_CENTRAL"
     total_corridor_length_km: float = 268.94
     catchment_area_km2: float = 11365.12
@@ -133,6 +147,9 @@ class AssessmentResponse(BaseModel):
     """Comprehensive, simplified flood risk assessment response."""
     area_id: str
     area_name: str
+    river_id: str = "yamuna"
+    river_name: str = "Yamuna River"
+    is_operational_river: bool = True
     area_type: AreaType
     coverage_description: str
     forecast_days: int

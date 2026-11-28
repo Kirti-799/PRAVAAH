@@ -11,9 +11,10 @@ Integrates:
 
 import math
 from datetime import datetime, timezone
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 from app.schemas.risk_assessment import (
+    RiverInfo,
     SupportedArea,
     SupportedAreasResponse,
     AssessmentRequest,
@@ -34,11 +35,48 @@ from app.services.weather_service import weather_service
 from app.services.disaster_service import SHELTERS_DATA
 
 
-# Supported authentic geographical entities along the Yamuna corridor
+# Supported river basins catalog
+SUPPORTED_RIVERS_CATALOG: List[RiverInfo] = [
+    RiverInfo(
+        id="yamuna",
+        name="Yamuna River",
+        is_operational=True,
+        status_label="Operational ML (24h Active)",
+        description="Upper-Middle Yamuna River corridor (Hathnikund Barrage to Delhi NCT and Okhla Barrage, 268.9 km). Trained Random Forest regressor is fully calibrated and active.",
+    ),
+    RiverInfo(
+        id="ganga",
+        name="Ganga River",
+        is_operational=False,
+        status_label="Planned Expansion Basin",
+        description="Ganga mainstem reaches (Haridwar and Varanasi). Live Open-Meteo weather active; dedicated hydrological ML model is under development.",
+    ),
+    RiverInfo(
+        id="brahmaputra",
+        name="Brahmaputra River",
+        is_operational=False,
+        status_label="Planned Expansion Basin",
+        description="Brahmaputra gorge reach at Guwahati. Live Open-Meteo weather active; high-gradient discharge forecasting model is under development.",
+    ),
+    RiverInfo(
+        id="godavari",
+        name="Godavari River",
+        is_operational=False,
+        status_label="Planned Expansion Basin",
+        description="Godavari delta reach at Rajahmundry. Live Open-Meteo weather active; peninsular deltaic flood model is under development.",
+    ),
+]
+
+
+# Supported authentic geographical entities
 SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
+    # --- YAMUNA RIVER REACHES (OPERATIONAL ML ACTIVE) ---
     SupportedArea(
         id="DELHI_CENTRAL",
         name="Delhi NCT Reach (Palla to Old Railway Bridge)",
+        river_id="yamuna",
+        river_name="Yamuna River",
+        is_operational=True,
         area_type="REACH",
         coverage_description="Primary metropolitan reach passing Wazirabad, ISBT Kashmere Gate, and Delhi Old Railway Bridge.",
         length_km=31.62,
@@ -49,6 +87,9 @@ SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
     SupportedArea(
         id="ALL_CORRIDOR",
         name="Entire Upper-Middle Yamuna Corridor (Hathnikund to Okhla)",
+        river_id="yamuna",
+        river_name="Yamuna River",
+        is_operational=True,
         area_type="CORRIDOR_ALL",
         coverage_description="Complete 268.9 km downstream river mainstem from Hathnikund Barrage (Haryana) to Okhla Barrage (Delhi/UP).",
         length_km=268.94,
@@ -59,6 +100,9 @@ SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
     SupportedArea(
         id="UPSTREAM_CATCHMENT",
         name="Hathnikund Upstream Catchment Basin",
+        river_id="yamuna",
+        river_name="Yamuna River",
+        is_operational=True,
         area_type="BASIN",
         coverage_description="Contributing mountain catchment draining Himachal Pradesh and Uttarakhand into Hathnikund Barrage.",
         area_km2=11365.12,
@@ -69,6 +113,9 @@ SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
     SupportedArea(
         id="UPPER_CORRIDOR",
         name="Upper Reach (Hathnikund Barrage to Panipat)",
+        river_id="yamuna",
+        river_name="Yamuna River",
+        is_operational=True,
         area_type="REACH",
         coverage_description="Upper alluvial plain through Yamunanagar and Karnal districts.",
         length_km=154.81,
@@ -79,6 +126,9 @@ SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
     SupportedArea(
         id="MIDDLE_CORRIDOR",
         name="Middle Reach (Panipat to Sonipat)",
+        river_id="yamuna",
+        river_name="Yamuna River",
+        is_operational=True,
         area_type="REACH",
         coverage_description="Agricultural and industrial corridor through Panipat and Sonipat embankments.",
         length_km=53.54,
@@ -89,6 +139,9 @@ SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
     SupportedArea(
         id="NCR_NORTH",
         name="NCR North Reach (Sonipat to Palla)",
+        river_id="yamuna",
+        river_name="Yamuna River",
+        is_operational=True,
         area_type="REACH",
         coverage_description="Border transit reach entering Delhi NCT at Palla hydrometric station.",
         length_km=11.08,
@@ -99,6 +152,9 @@ SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
     SupportedArea(
         id="LOWER_REACH",
         name="Lower Reach (Delhi ORB to Okhla Barrage)",
+        river_id="yamuna",
+        river_name="Yamuna River",
+        is_operational=True,
         area_type="REACH",
         coverage_description="Southern urban corridor passing ITO, Nizamuddin, and terminating at Okhla Barrage.",
         length_km=17.89,
@@ -106,10 +162,13 @@ SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
         osm_way_id=24944222,
         associated_stations=["DELHI_OLD_RAILWAY_BRIDGE", "OKHLA_BARRAGE"],
     ),
-    # Predefined Stations for point inspection
+    # Predefined Stations
     SupportedArea(
         id="STATION_HATHNIKUND",
         name="Station: Hathnikund Barrage",
+        river_id="yamuna",
+        river_name="Yamuna River",
+        is_operational=True,
         area_type="STATION",
         coverage_description="Upstream boundary barrage controlling seasonal flow release to the Yamuna.",
         representative_coord=[30.3100, 77.5800],
@@ -118,10 +177,67 @@ SUPPORTED_AREAS_CATALOG: List[SupportedArea] = [
     SupportedArea(
         id="STATION_DELHI_ORB",
         name="Station: Delhi Old Railway Bridge (ORB)",
+        river_id="yamuna",
+        river_name="Yamuna River",
+        is_operational=True,
         area_type="STATION",
         coverage_description="Central Water Commission reference gauge pier in Delhi NCT (Warning: 204.50m, Danger: 205.33m).",
         representative_coord=[28.6600, 77.2500],
         associated_stations=["DELHI_OLD_RAILWAY_BRIDGE"],
+    ),
+
+    # --- GANGA RIVER REACHES (PLANNED EXPANSION) ---
+    SupportedArea(
+        id="GANGA_HARIDWAR",
+        name="Ganga: Haridwar Reach (Upper Plain)",
+        river_id="ganga",
+        river_name="Ganga River",
+        is_operational=False,
+        area_type="REACH",
+        coverage_description="Haridwar Upper Basin from Bhimgoda Barrage to Roorkee. Live weather available; ML hydrological model in development.",
+        length_km=42.50,
+        representative_coord=[29.9457, 78.1642],
+        associated_stations=["HARIDWAR_BHIMGODA"],
+    ),
+    SupportedArea(
+        id="GANGA_VARANASI",
+        name="Ganga: Varanasi Reach (Middle Basin)",
+        river_id="ganga",
+        river_name="Ganga River",
+        is_operational=False,
+        area_type="REACH",
+        coverage_description="Varanasi metropolitan reach along the crescent ghats. Live weather available; ML hydrological model in development.",
+        length_km=28.10,
+        representative_coord=[25.3176, 83.0062],
+        associated_stations=["VARANASI_GHAT"],
+    ),
+
+    # --- BRAHMAPUTRA RIVER REACH (PLANNED EXPANSION) ---
+    SupportedArea(
+        id="BRAHMAPUTRA_GUWAHATI",
+        name="Brahmaputra: Guwahati Reach",
+        river_id="brahmaputra",
+        river_name="Brahmaputra River",
+        is_operational=False,
+        area_type="REACH",
+        coverage_description="Guwahati gorge section and Pandu hydrometric reach in Assam. Live weather available; ML model in development.",
+        length_km=34.20,
+        representative_coord=[26.1856, 91.7539],
+        associated_stations=["GUWAHATI_PANDU"],
+    ),
+
+    # --- GODAVARI RIVER REACH (PLANNED EXPANSION) ---
+    SupportedArea(
+        id="GODAVARI_RAJAHMUNDRY",
+        name="Godavari: Rajahmundry Reach",
+        river_id="godavari",
+        river_name="Godavari River",
+        is_operational=False,
+        area_type="REACH",
+        coverage_description="Lower Godavari delta reach and Dowleswaram Barrage corridor. Live weather available; ML model in development.",
+        length_km=38.40,
+        representative_coord=[17.0005, 81.8040],
+        associated_stations=["RAJAHMUNDRY_DOWLESWARAM"],
     ),
 ]
 
@@ -144,9 +260,11 @@ class RiskAssessmentService:
         self._forecasting_service = ForecastingService()
 
     def get_supported_areas(self) -> SupportedAreasResponse:
-        """Return catalog of supported geographical areas."""
+        """Return catalog of supported geographical areas and river basins."""
         return SupportedAreasResponse(
+            rivers=SUPPORTED_RIVERS_CATALOG,
             areas=SUPPORTED_AREAS_CATALOG,
+            default_river_id="yamuna",
             default_area_id="DELHI_CENTRAL",
             total_corridor_length_km=268.94,
             catchment_area_km2=11365.12,
@@ -364,129 +482,191 @@ class RiskAssessmentService:
         days = max(1, min(10, request.forecast_days))
         confidence = self.calculate_confidence(days)
 
-        # 1. Upstream ML Forecast
-        ml_forecast = await self._get_upstream_ml_forecast()
-
-        # 2. Weather Forecast for Target Area
+        # 1. Weather Forecast for Target Area (Active across all rivers via Open-Meteo)
         weather = await self._get_weather_assessment(
             lat=area.representative_coord[0],
             lon=area.representative_coord[1],
             days=days,
         )
 
-        # 3. Hydrodynamic Reach Attenuation & Risk per Zone
-        # Hathnikund -> Upper -> Middle -> NCR North -> Delhi Central -> Lower
-        reaches_spec = [
-            ("UPSTREAM_CATCHMENT", "Hathnikund Upstream Catchment", 1.00, 0.0, None),
-            ("UPPER_CORRIDOR", "Upper Reach: Hathnikund to Panipat", 0.95, 12.0, 204980194),
-            ("MIDDLE_CORRIDOR", "Middle Reach: Panipat to Sonipat", 0.88, 24.0, 648975828),
-            ("NCR_NORTH", "NCR North Reach: Sonipat to Palla", 0.84, 34.0, 267825123),
-            ("DELHI_CENTRAL", "Delhi NCT Reach: Palla to Delhi ORB", 0.80, 42.0, 24943999),
-            ("LOWER_REACH", "Lower Reach: Delhi ORB to Okhla Barrage", 0.75, 50.0, 24944222),
-        ]
+        # 2. ML Discharge Modeling (Yamuna operational; non-Yamuna expansion basins handled honestly)
+        if area.river_id == "yamuna" and area.is_operational:
+            ml_forecast = await self._get_upstream_ml_forecast()
 
-        reach_risks: List[ReachRiskItem] = []
-        for r_id, r_name, atten, lag, way_id in reaches_spec:
-            r_level, r_color, r_q = self._determine_reach_risk(
-                base_discharge_cumecs=ml_forecast.predicted_inflow_cumecs,
-                rainfall_band=weather.rainfall_risk_band,
-                attenuation_factor=atten,
-            )
-            reach_risks.append(
-                ReachRiskItem(
-                    area_id=r_id,
-                    name=r_name,
-                    risk_level=r_level,
-                    risk_color=r_color,
-                    estimated_peak_discharge_cumecs=r_q,
-                    transit_lag_hours=lag,
-                    osm_way_id=way_id,
+            # Hydrodynamic Reach Attenuation & Risk per Zone
+            # Hathnikund -> Upper -> Middle -> NCR North -> Delhi Central -> Lower
+            reaches_spec = [
+                ("UPSTREAM_CATCHMENT", "Hathnikund Upstream Catchment", 1.00, 0.0, None),
+                ("UPPER_CORRIDOR", "Upper Reach: Hathnikund to Panipat", 0.95, 12.0, 204980194),
+                ("MIDDLE_CORRIDOR", "Middle Reach: Panipat to Sonipat", 0.88, 24.0, 648975828),
+                ("NCR_NORTH", "NCR North Reach: Sonipat to Palla", 0.84, 34.0, 267825123),
+                ("DELHI_CENTRAL", "Delhi NCT Reach: Palla to Delhi ORB", 0.80, 42.0, 24943999),
+                ("LOWER_REACH", "Lower Reach: Delhi ORB to Okhla Barrage", 0.75, 50.0, 24944222),
+            ]
+
+            reach_risks: List[ReachRiskItem] = []
+            for r_id, r_name, atten, lag, way_id in reaches_spec:
+                r_level, r_color, r_q = self._determine_reach_risk(
+                    base_discharge_cumecs=ml_forecast.predicted_inflow_cumecs,
+                    rainfall_band=weather.rainfall_risk_band,
+                    attenuation_factor=atten,
                 )
-            )
-
-        # 4. Corridor Station Risks
-        stations_spec = [
-            ("HATHNIKUND_BARRAGE", "Hathnikund Barrage", 30.31, 77.58, 0.0, 1.00, None, None),
-            ("YAMUNANAGAR", "Yamunanagar Gauge", 30.13, 77.29, 35.0, 0.96, None, None),
-            ("KARNAL", "Karnal Bridge Gauge", 29.69, 77.08, 95.0, 0.92, None, None),
-            ("PANIPAT", "Panipat Embankment", 29.39, 77.10, 140.0, 0.88, None, None),
-            ("SONIPAT", "Sonipat Station", 28.99, 77.12, 195.0, 0.84, None, None),
-            ("DELHI_OLD_RAILWAY_BRIDGE", "Delhi Old Railway Bridge", 28.66, 77.25, 251.05, 0.80, 204.50, 205.33),
-            ("OKHLA_BARRAGE", "Okhla Barrage", 28.53, 77.30, 268.94, 0.75, None, None),
-        ]
-
-        station_risks: List[StationRiskItem] = []
-        for s_id, s_name, s_lat, s_lon, ch_km, atten, warn_lvl, dang_lvl in stations_spec:
-            s_level, s_color, s_q = self._determine_reach_risk(
-                base_discharge_cumecs=ml_forecast.predicted_inflow_cumecs,
-                rainfall_band=weather.rainfall_risk_band,
-                attenuation_factor=atten,
-            )
-            station_risks.append(
-                StationRiskItem(
-                    station_id=s_id,
-                    station_name=s_name,
-                    latitude=s_lat,
-                    longitude=s_lon,
-                    chainage_km=ch_km,
-                    risk_level=s_level,
-                    risk_color=s_color,
-                    estimated_discharge_cumecs=s_q,
-                    warning_level_m=warn_lvl,
-                    danger_level_m=dang_lvl,
+                reach_risks.append(
+                    ReachRiskItem(
+                        area_id=r_id,
+                        name=r_name,
+                        risk_level=r_level,
+                        risk_color=r_color,
+                        estimated_peak_discharge_cumecs=r_q,
+                        transit_lag_hours=lag,
+                        osm_way_id=way_id,
+                    )
                 )
+
+            # Corridor Station Risks
+            stations_spec = [
+                ("HATHNIKUND_BARRAGE", "Hathnikund Barrage", 30.31, 77.58, 0.0, 1.00, None, None),
+                ("YAMUNANAGAR", "Yamunanagar Gauge", 30.13, 77.29, 35.0, 0.96, None, None),
+                ("KARNAL", "Karnal Bridge Gauge", 29.69, 77.08, 95.0, 0.92, None, None),
+                ("PANIPAT", "Panipat Embankment", 29.39, 77.10, 140.0, 0.88, None, None),
+                ("SONIPAT", "Sonipat Station", 28.99, 77.12, 195.0, 0.84, None, None),
+                ("DELHI_OLD_RAILWAY_BRIDGE", "Delhi Old Railway Bridge", 28.66, 77.25, 251.05, 0.80, 204.50, 205.33),
+                ("OKHLA_BARRAGE", "Okhla Barrage", 28.53, 77.30, 268.94, 0.75, None, None),
+            ]
+
+            station_risks: List[StationRiskItem] = []
+            for s_id, s_name, s_lat, s_lon, ch_km, atten, warn_lvl, dang_lvl in stations_spec:
+                s_level, s_color, s_q = self._determine_reach_risk(
+                    base_discharge_cumecs=ml_forecast.predicted_inflow_cumecs,
+                    rainfall_band=weather.rainfall_risk_band,
+                    attenuation_factor=atten,
+                )
+                station_risks.append(
+                    StationRiskItem(
+                        station_id=s_id,
+                        station_name=s_name,
+                        latitude=s_lat,
+                        longitude=s_lon,
+                        chainage_km=ch_km,
+                        risk_level=s_level,
+                        risk_color=s_color,
+                        estimated_discharge_cumecs=s_q,
+                        warning_level_m=warn_lvl,
+                        danger_level_m=dang_lvl,
+                    )
+                )
+
+            # Overall Area Risk
+            if area.area_type == "CORRIDOR_ALL":
+                levels = [r.risk_level for r in reach_risks]
+                if "HIGH" in levels:
+                    overall_level: RiskLevel = "HIGH"
+                elif "MODERATE" in levels:
+                    overall_level = "MODERATE"
+                else:
+                    overall_level = "LOW"
+            else:
+                matching = [r for r in reach_risks if r.area_id == area.id]
+                if matching:
+                    overall_level = matching[0].risk_level
+                else:
+                    overall_level = reach_risks[4].risk_level
+
+            color_map: Dict[RiskLevel, RiskColor] = {
+                "LOW": "GREEN",
+                "MODERATE": "ORANGE",
+                "HIGH": "RED",
+            }
+            overall_color = color_map[overall_level]
+
+            # Summary & Guidance
+            if overall_level == "LOW":
+                summary = (
+                    f"LOW FLOOD RISK across {area.name} over the next 24 hours. "
+                    f"Predicted upstream release at Hathnikund is nominal ({ml_forecast.predicted_inflow_cumecs:.1f} m³/s), "
+                    f"and forecast rainfall is light ({weather.total_forecast_rainfall_mm:.1f} mm cumulative). "
+                    f"Yamuna river levels are expected to remain within normal seasonal riverbed confines."
+                )
+                guidance = "No emergency evacuations required. Continue standard seasonal hydrometric monitoring."
+            elif overall_level == "MODERATE":
+                summary = (
+                    f"MODERATE FLOOD RISK across {area.name} over the next 24 hours. "
+                    f"Expected flows ({ml_forecast.predicted_inflow_cumecs:.1f} m³/s) or moderate forecast rainfall "
+                    f"({weather.total_forecast_rainfall_mm:.1f} mm) may cause localized waterlogging in low-lying floodplain khadar zones."
+                )
+                guidance = "Advise floodplain agricultural workers to monitor river stages. Review candidate shelter accessibility."
+            else:
+                summary = (
+                    f"HIGH FLOOD RISK across {area.name} over the next 24 hours! "
+                    f"Extreme flows or heavy forecast precipitation ({weather.total_forecast_rainfall_mm:.1f} mm) "
+                    f"pose significant inundation threats along embankments and low-lying riverbed settlements."
+                )
+                guidance = "URGENT PREPAREDNESS: Initiate administrative alerts for floodplain evacuation to candidate highland relief centres."
+
+        else:
+            # NON-YAMUNA PLANNED EXPANSION BASIN
+            ml_forecast = UpstreamMLForecast(
+                model_name=f"Model Unavailable ({area.river_name} Planned Expansion Basin)",
+                predicted_inflow_cumecs=0.0,
+                flood_band="DATA_IN_DEVELOPMENT",
+                model_r2_score=0.0,
+                model_rmse_cumecs=0.0,
+                provenance_note=(
+                    f"Hydrological ML model for {area.river_name} is under development. "
+                    f"The trained Random Forest Regressor v1 is calibrated strictly for the Yamuna River basin."
+                ),
             )
 
-        # 5. Determine Overall Area Risk
-        if area.area_type == "CORRIDOR_ALL":
-            # Maximum of all reaches
-            levels = [r.risk_level for r in reach_risks]
-            if "HIGH" in levels:
-                overall_level: RiskLevel = "HIGH"
-            elif "MODERATE" in levels:
+            # Risk is derived strictly from real Open-Meteo precipitation thresholds
+            if weather.rainfall_risk_band in ["VERY_HEAVY_RAIN"]:
+                overall_level = "HIGH"
+                overall_color = "RED"
+            elif weather.rainfall_risk_band in ["HEAVY_RAIN", "MODERATE_RAIN"]:
                 overall_level = "MODERATE"
+                overall_color = "ORANGE"
             else:
                 overall_level = "LOW"
-        else:
-            # Match reach or default
-            matching = [r for r in reach_risks if r.area_id == area.id]
-            if matching:
-                overall_level = matching[0].risk_level
-            else:
-                overall_level = reach_risks[4].risk_level  # Delhi Central default
+                overall_color = "GREEN"
 
-        color_map: Dict[RiskLevel, RiskColor] = {
-            "LOW": "GREEN",
-            "MODERATE": "ORANGE",
-            "HIGH": "RED",
-        }
-        overall_color = color_map[overall_level]
+            reach_risks = [
+                ReachRiskItem(
+                    area_id=area.id,
+                    name=area.name,
+                    risk_level=overall_level,
+                    risk_color=overall_color,
+                    estimated_peak_discharge_cumecs=0.0,
+                    transit_lag_hours=0.0,
+                    osm_way_id=area.osm_way_id,
+                )
+            ]
 
-        # Plain language summary & guidance
-        if overall_level == "LOW":
-            summary = (
-                f"LOW FLOOD RISK across {area.name} over the next {days} days. "
-                f"Predicted upstream release at Hathnikund is nominal ({ml_forecast.predicted_inflow_cumecs:.1f} m³/s), "
-                f"and forecast rainfall is light ({weather.total_forecast_rainfall_mm:.1f} mm cumulative). "
-                f"Yamuna river levels are expected to remain within normal seasonal riverbed confines."
-            )
-            guidance = "No emergency evacuations required. Continue standard seasonal hydrometric monitoring."
-        elif overall_level == "MODERATE":
-            summary = (
-                f"MODERATE FLOOD RISK across {area.name} over the next {days} days. "
-                f"Expected flows ({ml_forecast.predicted_inflow_cumecs:.1f} m³/s) or moderate forecast rainfall "
-                f"({weather.total_forecast_rainfall_mm:.1f} mm) may cause localized waterlogging in low-lying floodplain khadar zones."
-            )
-            guidance = "Advise floodplain agricultural workers to monitor river stages. Review candidate shelter accessibility."
-        else:
-            summary = (
-                f"HIGH FLOOD RISK across {area.name} over the next {days} days! "
-                f"Extreme flows or heavy forecast precipitation ({weather.total_forecast_rainfall_mm:.1f} mm) "
-                f"pose significant inundation threats along embankments and low-lying riverbed settlements."
-            )
-            guidance = "URGENT PREPAREDNESS: Initiate administrative alerts for floodplain evacuation to candidate highland relief centres."
+            station_risks = []
+            for st_id in area.associated_stations:
+                station_risks.append(
+                    StationRiskItem(
+                        station_id=st_id,
+                        station_name=f"{area.river_name} Monitoring Station",
+                        latitude=area.representative_coord[0],
+                        longitude=area.representative_coord[1],
+                        chainage_km=0.0,
+                        risk_level=overall_level,
+                        risk_color=overall_color,
+                        estimated_discharge_cumecs=0.0,
+                    )
+                )
 
-        # 6. Candidate Shelters with distance calculation
+            summary = (
+                f"PLANNED EXPANSION BASIN: Live Open-Meteo weather is active for {area.name} "
+                f"({weather.total_forecast_rainfall_mm:.1f} mm cumulative forecast, Risk: {overall_level}). "
+                f"The trained Random Forest discharge model is calibrated strictly for the Yamuna River. "
+                f"Hydrological ML modeling for {area.river_name} will be deployed in Phase 2."
+            )
+            guidance = (
+                f"Hydrological ML modeling for {area.river_name} is in development. "
+                f"Refer to State Disaster Management Authority (SDMA) bulletins and IMD forecasts."
+            )
+
+        # 3. Candidate Shelters with Haversine straight-line distance
         candidate_shelters: List[CandidateShelter] = []
         target_lat, target_lon = area.representative_coord
         for s in SHELTERS_DATA:
@@ -507,10 +687,9 @@ class RiskAssessmentService:
                     validation_status="ILLUSTRATIVE_PROTOTYPE (Unvalidated for Life-Safety Operations)",
                 )
             )
-        # Sort by distance
         candidate_shelters.sort(key=lambda x: x.approx_distance_km)
 
-        # 6b. Estimate affected population based on risk level and reach exposure
+        # 4. Population exposure estimation
         if overall_level == "HIGH":
             affected_pop = 37500 if "DELHI" in area.id or "CORRIDOR" in area.id else 18000
             villages = 14 if "DELHI" in area.id or "CORRIDOR" in area.id else 8
@@ -521,13 +700,21 @@ class RiskAssessmentService:
             affected_pop = 1200 if "DELHI" in area.id or "CORRIDOR" in area.id else 500
             villages = 2 if "DELHI" in area.id or "CORRIDOR" in area.id else 1
 
-        # 7. Scientific Provenance
-        provenance = ScientificProvenanceMetadata(
-            ml_model_prediction=(
+        # 5. Scientific Provenance
+        if area.river_id == "yamuna":
+            ml_statement = (
                 f"Trained Random Forest Regressor v1 predicting next-day Hathnikund Barrage discharge "
                 f"(R²={ml_forecast.model_r2_score:.2f}, RMSE={ml_forecast.model_rmse_cumecs:.1f} m³/s). "
-                f"Does NOT predict localized downstream water levels directly."
-            ),
+                f"Calibrated strictly for Yamuna River."
+            )
+        else:
+            ml_statement = (
+                f"Model Unavailable for {area.river_name}. The trained Random Forest Regressor v1 "
+                f"is strictly calibrated on Yamuna Hathnikund barrage data and is never applied to uncalibrated basins."
+            )
+
+        provenance = ScientificProvenanceMetadata(
+            ml_model_prediction=ml_statement,
             rule_based_risk_engine=(
                 "CWC & Haryana Irrigation discharge flood classifications (Normal < 1,416 m³/s, Alert 1,416-2,832 m³/s, "
                 "Warning 2,832-7,079 m³/s) coupled with IMD daily rainfall intensity standards."
@@ -541,14 +728,17 @@ class RiskAssessmentService:
                 "(including July 2023 peak of 8,342.9 m³/s daily mean / 10,194 m³/s instantaneous crest)."
             ),
             unavailable_realtime_data=(
-                "Continuous downstream stage observations at Delhi Old Railway Bridge remain restricted by CWC. "
-                "2D floodplain inundation depth and velocity are not computed; 1D thalweg risk is displayed."
+                "Continuous downstream stage observations at CWC monitoring gauges remain restricted. "
+                "2D floodplain inundation depth and velocity are not computed; 1D risk categorization is displayed."
             ),
         )
 
         return AssessmentResponse(
             area_id=area.id,
             area_name=area.name,
+            river_id=area.river_id,
+            river_name=area.river_name,
+            is_operational_river=area.is_operational,
             area_type=area.area_type,
             coverage_description=area.coverage_description,
             forecast_days=days,

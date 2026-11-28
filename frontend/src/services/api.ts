@@ -40,77 +40,80 @@ export class ApiError extends Error {
 
 /**
  * Fetches health status from the backend API.
- * Validates the schema and handles network and HTTP errors.
+ * Probes primary (/api/health) and fallback endpoints (/health, /api) to ensure
+ * reliable connection status across diverse serverless routing configurations.
  */
 export async function fetchHealth(): Promise<HealthStatus> {
   const baseUrl = getApiBaseUrl();
-  const endpoint = `${baseUrl}/api/health`;
+  const candidates = [
+    `${baseUrl}/api/health`,
+    `${baseUrl}/health`,
+    `${baseUrl}/api`,
+  ];
 
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+  let lastError: Error | null = null;
 
-    const response = await fetch(endpoint, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-      },
-      signal: controller.signal,
-    });
+  for (const endpoint of candidates) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
 
-    clearTimeout(timeoutId);
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+        signal: controller.signal,
+      });
 
-    if (!response.ok) {
-      throw new ApiError(
-        `Backend returned HTTP status ${response.status} (${response.statusText})`,
-        response.status
-      );
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        lastError = new ApiError(
+          `Backend returned HTTP status ${response.status} (${response.statusText}) at ${endpoint}`,
+          response.status
+        );
+        continue;
+      }
+
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        lastError = new ApiError(
+          `Backend returned non-JSON response (${contentType || 'unknown'}) at ${endpoint}.`,
+          response.status
+        );
+        continue;
+      }
+
+      const json = (await response.json()) as unknown;
+
+      if (
+        typeof json === 'object' &&
+        json !== null &&
+        'status' in json &&
+        typeof (json as Record<string, unknown>).status === 'string'
+      ) {
+        const record = json as Record<string, unknown>;
+        return {
+          status: String(record.status),
+          service: typeof record.service === 'string' ? record.service : 'PRAVAAH API',
+          version: typeof record.version === 'string' ? record.version : '0.1.0',
+        };
+      }
+
+      lastError = new ApiError(`Invalid health schema returned from ${endpoint}`);
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        lastError = new ApiError(`Connection timed out while contacting backend at ${endpoint}.`);
+      } else if (err instanceof TypeError && err.message.toLowerCase().includes('failed to fetch')) {
+        lastError = new ApiError(`Unable to reach backend service at ${endpoint}.`);
+      } else if (err instanceof Error) {
+        lastError = err;
+      } else {
+        lastError = new ApiError(String(err));
+      }
     }
-
-    const contentType = response.headers.get('content-type') || '';
-    if (!contentType.includes('application/json')) {
-      throw new ApiError(
-        `Backend returned non-JSON response (${contentType || 'unknown'}). The request at ${endpoint} was not handled by the backend API.`,
-        response.status
-      );
-    }
-
-    const json = (await response.json()) as unknown;
-
-    if (
-      typeof json === 'object' &&
-      json !== null &&
-      'status' in json &&
-      'service' in json &&
-      'version' in json &&
-      typeof (json as Record<string, unknown>).status === 'string' &&
-      typeof (json as Record<string, unknown>).service === 'string' &&
-      typeof (json as Record<string, unknown>).version === 'string'
-    ) {
-      return json as HealthStatus;
-    }
-
-    throw new ApiError('Received invalid data format from backend health endpoint.');
-  } catch (error: unknown) {
-    if (error instanceof ApiError) {
-      throw error;
-    }
-
-    if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new ApiError(`Connection timed out while contacting backend at ${endpoint}.`);
-    }
-
-    if (error instanceof TypeError && error.message.toLowerCase().includes('failed to fetch')) {
-      const hint = import.meta.env.DEV
-        ? 'Ensure FastAPI is running on port 8000 and CORS is properly configured.'
-        : 'Ensure the API service is operational and CORS is properly configured.';
-      throw new ApiError(`Unable to reach backend service at ${baseUrl}. ${hint}`);
-    }
-
-    if (error instanceof Error) {
-      throw new ApiError(`Network error: ${error.message}`);
-    }
-
-    throw new ApiError('An unexpected network error occurred.');
   }
+
+  throw lastError || new ApiError('Unable to connect to backend API endpoints.');
 }

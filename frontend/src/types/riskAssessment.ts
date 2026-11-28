@@ -9,9 +9,20 @@ export type RiskColor = 'GREEN' | 'ORANGE' | 'RED';
 export type ConfidenceLevel = 'HIGH' | 'MODERATE' | 'FAIR' | 'LOW';
 export type AreaType = 'CORRIDOR_ALL' | 'BASIN' | 'REACH' | 'STATION';
 
+export interface RiverInfo {
+  id: string;
+  name: string;
+  is_operational: boolean;
+  status_label: string;
+  description: string;
+}
+
 export interface SupportedArea {
   id: string;
   name: string;
+  river_id?: string;
+  river_name?: string;
+  is_operational?: boolean;
   area_type: AreaType;
   coverage_description: string;
   length_km?: number | null;
@@ -22,7 +33,9 @@ export interface SupportedArea {
 }
 
 export interface SupportedAreasResponse {
+  rivers?: RiverInfo[];
   areas: SupportedArea[];
+  default_river_id?: string;
   default_area_id: string;
   total_corridor_length_km: number;
   catchment_area_km2: number;
@@ -110,6 +123,9 @@ export interface ScientificProvenanceMetadata {
 export interface AssessmentResponse {
   area_id: string;
   area_name: string;
+  river_id?: string;
+  river_name?: string;
+  is_operational_river?: boolean;
   area_type: AreaType;
   coverage_description: string;
   forecast_days: number;

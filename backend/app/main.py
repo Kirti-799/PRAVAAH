@@ -30,6 +30,35 @@ def get_application() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Direct root-level and health handlers to guarantee instant JSON health checks
+    @app.get(
+        "/health",
+        tags=["health"],
+        summary="Service Health Status",
+    )
+    @app.get(
+        "/api/health",
+        tags=["health"],
+        summary="Service Health Status",
+    )
+    @app.get(
+        "/api/index.py",
+        tags=["health"],
+        summary="Vercel Serverless Function Health Status",
+    )
+    @app.get(
+        "/index.py",
+        tags=["health"],
+        summary="Vercel Serverless Function Health Status",
+    )
+    def direct_health():
+        return {
+            "status": "ok",
+            "service": settings.PROJECT_NAME,
+            "version": settings.VERSION,
+            "environment": settings.ENVIRONMENT,
+        }
+
     # Attach versioned API routes under /api (standard) and root fallback
     app.include_router(api_router, prefix=settings.API_V1_STR)
     app.include_router(api_router)
