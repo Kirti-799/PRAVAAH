@@ -2,11 +2,10 @@
  * frontend/src/types/riskAssessment.ts
  *
  * TypeScript types for the simplified PRAVAAH AI-Powered Flood Risk Assessment & Management System.
- * Strictly 24-hour operational prediction horizon with 3 risk categories: GREEN, YELLOW, RED.
  */
 
 export type RiskLevel = 'LOW' | 'MODERATE' | 'HIGH';
-export type RiskColor = 'GREEN' | 'YELLOW' | 'RED';
+export type RiskColor = 'GREEN' | 'ORANGE' | 'RED';
 export type ConfidenceLevel = 'HIGH' | 'MODERATE' | 'FAIR' | 'LOW';
 export type AreaType = 'CORRIDOR_ALL' | 'BASIN' | 'REACH' | 'STATION';
 
@@ -31,8 +30,7 @@ export interface SupportedAreasResponse {
 
 export interface AssessmentRequest {
   area_id: string;
-  forecast_days?: number;
-  horizon_hours?: number;
+  forecast_days: number;
 }
 
 export interface UpstreamMLForecast {
@@ -41,8 +39,6 @@ export interface UpstreamMLForecast {
   flood_band: string;
   model_r2_score: number;
   model_rmse_cumecs: number;
-  model_mae_cumecs: number;
-  horizon_hours: number;
   provenance_note: string;
 }
 
@@ -50,7 +46,6 @@ export interface WeatherAssessmentSummary {
   provider: string;
   requested_days: number;
   available_days: number;
-  horizon_hours: number;
   total_forecast_rainfall_mm: number;
   peak_daily_rainfall_mm: number;
   peak_rainfall_date?: string | null;
@@ -61,7 +56,6 @@ export interface WeatherAssessmentSummary {
 
 export interface ForecastConfidenceSummary {
   forecast_days: number;
-  horizon_hours: number;
   confidence_level: ConfidenceLevel;
   confidence_score_pct: number;
   decay_explanation: string;
@@ -119,7 +113,6 @@ export interface AssessmentResponse {
   area_type: AreaType;
   coverage_description: string;
   forecast_days: number;
-  horizon_hours: number;
   risk_level: RiskLevel;
   risk_color: RiskColor;
   summary: string;
@@ -130,6 +123,9 @@ export interface AssessmentResponse {
   reach_risks: ReachRiskItem[];
   station_risks: StationRiskItem[];
   candidate_shelters: CandidateShelter[];
+  estimated_affected_population?: number;
+  vulnerable_villages_count?: number;
   scientific_provenance: ScientificProvenanceMetadata;
   assessed_at: string;
 }
+

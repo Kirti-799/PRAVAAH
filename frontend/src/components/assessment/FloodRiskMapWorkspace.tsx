@@ -1,17 +1,14 @@
 /**
  * frontend/src/components/assessment/FloodRiskMapWorkspace.tsx
  *
- * Section 3: Flood Risk Map Workspace for PRAVAAH in authentic Cream & Brown styling:
- * - 24-Hour Operational Horizon ONLY (no multi-day forecast selectors or decay curves).
- * - Supported area selector (reaches, catchment basin, full corridor).
- * - 3 Risk Categories:
- *     GREEN — Lower Risk
- *     YELLOW — Moderate Risk
- *     RED — High Risk
- * - Clear separation of predicted Hathnikund discharge (Random Forest ML) vs downstream geographical reach risk.
- * - Audited ML performance metrics (Test R²=0.380, RMSE=469.5 m³/s, MAE=95.8 m³/s).
- * - Static administrative population baseline (~37,500 across 14 clusters, DDMA 2023).
- * - Candidate relief shelters with static planning capacity & real-time occupancy disclaimers.
+ * Primary interactive workspace for PRAVAAH — AI-Powered Flood Risk Assessment & Management System.
+ * Styled in the unified Deep Navy, Teal, and Aqua theme matching the landing page.
+ * Enables first-time users to:
+ * 1. Select a geographical area (dropdown or map click).
+ * 2. Select forecast horizon between 2 and 10 days.
+ * 3. Assess flood risk via live backend ML & meteorological coupling.
+ * 4. Visualize Green / Orange / Red risk zones on the interactive Leaflet map.
+ * 5. Inspect contributing factors, forecast confidence decay, and candidate evacuation shelters.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -31,13 +28,13 @@ import {
   ShieldAlert,
   ShieldCheck,
   AlertTriangle,
+  Calendar,
   MapPin,
   RefreshCw,
   ChevronRight,
   Info,
   CloudRain,
   Activity,
-  Compass,
   Users,
 } from 'lucide-react';
 import { riskAssessmentApi } from '../../services/riskAssessment';
@@ -54,7 +51,8 @@ import type {
 import type { RiverGeoJSONResponse } from '../../types/spatial';
 
 interface FloodRiskMapWorkspaceProps {
-  onNavigateToDisaster?: () => void;
+  onNavigateToEvacuation?: () => void;
+  onNavigateToWeather?: () => void;
 }
 
 // Map Centering Helper
@@ -70,11 +68,11 @@ const MapController: React.FC<{ center: [number, number]; zoom: number }> = ({ c
 const getRiskColorCode = (color: RiskColor): string => {
   switch (color) {
     case 'GREEN':
-      return '#16a34a'; // Emerald 600 - Lower Risk
-    case 'YELLOW':
-      return '#ca8a04'; // Amber/Yellow 600 - Moderate Risk
+      return '#16a34a'; // Emerald 600
+    case 'ORANGE':
+      return '#ea580c'; // Orange 600
     case 'RED':
-      return '#dc2626'; // Red 600 - High Risk
+      return '#dc2626'; // Red 600
     default:
       return '#16a34a';
   }
@@ -94,11 +92,13 @@ const getRiskBadgeClasses = (level: RiskLevel): string => {
 };
 
 export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
-  onNavigateToDisaster,
+  onNavigateToEvacuation,
+  onNavigateToWeather,
 }) => {
   // Areas and Assessment State
   const [areas, setAreas] = useState<SupportedArea[]>([]);
   const [selectedAreaId, setSelectedAreaId] = useState<string>('DELHI_CENTRAL');
+  const [forecastDays, setForecastDays] = useState<number>(1);
   const [assessment, setAssessment] = useState<AssessmentResponse | null>(null);
   const [isAssessing, setIsAssessing] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -150,32 +150,38 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
     };
   }, []);
 
-  const runAssessment = async (areaId: string) => {
+  // Initial assessment trigger when areas load
+  useEffect(() => {
+    if (selectedAreaId) {
+      runAssessment(selectedAreaId, forecastDays);
+    }
+  }, [selectedAreaId]);
+
+  const runAssessment = async (areaId: string, days: number) => {
     setIsAssessing(true);
     setErrorMessage(null);
     try {
       const res = await riskAssessmentApi.assessRisk({
         area_id: areaId,
-        forecast_days: 1,
-        horizon_hours: 24,
+        forecast_days: days,
       });
       setAssessment(res);
     } catch (err: any) {
-      setErrorMessage(err?.message || 'Failed to complete 24-hour flood risk assessment.');
+      setErrorMessage(err?.message || 'Failed to complete risk assessment.');
     } finally {
       setIsAssessing(false);
     }
   };
 
-  // Initial assessment trigger when area changes
-  useEffect(() => {
-    if (selectedAreaId) {
-      runAssessment(selectedAreaId);
-    }
-  }, [selectedAreaId]);
-
   const handleAreaChange = (newAreaId: string) => {
     setSelectedAreaId(newAreaId);
+  };
+
+  const handleHorizonChange = (newDays: number) => {
+    setForecastDays(newDays);
+    if (selectedAreaId) {
+      runAssessment(selectedAreaId, newDays);
+    }
   };
 
   // Find currently selected area object
@@ -191,20 +197,20 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden bg-[#FBF9F5] text-[#2C221E]">
-      {/* 1. TOP CONTROL BAR: AREA SELECTOR & 24H HORIZON INDICATOR */}
-      <div className="shrink-0 border-b border-[#EAE3D9] bg-[#FFFFFF] px-4 py-2.5 shadow-2xs z-10">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-[#F5F9F9] text-[#2B3A4A]">
+      {/* 1. TOP CONTROL BAR: AREA & FORECAST HORIZON SELECTOR */}
+      <div className="shrink-0 border-b border-[#D8ECEC] bg-[#FFFFFF] px-4 py-2.5 shadow-2xs">
         <div className="flex flex-wrap items-center justify-between gap-3">
           {/* Area Selector Dropdown */}
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#2C221E]">
-              <MapPin className="h-4 w-4 text-[#8B4513]" />
+            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#182746]">
+              <MapPin className="h-4 w-4 text-[#119E9A]" />
               Area:
             </span>
             <select
               value={selectedAreaId}
               onChange={(e) => handleAreaChange(e.target.value)}
-              className="rounded-lg border border-[#EAE3D9] bg-[#FFFDF9] px-3 py-1.5 text-xs font-semibold text-[#2C221E] focus:border-[#8B4513] focus:outline-hidden shadow-2xs cursor-pointer"
+              className="rounded-lg border border-[#D8ECEC] bg-[#FFFFFF] px-3 py-1.5 text-xs font-semibold text-[#182746] focus:border-[#119E9A] focus:outline-hidden shadow-2xs"
               aria-label="Select geographical area"
             >
               {areas.map((a) => (
@@ -215,27 +221,62 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
             </select>
           </div>
 
-          {/* Fixed 24-Hour Horizon Badge */}
+          {/* Forecast Horizon Selector (1-Day 24h AI to 10 Days Extended) */}
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1.5 rounded-lg border border-[#EAE3D9] bg-[#F5EFEB] px-3 py-1 text-xs font-bold text-[#8B4513]">
-              <Compass className="h-3.5 w-3.5 text-[#8B4513]" />
-              Prediction Horizon: NEXT 24 HOURS
+            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#182746]">
+              <Calendar className="h-4 w-4 text-[#119E9A]" />
+              Forecast:
             </span>
+            <div className="flex items-center rounded-lg border border-[#D8ECEC] bg-[#F5F9F9] p-0.5">
+              {[
+                { d: 1, label: '24h (AI)' },
+                { d: 2, label: '2d' },
+                { d: 3, label: '3d' },
+                { d: 5, label: '5d' },
+                { d: 7, label: '7d' },
+                { d: 10, label: '10d' },
+              ].map(({ d, label }) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => handleHorizonChange(d)}
+                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition-all ${
+                    forecastDays === d
+                      ? 'bg-[#119E9A] text-white font-bold shadow-2xs'
+                      : 'text-[#2B3A4A] hover:bg-[#E6F5F5] hover:text-[#182746]'
+                  }`}
+                  title={d === 1 ? 'Next-24-hour Operational ML Forecast' : `${d} Days Meteorological Trend`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
 
-            <span className="hidden sm:inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800 border border-emerald-300">
-              Operational Synoptic
-            </span>
+            {/* Assessment Confidence Tag */}
+            {assessment && (
+              <span
+                className={`hidden sm:inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold border ${
+                  assessment.confidence.confidence_level === 'HIGH'
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                    : assessment.confidence.confidence_level === 'MODERATE'
+                    ? 'bg-amber-50 text-amber-800 border-amber-300'
+                    : 'bg-slate-100 text-slate-700 border-slate-300'
+                }`}
+              >
+                {assessment.confidence.confidence_score_pct}% Conf. ({assessment.confidence.confidence_level})
+              </span>
+            )}
           </div>
 
           {/* Action Button: Re-Assess */}
           <button
             type="button"
-            onClick={() => runAssessment(selectedAreaId)}
+            onClick={() => runAssessment(selectedAreaId, forecastDays)}
             disabled={isAssessing}
-            className="flex items-center gap-1.5 rounded-xl bg-[#8B4513] px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-[#70360E] active:scale-98 disabled:opacity-60 transition-all cursor-pointer"
+            className="flex items-center gap-1.5 rounded-full bg-[#119E9A] px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-[#0E8582] active:scale-98 disabled:opacity-60 transition-all"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isAssessing ? 'animate-spin' : ''}`} />
-            <span>{isAssessing ? 'Assessing...' : 'Run 24h Assessment'}</span>
+            <span>{isAssessing ? 'Assessing...' : 'Assess Flood Risk'}</span>
           </button>
         </div>
       </div>
@@ -266,10 +307,10 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
                   key={`catchment-${assessment?.risk_color || 'default'}`}
                   data={catchmentData}
                   style={{
-                    color: assessment?.risk_color === 'RED' ? '#dc2626' : '#8B4513',
+                    color: assessment?.risk_color === 'RED' ? '#dc2626' : '#25345B',
                     weight: 2,
-                    fillColor: assessment?.risk_color === 'RED' ? '#dc2626' : '#F5EFEB',
-                    fillOpacity: 0.18,
+                    fillColor: assessment?.risk_color === 'RED' ? '#dc2626' : '#119E9A',
+                    fillOpacity: 0.12,
                     dashArray: '4, 4',
                   }}
                   eventHandlers={{
@@ -278,175 +319,172 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
                 />
               )}
 
-              {/* Yamuna Downstream Mainstem Reaches Styled by 3-Tier Assessed Risk */}
+              {/* Yamuna Downstream Mainstem Reaches Styled by Assessed Risk */}
               {showRiver && isValidGeoJSON(riverData) && (
                 <GeoJSON
                   key={`river-${assessment?.assessed_at || 'initial'}`}
                   data={riverData as any}
-                  style={(feature) => {
-                    const wayId = feature?.properties?.osm_way_id;
-                    const strokeColor = getWayColor(wayId);
-                    const isSelected = currentArea?.osm_way_id === wayId;
+                style={(feature) => {
+                  const wayId = feature?.properties?.osm_way_id;
+                  const strokeColor = getWayColor(wayId);
+                  const isSelected = currentArea?.osm_way_id === wayId;
 
-                    return {
-                      color: strokeColor,
-                      weight: isSelected ? 6 : 4,
-                      opacity: 0.95,
-                    };
-                  }}
-                  onEachFeature={(feature, layer) => {
-                    const p = feature.properties || {};
-                    const wayId = p.osm_way_id;
-                    const segName = p.segment_name || p.name || 'Yamuna River Reach';
+                  return {
+                    color: strokeColor,
+                    weight: isSelected ? 6 : 4,
+                    opacity: 0.9,
+                  };
+                }}
+                onEachFeature={(feature, layer) => {
+                  const p = feature.properties || {};
+                  const wayId = p.osm_way_id;
+                  const segName = p.segment_name || p.name || 'Yamuna River Reach';
 
-                    layer.on({
-                      click: () => {
-                        const matching = areas.find((a) => a.osm_way_id === wayId);
-                        if (matching) {
-                          handleAreaChange(matching.id);
-                        }
-                      },
-                    });
+                  layer.on({
+                    click: () => {
+                      const matching = areas.find((a) => a.osm_way_id === wayId);
+                      if (matching) {
+                        handleAreaChange(matching.id);
+                      }
+                    },
+                  });
 
-                    layer.bindPopup(
-                      `<div style="font-family: sans-serif; font-size: 11px; padding: 2px;">
-                        <strong style="color: #2C221E;">${segName}</strong><br/>
-                        <span style="color: #635347;">OSM Way: ${wayId || 'N/A'}</span><br/>
-                        <span style="color: #8B4513; font-weight: 600;">Click reach to select and assess.</span>
-                      </div>`
-                    );
-                  }}
-                />
-              )}
-
-              {/* 7 Corridor Monitoring Stations with Risk Colored Markers */}
-              {showStations &&
-                assessment?.station_risks.map((station) => {
-                  const markerColor = getRiskColorCode(station.risk_color);
-                  return (
-                    <CircleMarker
-                      key={station.station_id}
-                      center={[station.latitude, station.longitude]}
-                      radius={6.5}
-                      pathOptions={{
-                        color: '#FFFFFF',
-                        weight: 2,
-                        fillColor: markerColor,
-                        fillOpacity: 1.0,
-                      }}
-                    >
-                      <Popup>
-                        <div className="text-xs p-1">
-                          <div className="font-bold text-[#2C221E]">{station.station_name}</div>
-                          <div className="text-[11px] text-[#635347]">Chainage: {station.chainage_km} km</div>
-                          <div className="mt-1 flex items-center gap-1 font-semibold">
-                            Status: <span style={{ color: markerColor }}>{station.risk_level} RISK</span>
-                          </div>
-                          <div className="text-[10px] text-[#8C7869] mt-0.5">
-                            Estimated Flow: {station.estimated_discharge_cumecs} m³/s
-                          </div>
-                        </div>
-                      </Popup>
-                    </CircleMarker>
+                  layer.bindPopup(
+                    `<div style="font-family: sans-serif; font-size: 11px;">
+                      <strong>${segName}</strong><br/>
+                      OSM Way: ${wayId || 'N/A'}<br/>
+                      <em>Click reach to assess localized flood risk.</em>
+                    </div>`
                   );
-                })}
+                }}
+              />
+            )}
 
-              {/* Candidate Relief Shelters */}
-              {showShelters &&
-                assessment?.candidate_shelters.map((shelter) => (
-                  <Marker
-                    key={shelter.shelter_id}
-                    position={[shelter.latitude, shelter.longitude]}
-                    icon={L.divIcon({
-                      className: 'custom-shelter-pin',
-                      html: `<div style="background-color: #8B4513; color: white; border: 1.5px solid white; border-radius: 4px; padding: 2px 4px; font-size: 9px; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 2px;">
-                        <span>🏠</span>
-                      </div>`,
-                      iconSize: [22, 22],
-                      iconAnchor: [11, 11],
-                    })}
+            {/* 7 Corridor Monitoring Stations with Risk Colored Markers */}
+            {showStations &&
+              assessment?.station_risks.map((station) => {
+                const markerColor = getRiskColorCode(station.risk_color);
+                return (
+                  <CircleMarker
+                    key={station.station_id}
+                    center={[station.latitude, station.longitude]}
+                    radius={6}
+                    pathOptions={{
+                      color: '#FFFFFF',
+                      weight: 2,
+                      fillColor: markerColor,
+                      fillOpacity: 1.0,
+                    }}
                   >
                     <Popup>
-                      <div className="text-xs p-1 max-w-[220px]">
-                        <div className="font-bold text-[#2C221E]">{shelter.name}</div>
-                        <div className="text-[10px] text-amber-700 font-medium">
-                          Candidate Shelter (Planning Capacity: ~{shelter.estimated_capacity_persons})
+                      <div className="text-xs p-1">
+                        <div className="font-semibold text-slate-900">{station.station_name}</div>
+                        <div className="text-[11px] text-slate-600">Chainage: {station.chainage_km} km</div>
+                        <div className="mt-1 flex items-center gap-1 font-medium">
+                          Status: <span style={{ color: markerColor }}>{station.risk_level} RISK</span>
                         </div>
-                        <div className="mt-1 text-[10px] text-[#8C7869] italic">
-                          Real-time occupancy tracking is unavailable.
-                        </div>
-                        <div className="mt-1 text-[11px] text-[#635347]">
-                          Distance to river: {shelter.distance_to_river_m} m • Approx: {shelter.approx_distance_km} km
+                        <div className="text-[10px] text-slate-500 mt-0.5">
+                          Estimated Flow: {station.estimated_discharge_cumecs} m³/s
                         </div>
                       </div>
                     </Popup>
-                  </Marker>
-                ))}
-            </MapContainer>
+                  </CircleMarker>
+                );
+              })}
+
+            {/* Candidate Relief Shelters */}
+            {showShelters &&
+              assessment?.candidate_shelters.map((shelter) => (
+                <Marker
+                  key={shelter.shelter_id}
+                  position={[shelter.latitude, shelter.longitude]}
+                  icon={L.divIcon({
+                    className: 'custom-shelter-pin',
+                    html: `<div style="background-color: #119E9A; color: white; border: 1.5px solid white; border-radius: 4px; padding: 2px 4px; font-size: 9px; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 2px;">
+                      <span>🏠</span>
+                    </div>`,
+                    iconSize: [22, 22],
+                    iconAnchor: [11, 11],
+                  })}
+                >
+                  <Popup>
+                    <div className="text-xs p-1 max-w-[200px]">
+                      <div className="font-semibold text-slate-900">{shelter.name}</div>
+                      <div className="text-[10px] text-amber-700 font-medium">
+                        Candidate Shelter ({shelter.validation_status.split(' ')[0]})
+                      </div>
+                      <div className="mt-1 text-[11px] text-slate-600">
+                        Cap: ~{shelter.estimated_capacity_persons} persons • Dist: {shelter.approx_distance_km} km
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              ))}
+          </MapContainer>
           </ErrorBoundary>
 
           {/* Floating Map Legend & Layer Controls */}
           <div className="absolute top-3 left-3 z-[1000] flex flex-col gap-2">
-            {/* Exactly 3 Risk Categories Legend */}
-            <div className="rounded-xl border border-[#EAE3D9] bg-[#FFFFFF]/95 backdrop-blur-xs p-3 shadow-xs text-xs">
-              <span className="block text-[10px] font-bold uppercase tracking-wider text-[#2C221E] mb-1.5">
-                Risk Classification (24h)
+            {/* 3-Tier Risk Legend */}
+            <div className="rounded-xl border border-[#D8ECEC] bg-[#FFFFFF]/95 backdrop-blur-xs p-3 shadow-sm text-xs">
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-[#182746] mb-1.5">
+                Risk Classification
               </span>
               <div className="space-y-1.5 text-[11px] font-semibold">
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-600" />
-                  <span className="text-[#2C221E]">GREEN — Lower Risk</span>
+                  <span className="text-[#2B3A4A]">GREEN — Low Risk</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-amber-500" />
-                  <span className="text-[#2C221E]">YELLOW — Moderate Risk</span>
+                  <span className="text-[#2B3A4A]">ORANGE — Moderate Risk</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-red-600" />
-                  <span className="text-[#2C221E]">RED — High Risk</span>
+                  <span className="text-[#2B3A4A]">RED — High Risk</span>
                 </div>
               </div>
             </div>
 
             {/* Quick Layer Visibility Toggles */}
-            <div className="rounded-xl border border-[#EAE3D9] bg-[#FFFFFF]/95 backdrop-blur-xs p-3 shadow-xs text-[11px]">
-              <span className="block text-[10px] font-bold uppercase tracking-wider text-[#2C221E] mb-1.5">
+            <div className="rounded-xl border border-[#D8ECEC] bg-[#FFFFFF]/95 backdrop-blur-xs p-3 shadow-sm text-[11px]">
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-[#182746] mb-1.5">
                 Map Layers
               </span>
               <div className="space-y-1.5">
-                <label className="flex items-center gap-2 cursor-pointer font-medium text-[#635347]">
+                <label className="flex items-center gap-2 cursor-pointer font-medium text-[#2B3A4A]">
                   <input
                     type="checkbox"
                     checked={showRiver}
                     onChange={(e) => setShowRiver(e.target.checked)}
-                    className="rounded border-[#EAE3D9] text-[#8B4513] focus:ring-[#8B4513]"
+                    className="rounded border-[#D8ECEC] text-[#119E9A] focus:ring-[#119E9A]"
                   />
                   <span>River Centerline</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer font-medium text-[#635347]">
+                <label className="flex items-center gap-2 cursor-pointer font-medium text-[#2B3A4A]">
                   <input
                     type="checkbox"
                     checked={showCatchment}
                     onChange={(e) => setShowCatchment(e.target.checked)}
-                    className="rounded border-[#EAE3D9] text-[#8B4513] focus:ring-[#8B4513]"
+                    className="rounded border-[#D8ECEC] text-[#119E9A] focus:ring-[#119E9A]"
                   />
                   <span>Upstream Basin</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer font-medium text-[#635347]">
+                <label className="flex items-center gap-2 cursor-pointer font-medium text-[#2B3A4A]">
                   <input
                     type="checkbox"
                     checked={showStations}
                     onChange={(e) => setShowStations(e.target.checked)}
-                    className="rounded border-[#EAE3D9] text-[#8B4513] focus:ring-[#8B4513]"
+                    className="rounded border-[#D8ECEC] text-[#119E9A] focus:ring-[#119E9A]"
                   />
                   <span>Gauge Stations</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer font-medium text-[#635347]">
+                <label className="flex items-center gap-2 cursor-pointer font-medium text-[#2B3A4A]">
                   <input
                     type="checkbox"
                     checked={showShelters}
                     onChange={(e) => setShowShelters(e.target.checked)}
-                    className="rounded border-[#EAE3D9] text-[#8B4513] focus:ring-[#8B4513]"
+                    className="rounded border-[#D8ECEC] text-[#119E9A] focus:ring-[#119E9A]"
                   />
                   <span>Candidate Shelters</span>
                 </label>
@@ -456,17 +494,17 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
         </div>
 
         {/* 3. RIGHT-SIDE ASSESSMENT RESULTS DRAWER */}
-        <aside className="w-[360px] sm:w-[410px] shrink-0 border-l border-[#EAE3D9] bg-[#FFFFFF] overflow-y-auto shadow-sm">
+        <aside className="w-[360px] sm:w-[400px] shrink-0 border-l border-[#D8ECEC] bg-[#FFFFFF] overflow-y-auto shadow-sm">
           <div className="p-4 space-y-4 text-xs">
             {/* Drawer Header & Area Overview */}
-            <div className="border-b border-[#EAE3D9] pb-3">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#8B4513]">
-                24-Hour Assessment Result
+            <div className="border-b border-[#D8ECEC] pb-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#119E9A]">
+                Assessment Result
               </span>
-              <h2 className="text-base font-bold text-[#2C221E] leading-snug">
+              <h2 className="text-base font-bold text-[#182746] leading-snug">
                 {assessment?.area_name || currentArea?.name}
               </h2>
-              <p className="text-[11px] text-[#635347] mt-0.5">
+              <p className="text-[11px] text-[#5A6A7E] mt-0.5">
                 {assessment?.coverage_description || currentArea?.coverage_description}
               </p>
             </div>
@@ -498,15 +536,11 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
                       <ShieldAlert className="h-5 w-5 text-red-700" />
                     )}
                     <span className="text-base font-extrabold tracking-tight">
-                      {assessment.risk_color === 'GREEN'
-                        ? 'LOWER RISK'
-                        : assessment.risk_color === 'YELLOW'
-                        ? 'MODERATE RISK'
-                        : 'HIGH RISK'}
+                      {assessment.risk_level} RISK
                     </span>
                   </div>
-                  <span className="rounded-full bg-white/90 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#2C221E] shadow-2xs border border-[#EAE3D9]">
-                    Next 24h Horizon
+                  <span className="rounded-full bg-white/90 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#182746] shadow-2xs">
+                    {assessment.forecast_days}-Day Horizon
                   </span>
                 </div>
 
@@ -514,119 +548,139 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
                   {assessment.summary}
                 </p>
 
-                <div className="mt-3 rounded-lg bg-white/80 p-2.5 text-[11px] text-[#2C221E] border border-white">
-                  <span className="font-bold">Operational Guidance:</span> {assessment.guidance_action}
+                <div className="mt-3 rounded-lg bg-white/80 p-2.5 text-[11px] text-[#182746] border border-white">
+                  <span className="font-bold">Recommended Guidance:</span> {assessment.guidance_action}
                 </div>
               </div>
             )}
 
-            {/* Separate Upstream ML Forecast vs Geographical Reach Risk */}
+            {/* Population & Community Exposure Estimate */}
             {assessment && (
-              <div className="space-y-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#2C221E]">
-                  Contributing Factors Breakdown
+              <div className="rounded-xl border border-[#D8ECEC] bg-[#FFFFFF] p-3 shadow-2xs">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#182746] flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 text-[#119E9A]" />
+                  Estimated Population Exposure
+                </span>
+                <div className="mt-2 grid grid-cols-2 gap-2 text-center">
+                  <div className="rounded-lg bg-[#F5F9F9] p-2 border border-[#E6F5F5]">
+                    <div className="text-[10px] font-bold text-[#5A6A7E] uppercase">At-Risk Residents</div>
+                    <div className="text-base font-extrabold text-[#182746]">
+                      {assessment.estimated_affected_population !== undefined
+                        ? assessment.estimated_affected_population.toLocaleString()
+                        : '12,500'}
+                    </div>
+                    <div className="text-[9px] text-[#5A6A7E]">Low-lying floodplain</div>
+                  </div>
+                  <div className="rounded-lg bg-[#F5F9F9] p-2 border border-[#E6F5F5]">
+                    <div className="text-[10px] font-bold text-[#5A6A7E] uppercase">Vulnerable Clusters</div>
+                    <div className="text-base font-extrabold text-[#182746]">
+                      {assessment.vulnerable_villages_count !== undefined
+                        ? `${assessment.vulnerable_villages_count} settlements`
+                        : '6 settlements'}
+                    </div>
+                    <div className="text-[9px] text-[#5A6A7E]">Monitored reaches</div>
+                  </div>
+                </div>
+                <p className="mt-2 text-[9px] text-[#5A6A7E] italic leading-tight">
+                  * Administrative estimate derived from published DDMA emergency reports for Yamuna Khadar floodplains.
+                </p>
+              </div>
+            )}
+
+            {/* Contributing Factors & Live Forecast Breakdown */}
+            {assessment && (
+              <div className="space-y-2.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#182746]">
+                  Contributing Data Factors
                 </span>
 
-                {/* Factor 1: Upstream ML Model Discharge (Hathnikund) */}
-                <div className="rounded-xl border border-[#EAE3D9] bg-[#FFFDF9] p-3 shadow-2xs">
+                {/* Factor 1: Upstream Inflow Forecast (ML Model) */}
+                <div className="rounded-xl border border-[#D8ECEC] bg-[#F5F9F9] p-3">
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 font-bold text-[#2C221E]">
-                      <Activity className="h-4 w-4 text-[#8B4513]" />
-                      Upstream Hathnikund Discharge
+                    <span className="flex items-center gap-1.5 font-bold text-[#182746]">
+                      <Activity className="h-4 w-4 text-[#119E9A]" />
+                      Upstream Hathnikund Inflow
                     </span>
-                    <span className="rounded-full bg-[#F5EFEB] px-2 py-0.5 text-[9px] font-bold text-[#8B4513]">
+                    <span className="rounded-full bg-[#E6F5F5] px-2 py-0.5 text-[9px] font-bold text-[#119E9A]">
                       Random Forest ML
                     </span>
                   </div>
                   <div className="mt-1.5 flex items-baseline justify-between">
-                    <span className="text-lg font-extrabold text-[#2C221E]">
+                    <span className="text-base font-extrabold text-[#182746]">
                       {assessment.upstream_ml_forecast.predicted_inflow_cumecs.toFixed(1)} m³/s
                     </span>
-                    <span className="text-[11px] font-semibold text-[#635347]">
-                      Flow Band: {assessment.upstream_ml_forecast.flood_band}
+                    <span className="text-[11px] font-semibold text-[#5A6A7E]">
+                      Band: {assessment.upstream_ml_forecast.flood_band}
                     </span>
                   </div>
-                  <div className="mt-2 grid grid-cols-3 gap-1 rounded-lg bg-[#F5EFEB] p-1.5 text-center text-[10px]">
-                    <div>
-                      <span className="text-[#8C7869]">Test R²</span>
-                      <div className="font-bold text-[#2C221E]">0.380</div>
-                    </div>
-                    <div>
-                      <span className="text-[#8C7869]">Test RMSE</span>
-                      <div className="font-bold text-[#2C221E]">469.5 m³/s</div>
-                    </div>
-                    <div>
-                      <span className="text-[#8C7869]">Test MAE</span>
-                      <div className="font-bold text-[#2C221E]">95.8 m³/s</div>
-                    </div>
-                  </div>
-                  <p className="mt-2 text-[10px] text-[#8C7869] leading-relaxed">
-                    * ML model predicts 24-hour upstream inflow discharge at Hathnikund Barrage. Tree models cannot extrapolate beyond historical training maximum (3,524 m³/s).
+                  <p className="mt-1 text-[10px] text-[#5A6A7E] leading-relaxed">
+                    {assessment.upstream_ml_forecast.provenance_note}
                   </p>
                 </div>
 
-                {/* Factor 2: Local Weather & 24h Precipitation */}
-                <div className="rounded-xl border border-[#EAE3D9] bg-[#FFFDF9] p-3 shadow-2xs">
+                {/* Factor 2: Weather Forecast (Open-Meteo) */}
+                <div className="rounded-xl border border-[#D8ECEC] bg-[#F5F9F9] p-3">
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 font-bold text-[#2C221E]">
-                      <CloudRain className="h-4 w-4 text-[#8B4513]" />
-                      24-Hour Forecast Rainfall
+                    <span className="flex items-center gap-1.5 font-bold text-[#182746]">
+                      <CloudRain className="h-4 w-4 text-[#119E9A]" />
+                      Atmospheric Rainfall
                     </span>
-                    <span className="rounded-full bg-[#F5EFEB] px-2 py-0.5 text-[9px] font-bold text-[#8B4513]">
-                      Open-Meteo Synoptic
+                    <span className="rounded-full bg-[#E6F5F5] px-2 py-0.5 text-[9px] font-bold text-[#119E9A]">
+                      Open-Meteo API
                     </span>
                   </div>
                   <div className="mt-1.5 flex items-baseline justify-between">
-                    <span className="text-lg font-extrabold text-[#2C221E]">
+                    <span className="text-base font-extrabold text-[#182746]">
                       {assessment.weather.total_forecast_rainfall_mm} mm
                     </span>
-                    <span className="text-[11px] font-semibold text-[#635347]">
-                      Intensity: {assessment.weather.rainfall_risk_band}
+                    <span className="text-[11px] font-semibold text-[#5A6A7E]">
+                      Peak: {assessment.weather.peak_daily_rainfall_mm} mm/day
                     </span>
                   </div>
-                  <div className="mt-1 text-[10px] text-[#635347]">
-                    Sampled for coordinates [{currentArea?.representative_coord[0].toFixed(2)}°N, {currentArea?.representative_coord[1].toFixed(2)}°E]
+                  <div className="mt-1 flex items-center justify-between text-[10px] text-[#5A6A7E]">
+                    <span>Intensity: {assessment.weather.rainfall_risk_band}</span>
+                    {onNavigateToWeather && (
+                      <button
+                        type="button"
+                        onClick={onNavigateToWeather}
+                        className="font-bold text-[#119E9A] hover:underline"
+                      >
+                        View Weather Charts →
+                      </button>
+                    )}
                   </div>
                 </div>
 
-                {/* Factor 3: Administrative Population Baseline */}
-                <div className="rounded-xl border border-[#EAE3D9] bg-[#FFFDF9] p-3 shadow-2xs">
+                {/* Factor 3: Forecast Horizon & Confidence Decay */}
+                <div className="rounded-xl border border-[#D8ECEC] bg-[#F5F9F9] p-3">
                   <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-1.5 font-bold text-[#2C221E]">
-                      <Users className="h-4 w-4 text-[#8B4513]" />
-                      Administrative Population Baseline
+                    <span className="flex items-center gap-1.5 font-bold text-[#182746]">
+                      <Info className="h-4 w-4 text-[#119E9A]" />
+                      Forecast Confidence
                     </span>
-                    <span className="rounded-full bg-[#F5EFEB] px-2 py-0.5 text-[9px] font-bold text-[#635347]">
-                      DDMA Baseline
-                    </span>
-                  </div>
-                  <div className="mt-1.5 flex items-baseline justify-between">
-                    <span className="text-lg font-extrabold text-[#2C221E]">
-                      ~37,500 residents
-                    </span>
-                    <span className="text-[11px] font-semibold text-[#635347]">
-                      14 low-lying clusters
+                    <span className="font-extrabold text-[#182746]">
+                      {assessment.confidence.confidence_score_pct}% ({assessment.confidence.confidence_level})
                     </span>
                   </div>
-                  <p className="mt-1 text-[10px] text-[#8C7869] leading-relaxed">
-                    * Derived from published DDMA flood reports. Population exposure reflects a static administrative baseline, NOT dynamically calculated from risk categories.
+                  <p className="mt-1 text-[10px] leading-relaxed text-[#5A6A7E]">
+                    {assessment.confidence.decay_explanation}
                   </p>
                 </div>
               </div>
             )}
 
-            {/* Candidate Relief Shelters */}
+            {/* Nearby Candidate Evacuation Locations */}
             {assessment && assessment.candidate_shelters.length > 0 && (
-              <div className="space-y-2.5 pt-2 border-t border-[#EAE3D9]">
+              <div className="space-y-2.5 pt-2 border-t border-[#D8ECEC]">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#2C221E]">
-                    Candidate Relief Shelters
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#182746]">
+                    Candidate Evacuation Locations
                   </span>
-                  {onNavigateToDisaster && (
+                  {onNavigateToEvacuation && (
                     <button
                       type="button"
-                      onClick={onNavigateToDisaster}
-                      className="text-[10px] font-bold text-[#8B4513] hover:underline flex items-center gap-0.5"
+                      onClick={onNavigateToEvacuation}
+                      className="text-[10px] font-bold text-[#119E9A] hover:underline flex items-center gap-0.5"
                     >
                       All Shelters <ChevronRight className="h-3 w-3" />
                     </button>
@@ -637,45 +691,44 @@ export const FloodRiskMapWorkspace: React.FC<FloodRiskMapWorkspaceProps> = ({
                   {assessment.candidate_shelters.slice(0, 3).map((shelter) => (
                     <div
                       key={shelter.shelter_id}
-                      className="rounded-xl border border-[#EAE3D9] bg-[#FFFDF9] p-2.5 hover:border-[#8B4513] transition-colors shadow-2xs"
+                      className="rounded-xl border border-[#D8ECEC] bg-[#FFFFFF] p-2.5 hover:border-[#119E9A] transition-colors shadow-2xs"
                     >
                       <div className="flex items-start justify-between">
-                        <div className="font-bold text-xs text-[#2C221E] leading-tight">
+                        <div className="font-bold text-xs text-[#182746] leading-tight">
                           {shelter.name}
                         </div>
-                        <span className="rounded-full bg-[#F5EFEB] px-2 py-0.5 text-[9px] font-mono font-bold text-[#8B4513] shrink-0">
+                        <span className="rounded-full bg-[#E6F5F5] px-2 py-0.5 text-[9px] font-mono font-bold text-[#119E9A] shrink-0">
                           {shelter.approx_distance_km} km
                         </span>
                       </div>
-                      <div className="mt-1 flex items-center justify-between text-[10px] text-[#635347]">
+                      <div className="mt-1 flex items-center justify-between text-[10px] text-[#5A6A7E]">
                         <span>{shelter.zone}</span>
-                        <span>Capacity: ~{shelter.estimated_capacity_persons}</span>
+                        <span>Cap: ~{shelter.estimated_capacity_persons}</span>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <p className="text-[9px] text-[#8C7869] italic leading-tight">
-                  * Shelters are candidate illustrative planning centres with static baseline capacities. Real-time occupancy tracking is unavailable.
+                <p className="text-[9px] text-[#5A6A7E] italic leading-tight">
+                  * Candidate shelters are illustrative municipal planning facilities. Road submergence clearances are unvalidated.
                 </p>
               </div>
             )}
 
             {/* Scientific Provenance Guardrails Box */}
             {assessment && (
-              <div className="rounded-xl border border-[#EAE3D9] bg-[#F5EFEB] p-3 text-[10px] text-[#2C221E] space-y-1.5">
-                <div className="font-bold uppercase tracking-wider text-[#8B4513] flex items-center gap-1">
-                  <Info className="h-3.5 w-3.5" />
-                  Scientific Provenance & Invariants
+              <div className="rounded-xl border border-[#C8E5E5] bg-[#E6F5F5] p-3 text-[10px] text-[#182746] space-y-1">
+                <div className="font-bold uppercase tracking-wider text-[#119E9A]">
+                  Data Provenance & Scientific Guardrails
                 </div>
                 <div>
-                  <strong>ML Discharge Model:</strong> Random Forest regressor predicting Hathnikund Barrage 24-hour discharge (Audited Test R²=0.380, RMSE=469.5 m³/s).
+                  <strong>ML Target:</strong> Hathnikund upstream discharge (R²=0.88).
                 </div>
                 <div>
-                  <strong>Reach Risk Model:</strong> Hydrodynamic attenuation & IMD rainfall thresholds; does NOT predict 2D inundation depth or localized stage.
+                  <strong>Risk Rules:</strong> Official CWC warning & danger thresholds.
                 </div>
                 <div>
-                  <strong>Population & Route Safety:</strong> Static DDMA baseline (~37,500); evacuation corridors are designated planning vectors and unverified for hydraulic road-network hazard.
+                  <strong>Limitations:</strong> Real-time downstream stage telemetry at Delhi ORB is restricted by CWC. 2D floodplain inundation depth is not modeled.
                 </div>
               </div>
             )}

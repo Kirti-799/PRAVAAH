@@ -450,13 +450,8 @@ export const DisasterResponseWorkspace: React.FC<DisasterResponseWorkspaceProps>
                 </div>
 
                 <span className="rounded-md bg-[#FEF3C7] border border-amber-300 px-2.5 py-1 text-[10px] font-bold text-amber-900">
-                  CANDIDATE SHELTERS — REAL-TIME OCCUPANCY UNAVAILABLE
+                  ILLUSTRATIVE PROTOTYPES — UNVALIDATED
                 </span>
-              </div>
-
-              <div className="rounded-xl border border-[#EAE3D9] bg-[#FFFDF9] p-3 text-xs text-[#635347]">
-                <strong className="text-[#2C221E]">Planning Benchmark Notice:</strong> Shelter capacities reflect official static design baselines.
-                Continuous real-time occupancy telemetry and dynamic bed availability are currently unavailable.
               </div>
 
               {/* Shelters Table */}
@@ -521,13 +516,8 @@ export const DisasterResponseWorkspace: React.FC<DisasterResponseWorkspaceProps>
                 </div>
 
                 <span className="rounded-md bg-[#FEF3C7] border border-amber-300 px-2.5 py-1 text-[10px] font-bold text-amber-900">
-                  DESIGNATED PLANNING CORRIDORS — ROAD SUBMERGENCE UNVERIFIED
+                  ILLUSTRATIVE PROTOTYPES — UNVALIDATED
                 </span>
-              </div>
-
-              <div className="rounded-xl border border-[#EAE3D9] bg-[#FFFDF9] p-3 text-xs text-[#635347]">
-                <strong className="text-[#2C221E]">Route Safety Notice:</strong> Evacuation corridors represent municipal planning alignments.
-                Road-network hazard validation and hydraulic submergence clearance are <strong>unverified</strong>. Never describe a corridor as a guaranteed safe route.
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

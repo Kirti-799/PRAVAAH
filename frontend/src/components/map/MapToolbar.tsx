@@ -1,10 +1,12 @@
 /**
  * frontend/src/components/map/MapToolbar.tsx
  *
- * Streamlined 3-Workspace Top Bar for PRAVAAH in authentic Cream & Brown styling:
- * 1. Overview (Overview Dashboard)
- * 2. Flood Risk Map (24-Hour Flood Risk Assessment Map)
- * 3. Disaster Response (Disaster Intelligence, Shelters & Corridors)
+ * Streamlined 5-Workspace Top Bar for PRAVAAH in authentic Cream & Brown styling:
+ * 1. Overview
+ * 2. Flood Map
+ * 3. Prediction & Simulation
+ * 4. Disaster Response
+ * 5. Terrain Insights
  */
 
 import React, { useState, useEffect } from 'react';
@@ -16,7 +18,10 @@ import {
   Minimize2,
 } from 'lucide-react';
 
-export type WorkspaceViewMode = 'overview' | 'map' | 'disaster';
+export type WorkspaceViewMode =
+  | 'overview'
+  | 'map'
+  | 'disaster';
 
 interface MapToolbarProps {
   mapContainerRef?: React.RefObject<HTMLDivElement | null>;
@@ -59,14 +64,14 @@ export const MapToolbar: React.FC<MapToolbarProps> = ({
   };
 
   const navItems: { mode: WorkspaceViewMode; label: string; icon: React.ElementType }[] = [
-    { mode: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { mode: 'overview', label: 'Overview Dashboard', icon: LayoutDashboard },
     { mode: 'map', label: 'Flood Risk Map', icon: Map },
-    { mode: 'disaster', label: 'Disaster Response', icon: ShieldAlert },
+    { mode: 'disaster', label: 'Disaster Response & Shelters', icon: ShieldAlert },
   ];
 
   return (
     <div className="flex h-11 w-full items-center justify-between border-b border-[#EAE3D9] bg-[#FFFDF9] px-3 sm:px-4 text-xs select-none shadow-2xs z-20">
-      {/* 3 Primary Workspace Tabs */}
+      {/* 5 Primary Workspace Tabs */}
       <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -76,9 +81,9 @@ export const MapToolbar: React.FC<MapToolbarProps> = ({
             <button
               key={item.mode}
               onClick={() => onViewChange?.(item.mode)}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-semibold transition-all whitespace-nowrap ${
+              className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-all whitespace-nowrap ${
                 isActive
-                  ? 'border border-[#EAE3D9] bg-[#F5EFEB] text-[#2C221E] shadow-2xs font-bold'
+                  ? 'border border-[#EAE3D9] bg-[#F5EFEB] text-[#2C221E] shadow-2xs'
                   : 'text-[#635347] hover:bg-[#F5EFEB]/60 hover:text-[#2C221E]'
               }`}
             >

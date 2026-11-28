@@ -36,9 +36,9 @@ export const AppLayout: React.FC<AppLayoutProps> = ({
       const navParam = params.get('nav');
       if (navParam) {
         const lower = navParam.toLowerCase();
-        if (lower === 'map' || lower === 'flood') return 'Flood Risk Map';
+        if (lower === 'map' || lower === 'flood') return 'Flood Map';
         if (lower === 'disaster') return 'Disaster Response';
-        return navParam;
+        return 'Overview';
       }
     }
     return 'Overview';

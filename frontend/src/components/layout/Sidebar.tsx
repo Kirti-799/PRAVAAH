@@ -1,10 +1,12 @@
 /**
  * frontend/src/components/layout/Sidebar.tsx
  *
- * Streamlined 3-Workspace Primary Navigation for PRAVAAH in authentic Cream & Brown styling:
- * 1. Overview (Overview Dashboard)
- * 2. Flood Risk Map (24-Hour Flood Risk Assessment Map)
- * 3. Disaster Response (Disaster Response, Shelters & Corridors)
+ * Unified 5-Workspace Primary Navigation for PRAVAAH in authentic Cream & Brown styling:
+ * 1. Overview
+ * 2. Flood Map
+ * 3. Prediction & Simulation
+ * 4. Disaster Response
+ * 5. Terrain Insights
  */
 
 import React from 'react';
@@ -42,21 +44,21 @@ interface NavItem {
 const PRIMARY_NAV_ITEMS: NavItem[] = [
   {
     name: 'Overview',
-    label: 'Overview',
+    label: 'Overview Dashboard',
     icon: LayoutDashboard,
     description: 'Corridor summary, real observations & warning thresholds',
   },
   {
-    name: 'Flood Risk Map',
+    name: 'Flood Map',
     label: 'Flood Risk Map',
     icon: Map,
-    description: '24-hour ML risk classification (Green / Yellow / Red)',
+    description: '24h ML flood risk prediction, Green/Yellow/Red zones & shelters',
   },
   {
     name: 'Disaster Response',
-    label: 'Disaster Response',
+    label: 'Disaster Response & Shelters',
     icon: ShieldAlert,
-    description: 'CWC gauge thresholds, candidate shelters & corridors',
+    description: 'CWC gauge thresholds, DDMA shelters & evacuation corridors',
   },
 ];
 
@@ -86,8 +88,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-[#EAE3D9] bg-[#FFFDF9] transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-[#EAE3D9] bg-[#FFFDF9] transition-transform duration-200 ease-in-out lg:static lg:translate-x-0 ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
       >
         {/* Mobile Header */}
         <div className="flex h-14 items-center justify-between border-b border-[#EAE3D9] px-4 lg:hidden bg-[#FBF9F5]">
@@ -109,15 +112,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Navigation Workspaces List */}
         <div className="flex-1 overflow-y-auto px-3 py-4">
           <div className="mb-2 px-3 text-[10px] font-bold uppercase tracking-wider text-[#8C7869]">
-            Primary Sections
+            Primary Workspaces
           </div>
 
           <nav className="space-y-1" aria-label="Workspaces">
             {PRIMARY_NAV_ITEMS.map((item) => {
               const Icon = item.icon;
-              const isActive =
-                activeNav === item.name ||
-                (item.name === 'Flood Risk Map' && (activeNav === 'Flood Map' || activeNav === 'map'));
+              const isActive = activeNav === item.name;
 
               return (
                 <button
@@ -126,21 +127,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onSelectNav(item.name);
                     onClose();
                   }}
-                  className={`group flex w-full flex-col rounded-lg px-3 py-2.5 text-left transition-all ${isActive
-                    ? 'border-l-4 border-[#8B4513] bg-[#F5EFEB] text-[#2C221E] shadow-2xs font-semibold'
-                    : 'border-l-4 border-transparent text-[#635347] hover:bg-[#F5EFEB]/60 hover:text-[#2C221E]'
-                    }`}
+                  className={`group flex w-full flex-col rounded-lg px-3 py-2.5 text-left transition-all ${
+                    isActive
+                      ? 'border-l-4 border-[#8B4513] bg-[#F5EFEB] text-[#2C221E] shadow-2xs font-semibold'
+                      : 'border-l-4 border-transparent text-[#635347] hover:bg-[#F5EFEB]/60 hover:text-[#2C221E]'
+                  }`}
                 >
                   <div className="flex items-center gap-2.5">
                     <Icon
-                      className={`h-4 w-4 transition-colors ${isActive ? 'text-[#8B4513]' : 'text-[#8C7869] group-hover:text-[#635347]'
-                        }`}
+                      className={`h-4 w-4 transition-colors ${
+                        isActive ? 'text-[#8B4513]' : 'text-[#8C7869] group-hover:text-[#635347]'
+                      }`}
                     />
                     <span className="text-sm font-semibold">{item.label}</span>
                   </div>
                   <span
-                    className={`mt-1 pl-6.5 text-[11px] leading-tight ${isActive ? 'text-[#635347]' : 'text-[#8C7869]'
-                      }`}
+                    className={`mt-1 pl-6.5 text-[11px] leading-tight ${
+                      isActive ? 'text-[#635347]' : 'text-[#8C7869]'
+                    }`}
                   >
                     {item.description}
                   </span>
@@ -169,24 +173,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span className="font-semibold text-[#2C221E]">11,365 km² (D8 DEM)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-[#8C7869]">Prediction Horizon:</span>
-                <span className="font-semibold text-[#8B4513]">Next 24 Hours</span>
+                <span className="text-[#8C7869]">CWC Survey Ref:</span>
+                <span className="font-semibold text-[#2C221E]">11,112 km² (Lit)</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer: System Health & Status */}
+        {/* Footer: System Health & Provenance */}
         <div className="border-t border-[#EAE3D9] bg-[#FBF9F5] p-3">
           <div className="flex items-center justify-between text-xs">
             <span className="font-bold text-[#2C221E]">System Status</span>
             <span
-              className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${isLoading
-                ? 'bg-amber-100 text-amber-800'
-                : isConnected
+              className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                isLoading
+                  ? 'bg-amber-100 text-amber-800'
+                  : isConnected
                   ? 'bg-emerald-100 text-emerald-800'
                   : 'bg-red-100 text-red-800'
-                }`}
+              }`}
             >
               {isLoading ? (
                 <RefreshCw className="h-2.5 w-2.5 animate-spin" />

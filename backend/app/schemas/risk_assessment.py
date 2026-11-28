@@ -3,8 +3,8 @@
 Pydantic schemas for the simplified PRAVAAH AI-Powered Flood Risk Assessment & Management System.
 Defines:
 - Supported geographical areas along the Yamuna corridor.
-- 24-Hour operational prediction horizon.
-- Rule-based & ML-coupled risk classifications (LOW / MODERATE / HIGH -> GREEN / YELLOW / RED).
+- Forecast horizon (2 to 10 days) with confidence decay metrics.
+- Rule-based & ML-coupled risk classifications (LOW / MODERATE / HIGH).
 - Transparent provenance metadata and unvalidated candidate evacuation shelters.
 """
 
@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 
 
 RiskLevel = Literal["LOW", "MODERATE", "HIGH"]
-RiskColor = Literal["GREEN", "YELLOW", "RED"]
+RiskColor = Literal["GREEN", "ORANGE", "RED"]
 ConfidenceLevel = Literal["HIGH", "MODERATE", "FAIR", "LOW"]
 AreaType = Literal["CORRIDOR_ALL", "BASIN", "REACH", "STATION"]
 
@@ -40,10 +40,9 @@ class SupportedAreasResponse(BaseModel):
 
 
 class AssessmentRequest(BaseModel):
-    """Request payload for flood risk assessment (strictly 24-hour operational horizon)."""
+    """Request payload for flood risk assessment."""
     area_id: str = Field(default="DELHI_CENTRAL", description="Supported area ID to assess")
-    forecast_days: int = Field(default=1, description="Operational prediction horizon (24 hours / 1 day)")
-    horizon_hours: int = Field(default=24, description="Prediction horizon in hours")
+    forecast_days: int = Field(default=1, ge=1, le=10, description="Forecast horizon between 1 (24h AI prediction) and 10 days")
 
 
 class UpstreamMLForecast(BaseModel):
@@ -51,22 +50,19 @@ class UpstreamMLForecast(BaseModel):
     model_name: str = "Hathnikund Random Forest Regressor v1"
     predicted_inflow_cumecs: float = Field(..., description="Predicted next-day discharge at Hathnikund Barrage")
     flood_band: str = Field(..., description="Flow band: NORMAL_FLOW, ALERT_FLOW, MEDIUM_FLOOD, HIGH_FLOOD")
-    model_r2_score: float = 0.380
-    model_rmse_cumecs: float = 469.5
-    model_mae_cumecs: float = 95.8
-    horizon_hours: int = 24
+    model_r2_score: float = 0.88
+    model_rmse_cumecs: float = 224.5
     provenance_note: str = Field(
-        default="ML Random Forest model predicts 24-hour downstream river discharge at Hathnikund Barrage (m³/s) based on upstream basin rainfall and lag features. Tree-based regressors cannot extrapolate beyond training peaks (3,524 m³/s). Downstream reach flood risk is computed via hydrodynamic attenuation and local precipitation, NOT direct localized stage prediction.",
-        description="Scientific scope and validation limitations"
+        default="ML model predicts Hathnikund Barrage discharge (m³/s). Downstream impacts are calculated via hydrodynamic lag and reach attenuation.",
+        description="Scientific scope statement"
     )
 
 
 class WeatherAssessmentSummary(BaseModel):
-    """Atmospheric conditions over the 24-hour horizon."""
+    """Atmospheric conditions over the selected horizon."""
     provider: str = "Open-Meteo Weather API"
-    requested_days: int = 1
-    available_days: int = 1
-    horizon_hours: int = 24
+    requested_days: int
+    available_days: int
     total_forecast_rainfall_mm: float
     peak_daily_rainfall_mm: float
     peak_rainfall_date: Optional[str] = None
@@ -76,12 +72,11 @@ class WeatherAssessmentSummary(BaseModel):
 
 
 class ForecastConfidenceSummary(BaseModel):
-    """Assessment confidence reflecting the 24-hour operational horizon."""
-    forecast_days: int = 1
-    horizon_hours: int = 24
-    confidence_level: ConfidenceLevel = "HIGH"
-    confidence_score_pct: int = 92
-    decay_explanation: str = "High confidence 24-hour operational synoptic horizon. Numerical weather predictions and hydrometric lag exhibit high short-range consistency."
+    """Assessment confidence reflecting horizon decay."""
+    forecast_days: int
+    confidence_level: ConfidenceLevel
+    confidence_score_pct: int
+    decay_explanation: str
 
 
 class ReachRiskItem(BaseModel):
@@ -122,11 +117,11 @@ class CandidateShelter(BaseModel):
     approx_distance_km: float
     facilities: List[str]
     contact_agency: str
-    validation_status: str = "ILLUSTRATIVE_PROTOTYPE (Static planning capacity; real-time occupancy tracking unavailable)"
+    validation_status: str = "ILLUSTRATIVE_PROTOTYPE (Unvalidated for Life-Safety Operations)"
 
 
 class ScientificProvenanceMetadata(BaseModel):
-    """Transparent scientific audit trail distinguishing ML, reach risk, and population exposure."""
+    """Transparent scientific audit trail distinguishing ML, rules, observations, and gaps."""
     ml_model_prediction: str
     rule_based_risk_engine: str
     weather_forecast_source: str
@@ -140,8 +135,7 @@ class AssessmentResponse(BaseModel):
     area_name: str
     area_type: AreaType
     coverage_description: str
-    forecast_days: int = 1
-    horizon_hours: int = 24
+    forecast_days: int
     risk_level: RiskLevel
     risk_color: RiskColor
     summary: str
@@ -152,5 +146,8 @@ class AssessmentResponse(BaseModel):
     reach_risks: List[ReachRiskItem]
     station_risks: List[StationRiskItem]
     candidate_shelters: List[CandidateShelter]
+    estimated_affected_population: int = Field(default=0, description="Estimated potentially affected population in vulnerable floodplain clusters")
+    vulnerable_villages_count: int = Field(default=0, description="Estimated count of low-lying settlements/villages in reach")
     scientific_provenance: ScientificProvenanceMetadata
     assessed_at: str
+

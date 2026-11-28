@@ -4,8 +4,8 @@
  * Primary Unified Workspace Container for PRAVAAH in authentic Cream & Brown styling:
  * Houses the 3 core workspaces:
  * 1. Overview Dashboard (Default)
- * 2. Flood Risk Map (Interactive 24h AI Risk Assessment)
- * 3. Disaster Response (CWC Thresholds, Candidate Shelters, Corridors)
+ * 2. Flood Risk Map (AI-Powered 24h Prediction & Risk Assessment)
+ * 3. Disaster Response & Shelters
  */
 
 import React, { useRef, useState, useEffect } from 'react';
@@ -37,20 +37,14 @@ export const GeospatialWorkspace: React.FC<GeospatialWorkspaceProps> = ({
 
   // Synchronize with sidebar navigation selection
   useEffect(() => {
-    if (activeNav === 'Overview') {
+    if (activeNav === 'Overview' || activeNav === 'Overview Dashboard') {
       setViewMode('overview');
-    } else if (
-      activeNav === 'Flood Risk Map' ||
-      activeNav === 'Flood Map' ||
-      activeNav === 'map'
-    ) {
+    } else if (activeNav === 'Flood Map' || activeNav === 'Flood Risk Map') {
       setViewMode('map');
-    } else if (
-      activeNav === 'Disaster Response' ||
-      activeNav === 'Disaster Intelligence' ||
-      activeNav === 'disaster'
-    ) {
+    } else if (activeNav === 'Disaster Response' || activeNav === 'Disaster Response & Shelters' || activeNav === 'Disaster Intelligence') {
       setViewMode('disaster');
+    } else {
+      setViewMode('overview');
     }
   }, [activeNav]);
 
@@ -58,7 +52,7 @@ export const GeospatialWorkspace: React.FC<GeospatialWorkspaceProps> = ({
     setViewMode(newView);
     if (onNavChange) {
       if (newView === 'overview') onNavChange('Overview');
-      else if (newView === 'map') onNavChange('Flood Risk Map');
+      else if (newView === 'map') onNavChange('Flood Map');
       else if (newView === 'disaster') onNavChange('Disaster Response');
     }
   };
@@ -83,18 +77,15 @@ export const GeospatialWorkspace: React.FC<GeospatialWorkspaceProps> = ({
             healthData={healthData}
             error={error}
             onNavigate={(navName) => {
-              if (navName === 'Flood Map' || navName === 'Flood Risk Map') {
-                handleViewChange('map');
-              } else if (navName === 'Disaster Response') {
-                handleViewChange('disaster');
-              }
+              if (navName === 'Flood Map' || navName === 'Flood Risk Map') handleViewChange('map');
+              else if (navName === 'Disaster Response' || navName === 'Disaster Response & Shelters') handleViewChange('disaster');
             }}
           />
         )}
 
         {viewMode === 'map' && (
           <FloodRiskMapWorkspace
-            onNavigateToDisaster={() => handleViewChange('disaster')}
+            onNavigateToEvacuation={() => handleViewChange('disaster')}
           />
         )}
 
